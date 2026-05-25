@@ -5,6 +5,8 @@ import {
   CheckCircle,
   Truck,
   Home,
+  Clock,
+  FileCheck,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Company } from "@/types";
@@ -26,6 +28,8 @@ export function SummaryCards({ companies }: Props) {
   const available = totalCompanies - sold;
   const strikeOff = owned.filter((c) => c.status === "Strike Off Notice").length;
   const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
+  const ad01Pending = owned.filter((c) => !c.ad01_filing_date).length;
+  const ad01Filed = owned.filter((c) => !!c.ad01_filing_date).length;
 
   const cards = [
     {
@@ -77,6 +81,26 @@ export function SummaryCards({ companies }: Props) {
       ring: "group-hover:ring-rose-500/40",
       iconBg: "bg-rose-500/10 text-rose-500 group-hover:bg-rose-500 group-hover:text-white",
       hint: "Strike off notice issued",
+    },
+    {
+      title: "AD01 Pending",
+      value: ad01Pending,
+      icon: Clock,
+      filter: "ad01",
+      accent: "from-orange-500/20 to-red-500/10",
+      ring: "group-hover:ring-orange-500/40",
+      iconBg: "bg-orange-500/10 text-orange-600 group-hover:bg-orange-500 group-hover:text-white",
+      hint: "AD01 not yet filed",
+    },
+    {
+      title: "AD01 Filed",
+      value: ad01Filed,
+      icon: FileCheck,
+      filter: "ad01-filed",
+      accent: "from-teal-500/20 to-emerald-500/10",
+      ring: "group-hover:ring-teal-500/40",
+      iconBg: "bg-teal-500/10 text-teal-600 group-hover:bg-teal-500 group-hover:text-white",
+      hint: "AD01 already filed",
     },
     {
       title: "Default Address",
