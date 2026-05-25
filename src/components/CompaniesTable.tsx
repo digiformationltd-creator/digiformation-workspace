@@ -101,16 +101,13 @@ export function CompaniesTable({
         <div className="overflow-x-auto">
           <table className="w-full text-[11px] table-fixed">
             <colgroup>
-              <col className="w-[18%]" />
-              <col className="w-[8%]" />
-              <col className="w-[9%]" />
+              <col className="w-[22%]" />
+              <col className="w-[10%]" />
               <col className="w-[11%]" />
-              <col className="w-[20%]" />
+              <col className="w-[14%]" />
+              <col className="w-[26%]" />
               <col className="w-[7%]" />
-              <col className="w-[8%]" />
-              <col className="w-[5%]" />
-              <col className="w-[5%]" />
-              <col className="w-[9%]" />
+              <col className="w-[10%]" />
             </colgroup>
             <thead>
               <tr className="border-b bg-muted/40 text-muted-foreground">
@@ -120,10 +117,7 @@ export function CompaniesTable({
                   { key: "status" as const, label: "Status" },
                   { key: "director" as const, label: "Director", sortable: false },
                   { key: "company_address" as const, label: "Address" },
-                  { key: "auth_code" as const, label: "Auth" },
-                  { key: "utr_number" as const, label: "UTR" },
                   { key: "ad01_filing_date" as const, label: "AD01" },
-                  
                   { key: "actions" as const, label: "Actions", sortable: false },
                 ].map((col) => (
                   <th
@@ -153,7 +147,7 @@ export function CompaniesTable({
             <tbody>
               {sortedCompanies.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-4 py-10 text-center text-xs text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-10 text-center text-xs text-muted-foreground">
                     No companies match your filters.
                   </td>
                 </tr>
@@ -219,20 +213,6 @@ export function CompaniesTable({
                         <div className="mt-1 text-muted-foreground">Status: {company.address_status}</div>
                       </TooltipContent>
                     </Tooltip>
-                  </td>
-                  <td className="px-2 py-1.5">
-                    <EditableCell
-                      value={company.auth_code}
-                      onSave={(v) => onUpdate(company.id, { auth_code: v })}
-                      mono
-                    />
-                  </td>
-                  <td className="px-2 py-1.5">
-                    <EditableCell
-                      value={company.utr_number}
-                      onSave={(v) => onUpdate(company.id, { utr_number: v })}
-                      mono
-                    />
                   </td>
                   <td className="px-2 py-1.5 text-[10px] whitespace-nowrap">
                     <EditableCell

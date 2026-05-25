@@ -81,6 +81,10 @@ function DashboardPage() {
       filtered = filtered.filter((c) => !c.ad01_filing_date);
     } else if (quickFilter === "pending-sale") {
       filtered = filtered.filter((c) => c.status === "Available Company");
+    } else if (quickFilter === "sold") {
+      filtered = filtered.filter((c) => c.status === "Sold/Transferred");
+    } else if (quickFilter === "default-address") {
+      filtered = filtered.filter((c) => c.address_status === "Default Address");
     } else if (quickFilter === "address") {
       filtered = filtered.filter(
         (c) => c.address_match_status === "Mismatched" || c.address_status === "Changed/Updated"
