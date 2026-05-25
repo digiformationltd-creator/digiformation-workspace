@@ -167,9 +167,8 @@ export function CompanyCard({
       {/* View More */}
       <CompanyDetailsSheet company={company} triggerStyle="full" />
 
-
       {/* Footer actions */}
-      <div className="flex items-center justify-between pt-2 border-t">
+      <div className="flex items-center justify-center pt-2 border-t">
         <Button
           variant="ghost"
           size="sm"
@@ -183,17 +182,6 @@ export function CompanyCard({
         >
           <ExternalLink className="h-3 w-3" />
           Companies House
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 text-xs text-destructive hover:text-destructive gap-1"
-          onClick={() => {
-            if (confirm(`Delete ${company.company_name}?`)) onDelete(company.id);
-          }}
-        >
-          <Trash2 className="h-3 w-3" />
-          Delete
         </Button>
       </div>
     </div>
