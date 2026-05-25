@@ -68,6 +68,15 @@ function AppLayout() {
                   <Moon className="h-4 w-4" />
                 )}
               </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                className="h-8 w-8"
+                aria-label="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </header>
           <main className="flex-1 p-6 overflow-auto">
