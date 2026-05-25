@@ -284,30 +284,6 @@ export function CompaniesTable({
                     />
                   </td>
                   <td className="px-2 py-1.5">
-                    {company.ch_company_status ? (
-                      <Badge
-                        variant="outline"
-                        className={
-                          company.ch_company_status === "active"
-                            ? "bg-success/10 text-success border-success/20 text-[9px] px-1.5 py-0"
-                            : "bg-destructive/10 text-destructive border-destructive/20 text-[9px] px-1.5 py-0"
-                        }
-                      >
-                        {company.ch_company_status === "active" ? "✓" : company.ch_company_status}
-                      </Badge>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() => onSyncCH(company.id, company.company_number)}
-                        disabled={isSyncing}
-                      >
-                        <RefreshCw className={`h-3 w-3 ${isSyncing ? "animate-spin" : ""}`} />
-                      </Button>
-                    )}
-                  </td>
-                  <td className="px-2 py-1.5">
                     <div className="flex items-center gap-0.5">
                       <EditCompanyDialog
                         company={company}
