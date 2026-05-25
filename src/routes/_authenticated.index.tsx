@@ -46,6 +46,7 @@ function DashboardPage() {
     markAsSold,
     markAd01Filed,
     syncCompanyCH,
+    syncAllCH,
     verifyDirector,
     updateCompany,
     deleteCompany,
@@ -53,6 +54,7 @@ function DashboardPage() {
     createDirector,
     refresh,
     isSyncing,
+    isBulkSyncing,
   } = useCompanies();
 
   const [searchTerm, setSearchTerm] = useState("");
