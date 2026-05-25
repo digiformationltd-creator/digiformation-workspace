@@ -340,7 +340,7 @@ function DashboardPage() {
         </div>
 
         {/* Mobile: cards */}
-        <div data-no-aura className="grid gap-3 md:hidden">
+        <div className="grid gap-3 md:hidden">
           {filteredCompanies.length === 0 ? (
             <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
               No companies match your filters.
@@ -360,7 +360,7 @@ function DashboardPage() {
         </div>
 
         {/* Desktop: compact table */}
-        <div data-no-aura className="hidden md:block">
+        <div className="hidden md:block">
 
             <CompaniesTable
               companies={filteredCompanies}
