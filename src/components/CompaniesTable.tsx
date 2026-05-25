@@ -98,16 +98,15 @@ export function CompaniesTable({
   return (
     <TooltipProvider delayDuration={200}>
       <div className="rounded-lg border bg-card overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="w-full">
           <table className="w-full text-[11px] table-fixed">
             <colgroup>
-              <col className="w-[20%]" />
+              <col className="w-[19%]" />
+              <col className="w-[8%]" />
               <col className="w-[9%]" />
-              <col className="w-[10%]" />
               <col className="w-[13%]" />
-              <col className="w-[24%]" />
-              <col className="w-[7%]" />
-              <col className="w-[17%]" />
+              <col className="w-[28%]" />
+              <col className="w-[23%]" />
             </colgroup>
             <thead>
               <tr className="border-b bg-muted/40 text-muted-foreground">
@@ -117,7 +116,6 @@ export function CompaniesTable({
                   { key: "status" as const, label: "Status" },
                   { key: "director" as const, label: "Director", sortable: false },
                   { key: "company_address" as const, label: "Address" },
-                  { key: "ad01_filing_date" as const, label: "AD01" },
                   { key: "actions" as const, label: "Actions", sortable: false },
                 ].map((col) => (
                   <th
@@ -147,7 +145,7 @@ export function CompaniesTable({
             <tbody>
               {sortedCompanies.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-xs text-muted-foreground">
+                  <td colSpan={6} className="px-4 py-10 text-center text-xs text-muted-foreground">
                     No companies match your filters.
                   </td>
                 </tr>
@@ -259,18 +257,9 @@ export function CompaniesTable({
                       </TooltipContent>
                     </Tooltip>
                   </td>
-                  <td className="px-2 py-1.5 text-[10px] whitespace-nowrap">
-                    <EditableCell
-                      value={company.ad01_filing_date}
-                      onSave={(v) => onUpdate(company.id, { ad01_filing_date: v })}
-                      type="date"
-                      placeholder="—"
-                      className={company.ad01_filing_date ? "text-success" : ""}
-                    />
-                  </td>
-                  <td className="px-2 py-1.5">
-                    <div className="flex items-center gap-1">
-                      <CompanyDetailsSheet company={company} triggerStyle="compact" />
+                  <td className="px-1 py-1.5">
+                    <div className="flex items-center gap-0.5 justify-end">
+                      <CompanyDetailsSheet company={company} triggerStyle="icon" />
                       <EditCompanyDialog
                         company={company}
                         directors={directors}
@@ -281,11 +270,11 @@ export function CompaniesTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-6 w-6"
                             onClick={() => onMarkSold(company.id)}
                             disabled={company.status === "Sold/Transferred"}
                           >
-                            <Truck className="h-3.5 w-3.5 text-info" />
+                            <Truck className="h-3 w-3 text-info" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>Mark Sold</TooltipContent>
@@ -295,20 +284,20 @@ export function CompaniesTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-6 w-6"
                             onClick={() => onMarkAd01(company.id)}
                           >
-                            <FileText className="h-3.5 w-3.5 text-primary" />
+                            <FileText className="h-3 w-3 text-primary" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>AD01 Filed</TooltipContent>
+                        <TooltipContent>AD01 Filed {company.ad01_filing_date ? `· ${formatDate(company.ad01_filing_date)}` : ""}</TooltipContent>
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-6 w-6"
                             onClick={() =>
                               window.open(
                                 `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -316,7 +305,7 @@ export function CompaniesTable({
                               )
                             }
                           >
-                            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>View on CH</TooltipContent>
@@ -326,10 +315,10 @@ export function CompaniesTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 hover:text-destructive"
+                            className="h-6 w-6 hover:text-destructive"
                             onClick={() => onDelete(company.id)}
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>Delete</TooltipContent>
@@ -340,10 +329,10 @@ export function CompaniesTable({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-7 w-7"
+                              className="h-6 w-6"
                               onClick={() => onVerifyDirector(company.director!.id)}
                             >
-                              <ShieldCheck className="h-3.5 w-3.5 text-warning" />
+                              <ShieldCheck className="h-3 w-3 text-warning" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>Verify Director</TooltipContent>
