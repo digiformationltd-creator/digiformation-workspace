@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { EditableCell } from "@/components/EditableCell";
 import { EditCompanyDialog } from "@/components/EditCompanyDialog";
 import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
-import type { Company, Director, CompanyStatus } from "@/types";
+import type { Company, Director } from "@/types";
 
 interface Props {
   companies: Company[];
