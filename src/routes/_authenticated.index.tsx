@@ -8,6 +8,7 @@ import { FilterBar } from "@/components/FilterBar";
 import { CompaniesTable } from "@/components/CompaniesTable";
 import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
+import logo from "@/assets/logo.png";
 
 import {
   Dialog,
