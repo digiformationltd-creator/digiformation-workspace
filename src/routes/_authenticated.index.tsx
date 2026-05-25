@@ -299,11 +299,13 @@ function DashboardPage() {
 
             <CompaniesTable
               companies={filteredCompanies}
+              directors={directors}
               onMarkSold={markAsSold}
               onMarkAd01={markAd01Filed}
               onSyncCH={syncCompanyCH}
               onDelete={deleteCompany}
               onVerifyDirector={verifyDirector}
+              onUpdate={updateCompany}
               isSyncing={isSyncing}
             />
           </div>
