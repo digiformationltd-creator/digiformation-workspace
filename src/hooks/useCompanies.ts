@@ -108,7 +108,7 @@ export function useCompanies() {
     mutationFn: async (name: string) => {
       const { data, error } = await supabase
         .from("directors")
-        .insert({ name })
+        .insert({ name, is_owner: true })
         .select()
         .single();
       if (error) throw safeDbError(error, "Failed to add director.");
