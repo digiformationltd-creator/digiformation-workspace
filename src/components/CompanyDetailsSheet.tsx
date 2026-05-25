@@ -90,11 +90,15 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
           <DetailRow label="Status" value={company.status} />
           <DetailRow label="Director" value={company.director?.name ?? "—"} />
           <DetailRow
+            label="Old Director"
+            value={company.previous_director_name ?? "—"}
+          />
+          <DetailRow
             label="Director Verified"
             value={company.director?.verification_status ?? "—"}
           />
           <DetailRow
-            label="Incorporation Date"
+            label="Company Created"
             value={fmt(company.incorporation_date) || "—"}
           />
           <DetailRow
@@ -115,38 +119,12 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
           />
           <DetailRow label="Address Status" value={company.address_status} />
           <DetailRow
-            label="Address Match"
-            value={company.address_match_status ?? "Unknown"}
-          />
-          <DetailRow
-            label="Expiry Date"
-            value={fmt(company.ch_expiry_date) || "—"}
-          />
-          <DetailRow
-            label="Operation Date"
-            value={fmt(company.ch_operation_date) || "—"}
-          />
-          <DetailRow
-            label="Filing Rate"
-            value={company.ch_filing_rate ?? "—"}
-          />
-          <DetailRow
             label="Accounts Next Due"
             value={fmt(company.ch_accounts_next_due) || "—"}
           />
           <DetailRow
             label="Confirmation Statement Next Due"
             value={fmt(company.ch_confirmation_statement_next_due) || "—"}
-          />
-
-          <DetailRow label="Tags" value={company.tags?.join(", ") || "—"} />
-          <DetailRow
-            label="Created"
-            value={fmt(company.created_at?.split("T")[0])}
-          />
-          <DetailRow
-            label="Last Updated"
-            value={fmt(company.updated_at?.split("T")[0])}
           />
         </div>
 
