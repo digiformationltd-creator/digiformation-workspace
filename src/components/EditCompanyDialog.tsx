@@ -32,7 +32,7 @@ interface Props {
   triggerStyle?: "icon" | "compact";
 }
 
-export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
+export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle = "icon" }: Props) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
