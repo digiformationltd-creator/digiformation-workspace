@@ -59,7 +59,7 @@ function DashboardPage() {
   const [activeStatus, setActiveStatus] = useState("all");
   const [addressFilter, setAddressFilter] = useState("all");
   const [authFilter, setAuthFilter] = useState("all");
-  const [ad01Filter, setAd01Filter] = useState("all");
+  
   const [showAddForm, setShowAddForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [newDirectorName, setNewDirectorName] = useState("");
@@ -129,14 +129,8 @@ function DashboardPage() {
       filtered = filtered.filter((c) => !c.auth_code || c.auth_code.trim() === "");
     }
 
-    if (ad01Filter === "filed") {
-      filtered = filtered.filter((c) => !!c.ad01_filing_date);
-    } else if (ad01Filter === "pending") {
-      filtered = filtered.filter((c) => !c.ad01_filing_date);
-    }
-
     return filtered;
-  }, [companies, searchTerm, selectedDirector, activeStatus, addressFilter, authFilter, ad01Filter, quickFilter, directorMap]);
+  }, [companies, searchTerm, selectedDirector, activeStatus, addressFilter, authFilter, quickFilter, directorMap]);
 
 
   const handleAddCompany = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -328,8 +322,6 @@ function DashboardPage() {
             onAddressFilterChange={setAddressFilter}
             authFilter={authFilter}
             onAuthFilterChange={setAuthFilter}
-            ad01Filter={ad01Filter}
-            onAd01FilterChange={setAd01Filter}
           />
         </div>
 

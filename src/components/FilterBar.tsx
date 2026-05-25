@@ -22,8 +22,6 @@ interface Props {
   onAddressFilterChange: (v: string) => void;
   authFilter: string;
   onAuthFilterChange: (v: string) => void;
-  ad01Filter: string;
-  onAd01FilterChange: (v: string) => void;
 }
 
 const statusOptions = [
@@ -47,11 +45,6 @@ const authOptions = [
   { label: "Auth Code Missing", value: "missing" },
 ];
 
-const ad01Options = [
-  { label: "All AD01", value: "all" },
-  { label: "AD01 Filed", value: "filed" },
-  { label: "AD01 Pending", value: "pending" },
-];
 
 function ChipGroup({
   options,
@@ -91,8 +84,6 @@ export function FilterBar({
   onAddressFilterChange,
   authFilter,
   onAuthFilterChange,
-  ad01Filter,
-  onAd01FilterChange,
 }: Props) {
   const clearFilters = () => {
     onSearchChange("");
@@ -100,7 +91,6 @@ export function FilterBar({
     onStatusChange("all");
     onAddressFilterChange("all");
     onAuthFilterChange("all");
-    onAd01FilterChange("all");
   };
 
   const hasFilters =
@@ -108,8 +98,7 @@ export function FilterBar({
     selectedDirector !== "all" ||
     activeStatus !== "all" ||
     addressFilter !== "all" ||
-    authFilter !== "all" ||
-    ad01Filter !== "all";
+    authFilter !== "all";
 
   return (
     <div className="space-y-3">
@@ -168,10 +157,6 @@ export function FilterBar({
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Auth</span>
             <ChipGroup options={authOptions} value={authFilter} onChange={onAuthFilterChange} />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">AD01</span>
-            <ChipGroup options={ad01Options} value={ad01Filter} onChange={onAd01FilterChange} />
-          </div>
         </div>
       </div>
 
@@ -181,7 +166,6 @@ export function FilterBar({
           <ChipGroup options={addressOptions} value={addressFilter} onChange={onAddressFilterChange} />
         </div>
         <ChipGroup options={authOptions} value={authFilter} onChange={onAuthFilterChange} />
-        <ChipGroup options={ad01Options} value={ad01Filter} onChange={onAd01FilterChange} />
       </div>
 
       {hasFilters && (
