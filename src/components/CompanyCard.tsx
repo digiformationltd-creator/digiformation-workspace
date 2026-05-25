@@ -91,7 +91,6 @@ export function CompanyCard({
   company,
   onMarkSold,
   onMarkAd01,
-  onDelete,
 }: Props) {
   const ad01Done = !!company.ad01_filing_date;
   const addressChanged = company.address_status === "Changed/Updated";
