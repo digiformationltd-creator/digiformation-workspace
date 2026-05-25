@@ -6,6 +6,7 @@ import { useCompanies } from "@/hooks/useCompanies";
 import { SummaryCards } from "@/components/SummaryCards";
 import { FilterBar } from "@/components/FilterBar";
 import { CompaniesTable } from "@/components/CompaniesTable";
+import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
 import {
   Dialog,
@@ -244,15 +245,40 @@ function DashboardPage() {
         />
       </div>
 
-      <CompaniesTable
-        companies={filteredCompanies}
-        onMarkSold={markAsSold}
-        onMarkAd01={markAd01Filed}
-        onSyncCH={syncCompanyCH}
-        onDelete={deleteCompany}
-        onVerifyDirector={verifyDirector}
-        isSyncing={isSyncing}
-      />
+      {/* Mobile: cards with explicit status buttons */}
+      <div className="grid gap-3 md:hidden">
+        {filteredCompanies.length === 0 ? (
+          <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
+            No companies match your filters.
+          </div>
+        ) : (
+          filteredCompanies.map((c) => (
+            <CompanyCard
+              key={c.id}
+              company={c}
+              onMarkSold={markAsSold}
+              onMarkAd01={markAd01Filed}
+              onSyncCH={syncCompanyCH}
+              onDelete={deleteCompany}
+              onVerifyDirector={verifyDirector}
+              isSyncing={isSyncing}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Desktop: original table */}
+      <div className="hidden md:block">
+        <CompaniesTable
+          companies={filteredCompanies}
+          onMarkSold={markAsSold}
+          onMarkAd01={markAd01Filed}
+          onSyncCH={syncCompanyCH}
+          onDelete={deleteCompany}
+          onVerifyDirector={verifyDirector}
+          isSyncing={isSyncing}
+        />
+      </div>
 
       <div className="bg-card rounded-xl border p-6">
         <h2 className="text-lg font-semibold mb-4">Bulk Import</h2>
