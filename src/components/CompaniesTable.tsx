@@ -78,10 +78,9 @@ export function CompaniesTable({
   const getStatusBadge = (status: string) => {
     const variants: Record<string, string> = {
       Active: "bg-success/10 text-success border-success/20",
-      "Pending Sale": "bg-warning/10 text-warning border-warning/20",
+      "Available Company": "bg-warning/10 text-warning border-warning/20",
       "Sold/Transferred": "bg-info/10 text-info border-info/20",
-      "Strike Off Pending": "bg-destructive/10 text-destructive border-destructive/20",
-      "Struck Off": "bg-muted text-muted-foreground",
+      "Strike Off Notice": "bg-destructive/10 text-destructive border-destructive/20",
     };
     return variants[status] || "bg-muted text-muted-foreground";
   };
