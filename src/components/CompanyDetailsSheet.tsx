@@ -112,6 +112,13 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
             value={company.company_address ?? "—"}
             multiline
           />
+          {company.address_status === "Default Address" && (
+            <DetailRow
+              label="Original Address (before default)"
+              value={company.previous_address ?? "Not recorded"}
+              multiline
+            />
+          )}
           <DetailRow label="Auth Code" value={company.auth_code ?? "—"} mono />
           <DetailRow label="UTR Number" value={company.utr_number ?? "—"} mono />
           <DetailRow
