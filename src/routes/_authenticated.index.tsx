@@ -182,11 +182,19 @@ function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage and track all your UK limited companies
-          </p>
+        <div className="relative flex items-center gap-5 overflow-hidden rounded-xl px-5 py-3 -ml-2">
+          {/* Large DG Formation logo behind text */}
+          <img
+            src="/src/assets/logo.png"
+            alt=""
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-24 w-24 object-contain opacity-25 pointer-events-none"
+          />
+          <div className="relative z-10 pl-24">
+            <h1 className="text-2xl font-bold tracking-tight">Company Portfolio</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage and track all your UK limited companies
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {chKeyMissing && (
