@@ -24,8 +24,6 @@ interface Props {
   directors: Director[];
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
-  onDelete: (id: string) => void;
-  onVerifyDirector: (directorId: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
 }
 
