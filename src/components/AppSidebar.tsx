@@ -1,6 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  Building2,
   LayoutDashboard,
   Upload,
   Settings,
@@ -16,6 +15,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import logo from "@/assets/logo.png";
+
 
 const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -35,14 +36,14 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <div className="flex items-center gap-2 px-4 py-4">
-          <Building2 className="h-6 w-6 text-primary shrink-0" />
-          {!collapsed && (
-            <span className="font-semibold text-sm text-foreground truncate">
-              Portfolio
-            </span>
-          )}
+        <div className="flex items-center gap-2 px-3 py-3">
+          <img
+            src={logo}
+            alt="DigiFormatian LTD"
+            className={collapsed ? "h-8 w-8 object-contain shrink-0" : "h-12 w-auto object-contain shrink-0"}
+          />
         </div>
+
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
