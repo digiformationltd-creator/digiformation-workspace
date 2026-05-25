@@ -193,9 +193,6 @@ export function CompaniesTable({
                       <TooltipTrigger asChild>
                         <span className="truncate flex items-center gap-1 text-[11px] cursor-help">
                           {company.director?.name || <span className="text-muted-foreground">—</span>}
-                          {company.director?.verification_status === "Verified" && (
-                            <ShieldCheck className="h-3 w-3 text-success shrink-0" />
-                          )}
                         </span>
                       </TooltipTrigger>
                       <TooltipContent className="text-xs max-w-[320px]">
