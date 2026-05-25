@@ -3,7 +3,6 @@ import {
   Truck,
   MapPin,
   RefreshCw,
-  ShieldCheck,
   ExternalLink,
   Trash2,
   CheckCircle2,
@@ -20,7 +19,7 @@ interface Props {
   onMarkAd01: (id: string) => void;
   onSyncCH: (id: string, number: string) => void;
   onDelete: (id: string) => void;
-  onVerifyDirector: (directorId: string) => void;
+  onVerifyDirector?: (directorId: string) => void;
   isSyncing?: boolean;
 }
 
@@ -99,16 +98,14 @@ export function CompanyCard({
   onMarkAd01,
   onSyncCH,
   onDelete,
-  onVerifyDirector,
   isSyncing,
 }: Props) {
   const ad01Done = !!company.ad01_filing_date;
   const addressChanged = company.address_status === "Changed/Updated";
   const sold = company.status === "Sold/Transferred";
   const chSynced = !!company.ch_company_status;
-  const directorVerified = company.director?.verification_status === "Verified";
 
-  const allDone = ad01Done && addressChanged && sold && chSynced && directorVerified;
+  const allDone = ad01Done && addressChanged && sold && chSynced;
 
   return (
     <div className="rounded-xl border bg-card p-4 space-y-3">
@@ -180,17 +177,6 @@ export function CompanyCard({
           onAction={() => onSyncCH(company.id, company.company_number)}
           meta={chSynced ? fmt(company.last_ch_sync?.split("T")[0]) : undefined}
         />
-        {company.director?.id && (
-          <StatusRow
-            icon={ShieldCheck}
-            label="Director Verification"
-            done={directorVerified}
-            doneLabel="Verified"
-            pendingLabel="Pending"
-            actionLabel="Verify"
-            onAction={() => onVerifyDirector(company.director!.id)}
-          />
-        )}
       </div>
 
       {/* Footer actions */}
