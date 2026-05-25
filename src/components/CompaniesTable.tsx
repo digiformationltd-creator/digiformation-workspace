@@ -17,25 +17,38 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import type { Company } from "@/types";
+import { EditableCell } from "@/components/EditableCell";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Company, Director, CompanyStatus } from "@/types";
 
 interface Props {
   companies: Company[];
+  directors: Director[];
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
   onSyncCH: (id: string, number: string) => void;
   onDelete: (id: string) => void;
   onVerifyDirector: (directorId: string) => void;
+  onUpdate: (id: string, updates: Record<string, unknown>) => void;
   isSyncing?: boolean;
 }
 
+
 export function CompaniesTable({
   companies,
+  directors,
   onMarkSold,
   onMarkAd01,
   onSyncCH,
   onDelete,
   onVerifyDirector,
+  onUpdate,
   isSyncing,
 }: Props) {
   const [sortField, setSortField] = useState<keyof Company>("company_name");
