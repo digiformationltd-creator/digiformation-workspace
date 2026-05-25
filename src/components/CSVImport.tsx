@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { Upload, FileSpreadsheet, Loader2, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { safeDbError } from "@/lib/safeError";
 import { toast } from "sonner";
 
 interface Props {
@@ -127,7 +128,7 @@ export function CSVImport({ onSuccess }: Props) {
           .from("companies")
           .insert(payload as never)
           .select("id");
-        if (error) throw new Error(error.message);
+        if (error) throw safeDbError(error, "Import failed.");
 
         const count = data?.length ?? 0;
         setImportedCount(count);
