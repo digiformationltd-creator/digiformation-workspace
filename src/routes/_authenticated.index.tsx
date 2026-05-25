@@ -376,8 +376,8 @@ function DashboardPage() {
 
 
 
-      <div className="bg-card rounded-xl border p-6">
-        <h2 className="text-lg font-semibold mb-4">Bulk Import</h2>
+      <div className="bg-card rounded-xl border p-4 sm:p-6">
+        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Bulk Import</h2>
         <CSVImport onSuccess={refresh} />
       </div>
     </div>
