@@ -105,28 +105,33 @@ function DashboardPage() {
   }, [companies, searchTerm, selectedDirector, activeStatus, quickFilter]);
 
 
-  const handleAddCompany = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddCompany = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    createMutation.mutate({
-      data: {
-        company: {
-          company_name: formData.get("company_name") as string,
-          company_number: formData.get("company_number") as string,
-          incorporation_date: (formData.get("incorporation_date") as string) || null,
-          company_address: (formData.get("company_address") as string) || null,
-          sic_codes: (formData.get("sic_codes") as string)
-            ? (formData.get("sic_codes") as string).split(",").map((s) => s.trim())
-            : null,
-          auth_code: (formData.get("auth_code") as string) || null,
-          utr_number: (formData.get("utr_number") as string) || null,
-          director_id: (formData.get("director_id") as string) || null,
-          status: (formData.get("status") as Company["status"]) || "Active",
-        },
-      },
-    });
+    setSubmitting(true);
+    try {
+      await createCompany({
+        company_name: formData.get("company_name") as string,
+        company_number: (formData.get("company_number") as string).toUpperCase(),
+        incorporation_date: (formData.get("incorporation_date") as string) || null,
+        company_address: (formData.get("company_address") as string) || null,
+        sic_codes: (formData.get("sic_codes") as string)
+          ? (formData.get("sic_codes") as string).split(",").map((s) => s.trim())
+          : null,
+        auth_code: (formData.get("auth_code") as string) || null,
+        utr_number: (formData.get("utr_number") as string) || null,
+        director_id: (formData.get("director_id") as string) || null,
+        status: (formData.get("status") as Company["status"]) || "Active",
+      });
+      form.reset();
+      setShowAddForm(false);
+    } catch {
+      // toast handled in hook
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
