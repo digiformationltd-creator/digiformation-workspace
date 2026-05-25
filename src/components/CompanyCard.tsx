@@ -16,8 +16,6 @@ interface Props {
   company: Company;
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
-  onDelete: (id: string) => void;
-  onVerifyDirector?: (directorId: string) => void;
 }
 
 const fmt = (d: string | null | undefined) =>
