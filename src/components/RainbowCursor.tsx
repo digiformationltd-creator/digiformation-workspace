@@ -67,18 +67,8 @@ export function RainbowCursor() {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[60] overflow-hidden">
-      {/* soft rainbow glow following cursor */}
-      <div
-        aria-hidden
-        className="absolute h-20 w-20 rounded-full blur-2xl transition-opacity duration-200"
-        style={{
-          left: pos.x - 40,
-          top: pos.y - 40,
-          opacity: on ? 0.35 : 0,
-          background:
-            "conic-gradient(from 0deg, #ef4444, #f97316, #eab308, #22c55e, #06b6d4, #3b82f6, #a855f7, #ec4899, #ef4444)",
-        }}
-      />
+      {/* sparks only — rainbow halo removed */}
+      <span className="sr-only" aria-hidden style={{ left: pos.x, top: pos.y, opacity: on ? 1 : 0 }} />
       {sparks.map((s) => (
         <span
           key={s.id}
