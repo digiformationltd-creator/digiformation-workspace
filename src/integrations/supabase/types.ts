@@ -69,6 +69,7 @@ export type Database = {
           incorporation_date: string | null
           last_ch_sync: string | null
           previous_address: string | null
+          previous_director_name: string | null
           previous_name: string | null
           sic_codes: string[] | null
           status: Database["public"]["Enums"]["company_status"] | null
@@ -98,6 +99,7 @@ export type Database = {
           incorporation_date?: string | null
           last_ch_sync?: string | null
           previous_address?: string | null
+          previous_director_name?: string | null
           previous_name?: string | null
           sic_codes?: string[] | null
           status?: Database["public"]["Enums"]["company_status"] | null
@@ -127,6 +129,7 @@ export type Database = {
           incorporation_date?: string | null
           last_ch_sync?: string | null
           previous_address?: string | null
+          previous_director_name?: string | null
           previous_name?: string | null
           sic_codes?: string[] | null
           status?: Database["public"]["Enums"]["company_status"] | null
