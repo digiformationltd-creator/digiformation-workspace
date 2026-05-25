@@ -56,6 +56,9 @@ function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDirector, setSelectedDirector] = useState("all");
   const [activeStatus, setActiveStatus] = useState("all");
+  const [addressFilter, setAddressFilter] = useState("all");
+  const [authFilter, setAuthFilter] = useState("all");
+  const [ad01Filter, setAd01Filter] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [newDirectorName, setNewDirectorName] = useState("");
@@ -63,10 +66,15 @@ function DashboardPage() {
 
   const { filter: quickFilter } = Route.useSearch();
 
+  const directorMap = useMemo(() => {
+    const m = new Map<string, string>();
+    directors.forEach((d) => m.set(d.id, d.name));
+    return m;
+  }, [directors]);
+
   const filteredCompanies = useMemo(() => {
     let filtered = [...companies];
 
-    // Apply sidebar quick filter
     if (quickFilter === "active") {
       filtered = filtered.filter((c) => c.status === "Active");
     } else if (quickFilter === "ad01") {
@@ -83,12 +91,21 @@ function DashboardPage() {
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (c) =>
+      filtered = filtered.filter((c) => {
+        const directorName = c.director_id ? directorMap.get(c.director_id) ?? "" : "";
+        const sic = (c.sic_codes ?? []).join(" ");
+        return (
           c.company_name.toLowerCase().includes(term) ||
           c.company_number.toLowerCase().includes(term) ||
-          (c.utr_number?.toLowerCase().includes(term) ?? false)
-      );
+          (c.utr_number?.toLowerCase().includes(term) ?? false) ||
+          (c.auth_code?.toLowerCase().includes(term) ?? false) ||
+          (c.company_address?.toLowerCase().includes(term) ?? false) ||
+          (c.ch_address?.toLowerCase().includes(term) ?? false) ||
+          directorName.toLowerCase().includes(term) ||
+          c.status.toLowerCase().includes(term) ||
+          sic.toLowerCase().includes(term)
+        );
+      });
     }
 
     if (selectedDirector !== "all") {
@@ -99,8 +116,24 @@ function DashboardPage() {
       filtered = filtered.filter((c) => c.status === activeStatus);
     }
 
+    if (addressFilter !== "all") {
+      filtered = filtered.filter((c) => c.address_status === addressFilter);
+    }
+
+    if (authFilter === "has") {
+      filtered = filtered.filter((c) => !!c.auth_code && c.auth_code.trim() !== "");
+    } else if (authFilter === "missing") {
+      filtered = filtered.filter((c) => !c.auth_code || c.auth_code.trim() === "");
+    }
+
+    if (ad01Filter === "filed") {
+      filtered = filtered.filter((c) => !!c.ad01_filing_date);
+    } else if (ad01Filter === "pending") {
+      filtered = filtered.filter((c) => !c.ad01_filing_date);
+    }
+
     return filtered;
-  }, [companies, searchTerm, selectedDirector, activeStatus, quickFilter]);
+  }, [companies, searchTerm, selectedDirector, activeStatus, addressFilter, authFilter, ad01Filter, quickFilter, directorMap]);
 
 
   const handleAddCompany = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -280,6 +313,12 @@ function DashboardPage() {
             directors={directors}
             activeStatus={activeStatus}
             onStatusChange={setActiveStatus}
+            addressFilter={addressFilter}
+            onAddressFilterChange={setAddressFilter}
+            authFilter={authFilter}
+            onAuthFilterChange={setAuthFilter}
+            ad01Filter={ad01Filter}
+            onAd01FilterChange={setAd01Filter}
           />
         </div>
 
