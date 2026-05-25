@@ -53,7 +53,7 @@ function AppLayout() {
               <SidebarTrigger className="-ml-1" />
               <LayoutDashboard className="h-4 w-4 text-primary" />
               <span className="text-sm font-semibold text-foreground">
-                Tracking Dashboard
+                Made By Digiformation Dev Studio
               </span>
             </div>
             <div className="flex items-center gap-1">
