@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Moon, Sun, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
