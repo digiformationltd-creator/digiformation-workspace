@@ -55,6 +55,9 @@ export type Database = {
           ch_address: string | null
           ch_company_profile: Json | null
           ch_company_status: string | null
+          ch_expiry_date: string | null
+          ch_filing_rate: string | null
+          ch_operation_date: string | null
           company_address: string | null
           company_name: string
           company_number: string
@@ -77,6 +80,9 @@ export type Database = {
           ch_address?: string | null
           ch_company_profile?: Json | null
           ch_company_status?: string | null
+          ch_expiry_date?: string | null
+          ch_filing_rate?: string | null
+          ch_operation_date?: string | null
           company_address?: string | null
           company_name: string
           company_number: string
@@ -99,6 +105,9 @@ export type Database = {
           ch_address?: string | null
           ch_company_profile?: Json | null
           ch_company_status?: string | null
+          ch_expiry_date?: string | null
+          ch_filing_rate?: string | null
+          ch_operation_date?: string | null
           company_address?: string | null
           company_name?: string
           company_number?: string

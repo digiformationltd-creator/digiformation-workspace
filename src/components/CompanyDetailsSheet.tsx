@@ -114,6 +114,18 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
             label="Address Match"
             value={company.address_match_status ?? "Unknown"}
           />
+          <DetailRow
+            label="Expiry Date"
+            value={fmt(company.ch_expiry_date) || "—"}
+          />
+          <DetailRow
+            label="Operation Date"
+            value={fmt(company.ch_operation_date) || "—"}
+          />
+          <DetailRow
+            label="Filing Rate"
+            value={company.ch_filing_rate ?? "—"}
+          />
           <DetailRow label="Tags" value={company.tags?.join(", ") || "—"} />
           <DetailRow
             label="Created"
@@ -124,6 +136,7 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
             value={fmt(company.updated_at?.split("T")[0])}
           />
         </div>
+
       </SheetContent>
     </Sheet>
   );
