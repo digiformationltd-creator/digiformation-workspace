@@ -115,7 +115,7 @@ export function SummaryCards({ companies }: Props) {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
       {cards.map((card, i) => {
         const inner = (
           <>
@@ -128,29 +128,29 @@ export function SummaryCards({ companies }: Props) {
                 bg-gradient-to-r from-transparent via-white/10 to-transparent
                 translate-x-[-120%] group-hover:translate-x-[120%] transition-transform duration-700 ease-out"
             />
-            <div className="relative flex items-center justify-between">
-              <div className="min-w-0">
-                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide truncate">
+            <div className="relative flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground uppercase tracking-wide truncate">
                   {card.title}
                 </p>
-                <p className="text-2xl font-bold mt-1 tabular-nums transition-transform duration-300 group-hover:scale-110 origin-left">
+                <p className="text-xl sm:text-2xl font-bold mt-1 tabular-nums transition-transform duration-300 group-hover:scale-110 origin-left">
                   {card.value}
                 </p>
-                <p className="text-[10px] text-muted-foreground/70 mt-0.5 truncate">
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5 truncate hidden sm:block">
                   {card.hint}
                 </p>
               </div>
               <div
-                className={`rounded-lg p-2 shrink-0 transition-all duration-300
+                className={`rounded-lg p-1.5 sm:p-2 shrink-0 transition-all duration-300
                   group-hover:rotate-6 group-hover:scale-110 ${card.iconBg}`}
               >
-                <card.icon className="h-5 w-5" />
+                <card.icon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
             </div>
           </>
         );
 
-        const className = `group relative overflow-hidden rounded-xl border bg-card p-4 shadow-sm
+        const className = `group relative overflow-hidden rounded-xl border bg-card p-3 sm:p-4 shadow-sm
             ring-1 ring-transparent transition-all duration-300 ease-out
             hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]
             animate-fade-in ${card.ring} ${card.filter ? "cursor-pointer" : "cursor-default"}`;
