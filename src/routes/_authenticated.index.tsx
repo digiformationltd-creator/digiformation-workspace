@@ -322,8 +322,6 @@ function DashboardPage() {
             onAddressFilterChange={setAddressFilter}
             authFilter={authFilter}
             onAuthFilterChange={setAuthFilter}
-            ad01Filter={ad01Filter}
-            onAd01FilterChange={setAd01Filter}
           />
         </div>
 
