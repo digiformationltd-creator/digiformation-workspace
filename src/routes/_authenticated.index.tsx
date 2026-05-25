@@ -8,6 +8,7 @@ import { FilterBar } from "@/components/FilterBar";
 import { CompaniesTable } from "@/components/CompaniesTable";
 import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
+import logo from "@/assets/logo.png";
 
 import {
   Dialog,
@@ -182,11 +183,19 @@ function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage and track all your UK limited companies
-          </p>
+        <div className="relative flex items-center gap-5 overflow-hidden rounded-xl px-6 py-4 -ml-2">
+          {/* Large DG Formation logo behind text */}
+          <img
+            src={logo}
+            alt=""
+            className="absolute left-2 top-1/2 -translate-y-1/2 h-32 w-32 object-contain opacity-40 pointer-events-none"
+          />
+          <div className="relative z-10 pl-32">
+            <h1 className="text-2xl font-bold tracking-tight">Company Portfolio</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage and track all your UK limited companies
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {chKeyMissing && (
