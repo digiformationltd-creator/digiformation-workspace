@@ -298,7 +298,7 @@ export function CompaniesTable({
               ))}
             </tbody>
           </table>
-        </h>
+        </div>
       </div>
     </TooltipProvider>
   );
