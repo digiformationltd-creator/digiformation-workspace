@@ -87,8 +87,9 @@ export function CompaniesTable({
 
   const getAddressBadge = (status: string) => {
     const variants: Record<string, string> = {
-      "Default Address": "bg-muted/50 text-muted-foreground",
+      "Default Address": "bg-warning/10 text-warning border-warning/20",
       "Changed/Updated": "bg-primary/10 text-primary border-primary/20",
+      "Active": "bg-success/10 text-success border-success/20",
     };
     return variants[status] || "bg-muted text-muted-foreground";
   };

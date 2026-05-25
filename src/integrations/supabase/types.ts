@@ -187,7 +187,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      address_status: "Default Address" | "Changed/Updated"
+      address_status: "Default Address" | "Changed/Updated" | "Active"
       company_status:
         | "Active"
         | "Available Company"
@@ -321,7 +321,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      address_status: ["Default Address", "Changed/Updated"],
+      address_status: ["Default Address", "Changed/Updated", "Active"],
       company_status: [
         "Active",
         "Available Company",
