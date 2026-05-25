@@ -15,6 +15,7 @@ export interface Company {
   company_number: string;
   previous_name: string | null;
   previous_address: string | null;
+  previous_director_name: string | null;
   incorporation_date: string | null;
   company_address: string | null;
   sic_codes: string[] | null;
