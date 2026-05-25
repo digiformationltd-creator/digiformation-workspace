@@ -18,10 +18,8 @@ export function SummaryCards({ companies }: Props) {
   const total = companies.length;
   const active = companies.filter((c) => c.status === "Active").length;
   const sold = companies.filter((c) => c.status === "Sold/Transferred").length;
-  const pendingSale = companies.filter((c) => c.status === "Pending Sale").length;
-  const strikeOff = companies.filter(
-    (c) => c.status === "Strike Off Pending" || c.status === "Struck Off"
-  ).length;
+  const pendingSale = companies.filter((c) => c.status === "Available Company").length;
+  const strikeOff = companies.filter((c) => c.status === "Strike Off Notice").length;
   const addressMismatch = companies.filter(
     (c) => c.address_match_status === "Mismatched"
   ).length;
