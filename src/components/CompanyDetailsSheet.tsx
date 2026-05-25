@@ -126,6 +126,15 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
             label="Filing Rate"
             value={company.ch_filing_rate ?? "—"}
           />
+          <DetailRow
+            label="Accounts Next Due"
+            value={fmt(company.ch_accounts_next_due) || "—"}
+          />
+          <DetailRow
+            label="Confirmation Statement Next Due"
+            value={fmt(company.ch_confirmation_statement_next_due) || "—"}
+          />
+
           <DetailRow label="Tags" value={company.tags?.join(", ") || "—"} />
           <DetailRow
             label="Created"
