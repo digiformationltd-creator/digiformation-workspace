@@ -169,17 +169,7 @@ export function CompanyCard({
           actionLabel="Mark Sold"
           onAction={() => onMarkSold(company.id)}
         />
-        <StatusRow
-          icon={RefreshCw}
-          label="Companies House"
-          done={chSynced}
-          doneLabel={company.ch_company_status ?? "Synced"}
-          pendingLabel="Not Synced"
-          actionLabel="Sync Now"
-          disabled={isSyncing}
-          onAction={() => onSyncCH(company.id, company.company_number)}
-          meta={chSynced ? fmt(company.last_ch_sync?.split("T")[0]) : undefined}
-        />
+
       </div>
 
       {/* View More */}
