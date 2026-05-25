@@ -24,7 +24,6 @@ export function SummaryCards({ companies }: Props) {
     (c) => c.address_match_status === "Mismatched"
   ).length;
   const ad01Pending = companies.filter((c) => !c.ad01_filing_date).length;
-  const notSynced = companies.filter((c) => !c.ch_company_status).length;
 
   const cards = [
     {
