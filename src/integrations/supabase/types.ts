@@ -14,7 +14,171 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ad01_filings: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          filed_date: string
+          id: string
+          notes: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          filed_date: string
+          id?: string
+          notes?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          filed_date?: string
+          id?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad01_filings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      companies: {
+        Row: {
+          ad01_filing_date: string | null
+          address_match_status: string | null
+          address_status: Database["public"]["Enums"]["address_status"] | null
+          auth_code: string | null
+          ch_address: string | null
+          ch_company_profile: Json | null
+          ch_company_status: string | null
+          company_address: string | null
+          company_name: string
+          company_number: string
+          created_at: string | null
+          director_id: string | null
+          id: string
+          incorporation_date: string | null
+          last_ch_sync: string | null
+          sic_codes: string[] | null
+          status: Database["public"]["Enums"]["company_status"] | null
+          tags: string[] | null
+          updated_at: string | null
+          utr_number: string | null
+        }
+        Insert: {
+          ad01_filing_date?: string | null
+          address_match_status?: string | null
+          address_status?: Database["public"]["Enums"]["address_status"] | null
+          auth_code?: string | null
+          ch_address?: string | null
+          ch_company_profile?: Json | null
+          ch_company_status?: string | null
+          company_address?: string | null
+          company_name: string
+          company_number: string
+          created_at?: string | null
+          director_id?: string | null
+          id?: string
+          incorporation_date?: string | null
+          last_ch_sync?: string | null
+          sic_codes?: string[] | null
+          status?: Database["public"]["Enums"]["company_status"] | null
+          tags?: string[] | null
+          updated_at?: string | null
+          utr_number?: string | null
+        }
+        Update: {
+          ad01_filing_date?: string | null
+          address_match_status?: string | null
+          address_status?: Database["public"]["Enums"]["address_status"] | null
+          auth_code?: string | null
+          ch_address?: string | null
+          ch_company_profile?: Json | null
+          ch_company_status?: string | null
+          company_address?: string | null
+          company_name?: string
+          company_number?: string
+          created_at?: string | null
+          director_id?: string | null
+          id?: string
+          incorporation_date?: string | null
+          last_ch_sync?: string | null
+          sic_codes?: string[] | null
+          status?: Database["public"]["Enums"]["company_status"] | null
+          tags?: string[] | null
+          updated_at?: string | null
+          utr_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companies_director_id_fkey"
+            columns: ["director_id"]
+            isOneToOne: false
+            referencedRelation: "directors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_status_logs: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          company_id: string | null
+          id: string
+          new_status: Database["public"]["Enums"]["company_status"] | null
+          old_status: Database["public"]["Enums"]["company_status"] | null
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          company_id?: string | null
+          id?: string
+          new_status?: Database["public"]["Enums"]["company_status"] | null
+          old_status?: Database["public"]["Enums"]["company_status"] | null
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          company_id?: string | null
+          id?: string
+          new_status?: Database["public"]["Enums"]["company_status"] | null
+          old_status?: Database["public"]["Enums"]["company_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_status_logs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      directors: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          verification_status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          verification_status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          verification_status?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +187,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      address_status: "Default Address" | "Changed/Updated"
+      company_status:
+        | "Active"
+        | "Pending Sale"
+        | "Sold/Transferred"
+        | "Strike Off Pending"
+        | "Struck Off"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +320,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      address_status: ["Default Address", "Changed/Updated"],
+      company_status: [
+        "Active",
+        "Pending Sale",
+        "Sold/Transferred",
+        "Strike Off Pending",
+        "Struck Off",
+      ],
+    },
   },
 } as const
