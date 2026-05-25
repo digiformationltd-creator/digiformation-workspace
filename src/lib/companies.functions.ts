@@ -229,7 +229,7 @@ export const importCompaniesCSV = createServerFn({ method: "POST" })
         status: (row["Status"] || row["status"] || "Active") as CompanyStatus,
         address_status: (row["Address Status"] ||
           row["address_status"] ||
-          "Default Address") as "Default Address" | "Changed/Updated",
+          "Default Address") as "Default Address" | "Changed/Updated" | "Active",
         director_id: dirName ? directorMap.get(dirName) ?? null : null,
         tags: row["Tags"]
           ? row["Tags"].split(",").map((s: string) => s.trim()).filter(Boolean)
