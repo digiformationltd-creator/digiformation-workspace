@@ -67,6 +67,7 @@ function AppLayout() {
           <main className="flex-1 p-3 md:p-4 overflow-auto">
             <Outlet />
           </main>
+          <Footer />
         </div>
       </div>
     </SidebarProvider>
