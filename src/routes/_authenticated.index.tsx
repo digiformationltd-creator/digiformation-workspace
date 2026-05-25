@@ -10,7 +10,7 @@ import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
 import logo from "@/assets/digiformation-logo.png";
 import { isOwnedCompany } from "@/lib/ownership";
-import { RainbowCursor } from "@/components/RainbowCursor";
+
 
 import {
   Dialog,
@@ -176,7 +176,6 @@ function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <RainbowCursor />
       <div className="flex items-center justify-between">
         <div className="relative flex items-center gap-5 rounded-xl px-6 py-5 -ml-2">
           <div className="relative h-32 w-32 group cursor-pointer">
@@ -185,14 +184,6 @@ function DashboardPage() {
               alt="Digiformation"
               className="h-full w-full object-contain opacity-90 relative z-10"
             />
-            <div className="absolute inset-2 z-20 rounded-full pointer-events-none overflow-hidden">
-              <div className="absolute inset-0 translate-x-[-120%] group-hover:translate-x-[120%] transition-transform duration-700 ease-out shine-sweep"
-                style={{
-                  background: 'linear-gradient(120deg, transparent 0%, transparent 25%, rgba(255,0,0,0.35) 30%, rgba(255,165,1,0.35) 40%, rgba(255,255,0,1) 50%, rgba(0,128,0,0.35) 60%, rgba(0,0,255,0.35) 70%, transparent 75%, transparent 100%)',
-                }}
-              />
-            </div>
-            <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-red-500/20 via-yellow-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl z-0" />
           </div>
           <div className="relative z-10 pl-4">
             <h1 className="text-2xl font-bold tracking-tight">Company Portfolio</h1>
@@ -349,7 +340,7 @@ function DashboardPage() {
         </div>
 
         {/* Mobile: cards */}
-        <div data-no-aura className="grid gap-3 md:hidden">
+        <div className="grid gap-3 md:hidden">
           {filteredCompanies.length === 0 ? (
             <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
               No companies match your filters.
@@ -369,7 +360,7 @@ function DashboardPage() {
         </div>
 
         {/* Desktop: compact table */}
-        <div data-no-aura className="hidden md:block">
+        <div className="hidden md:block">
 
             <CompaniesTable
               companies={filteredCompanies}
