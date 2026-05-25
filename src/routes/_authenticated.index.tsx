@@ -9,6 +9,9 @@ import { CompaniesTable } from "@/components/CompaniesTable";
 import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
 import logo from "@/assets/digiformation-logo.png";
+import { isOwnedCompany } from "@/lib/ownership";
+import { Home } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 import {
   Dialog,
@@ -321,6 +324,39 @@ function DashboardPage() {
       </div>
 
       <SummaryCards companies={companies} />
+
+      {(() => {
+        const defaults = companies.filter(
+          (c) => isOwnedCompany(c) && c.address_status === "Default Address"
+        );
+        if (defaults.length === 0) return null;
+        return (
+          <div className="rounded-xl border bg-card p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Home className="h-4 w-4 text-yellow-600" />
+              <h3 className="text-sm font-semibold">
+                Default Address — AD01 Pending ({defaults.length})
+              </h3>
+            </div>
+            <p className="text-[11px] text-muted-foreground mb-3">
+              Owned companies still on PO Box / default address. AD01 filing required.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {defaults.map((c) => (
+                <Link
+                  key={c.id}
+                  to="/"
+                  search={{ filter: "default-address" }}
+                  className="text-xs px-2.5 py-1 rounded-md border bg-yellow-500/10 text-yellow-700 hover:bg-yellow-500/20 transition-colors"
+                  title={`${c.company_number} — Director: ${c.director?.name ?? "—"}`}
+                >
+                  {c.company_name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       <div className="space-y-3 min-w-0">
         <div className="bg-card rounded-lg border p-3">
