@@ -4,24 +4,15 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { updateCompanyCHStatus, bulkSyncCompaniesHouse } from "@/lib/companies.functions";
+import { safeDbError } from "@/lib/safeError";
 import type { Company, Director, CompanyStatus } from "@/types";
-
-/**
- * All CRUD goes through the supabase browser client directly so that
- * inserts/updates/deletes do not consume server-function invocations
- * (no Lovable credits used for normal data entry). RLS allows
- * authenticated users full access to these tables.
- *
- * The only server function still used is the Companies House sync,
- * because it needs a secret API key.
- */
 
 async function fetchCompaniesDirect(): Promise<Company[]> {
   const { data, error } = await supabase
     .from("companies")
     .select("*, director:directors(*)")
     .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
+  if (error) throw safeDbError(error, "Failed to load companies.");
   return (data ?? []) as unknown as Company[];
 }
 
@@ -30,7 +21,7 @@ async function fetchDirectorsDirect(): Promise<Director[]> {
     .from("directors")
     .select("*")
     .order("name");
-  if (error) throw new Error(error.message);
+  if (error) throw safeDbError(error, "Failed to load directors.");
   return (data ?? []) as Director[];
 }
 
@@ -54,32 +45,30 @@ export function useCompanies() {
     queryClient.invalidateQueries({ queryKey: ["directors"] });
   }, [queryClient]);
 
-  // --- direct supabase mutations (no server fn = no credits) ---
-
   const updateCompanyMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Record<string, unknown> }) => {
       const { error } = await supabase
         .from("companies")
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq("id", id);
-      if (error) throw new Error(error.message);
+      if (error) throw safeDbError(error, "Failed to update company.");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
     },
-    onError: (e: Error) => toast.error(e.message || "Failed to update"),
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const deleteCompanyMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("companies").delete().eq("id", id);
-      if (error) throw new Error(error.message);
+      if (error) throw safeDbError(error, "Failed to delete company.");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       toast.success("Company deleted");
     },
-    onError: (e: Error) => toast.error(e.message || "Failed to delete"),
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const markSoldMutation = useMutation({
@@ -88,7 +77,7 @@ export function useCompanies() {
         .from("companies")
         .update({ status: "Sold/Transferred" as CompanyStatus, updated_at: new Date().toISOString() })
         .eq("id", id);
-      if (error) throw new Error(error.message);
+      if (error) throw safeDbError(error, "Failed to update status.");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -104,8 +93,9 @@ export function useCompanies() {
         .from("companies")
         .update({ ad01_filing_date: today, updated_at: new Date().toISOString() })
         .eq("id", id);
-      if (e1) throw new Error(e1.message);
-      await supabase.from("ad01_filings").insert({ company_id: id, filed_date: today });
+      if (e1) throw safeDbError(e1, "Failed to record AD01 filing.");
+      const { error: e2 } = await supabase.from("ad01_filings").insert({ company_id: id, filed_date: today });
+      if (e2) throw safeDbError(e2, "Failed to record AD01 filing.");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -121,7 +111,7 @@ export function useCompanies() {
         .insert({ name })
         .select()
         .single();
-      if (error) throw new Error(error.message);
+      if (error) throw safeDbError(error, "Failed to add director.");
       return data;
     },
     onSuccess: () => {
@@ -137,7 +127,7 @@ export function useCompanies() {
         .from("directors")
         .update({ verification_status: "Verified" })
         .eq("id", directorId);
-      if (error) throw new Error(error.message);
+      if (error) throw safeDbError(error, "Failed to verify director.");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["directors"] });
@@ -150,23 +140,22 @@ export function useCompanies() {
   const createCompanyMutation = useMutation({
     mutationFn: async (company: Partial<Company>) => {
       const { error } = await supabase.from("companies").insert(company as never);
-      if (error) throw new Error(error.message);
+      if (error) throw safeDbError(error, "Failed to add company.");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       toast.success("Company added");
     },
-    onError: (e: Error) => toast.error(e.message || "Failed to add"),
+    onError: (e: Error) => toast.error(e.message),
   });
 
-  // CH sync still uses server fn (needs API key)
   const syncCHMutation = useMutation({
     mutationFn: syncCHFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       toast.success("Companies House sync completed");
     },
-    onError: (e: Error) => toast.error(e.message || "Failed to sync"),
+    onError: () => toast.error("Failed to sync with Companies House."),
   });
 
   const bulkSyncMutation = useMutation({
@@ -181,7 +170,7 @@ export function useCompanies() {
         toast.warning(`Synced ${ok} of ${res.total} companies (${failed} failed)`);
       }
     },
-    onError: (e: Error) => toast.error(e.message || "Bulk sync failed"),
+    onError: () => toast.error("Bulk sync failed."),
   });
 
   return {
