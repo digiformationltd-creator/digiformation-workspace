@@ -33,11 +33,9 @@ interface Props {
   directors: Director[];
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
-  onSyncCH: (id: string, number: string) => void;
   onDelete: (id: string) => void;
   onVerifyDirector: (directorId: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
-  isSyncing?: boolean;
 }
 
 
@@ -46,11 +44,9 @@ export function CompaniesTable({
   directors,
   onMarkSold,
   onMarkAd01,
-  onSyncCH,
   onDelete,
   onVerifyDirector,
   onUpdate,
-  isSyncing,
 }: Props) {
   const [sortField, setSortField] = useState<keyof Company>("company_name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
