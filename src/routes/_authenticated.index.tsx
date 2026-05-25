@@ -305,10 +305,8 @@ function DashboardPage() {
                 company={c}
                 onMarkSold={markAsSold}
                 onMarkAd01={markAd01Filed}
-                onSyncCH={syncCompanyCH}
                 onDelete={deleteCompany}
                 onVerifyDirector={verifyDirector}
-                isSyncing={isSyncing}
               />
             ))
           )}
