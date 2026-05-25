@@ -177,17 +177,17 @@ function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="relative flex items-center gap-5 rounded-xl px-6 py-5 -ml-2">
-          <div className="relative h-32 w-32 group cursor-pointer">
+        <div className="flex items-center gap-4 rounded-xl px-4 py-3 -ml-2">
+          <div className="h-24 w-24 flex items-center justify-center">
             <img
               src={logo}
               alt="Digiformation"
-              className="h-full w-full object-contain opacity-90 relative z-10"
+              className="h-full w-full object-contain opacity-90"
             />
           </div>
-          <div className="relative z-10 pl-4">
-            <h1 className="text-2xl font-bold tracking-tight">Company Portfolio</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+          <div className="flex flex-col justify-center">
+            <h1 className="text-3xl font-bold tracking-tight">Tracking Dashboard</h1>
+            <p className="text-base text-muted-foreground mt-1">
               Manage and track all your UK limited companies
             </p>
           </div>
