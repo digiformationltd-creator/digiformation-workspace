@@ -95,7 +95,84 @@ export function CompaniesTable({
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="rounded-lg border bg-card overflow-hidden">
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-2">
+        {sortedCompanies.length === 0 && (
+          <div className="rounded-lg border bg-card px-4 py-10 text-center text-xs text-muted-foreground">
+            No companies match your filters.
+          </div>
+        )}
+        {sortedCompanies.map((company) => (
+          <div
+            key={company.id}
+            className="rounded-lg border bg-card p-3 space-y-2 overflow-hidden"
+          >
+            <div className="space-y-1.5 text-[12px]">
+              <div>
+                <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Company</div>
+                <div className="font-medium break-words">{company.company_name}</div>
+              </div>
+              <div>
+                <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Number</div>
+                <div className="font-mono break-all">{company.company_number}</div>
+              </div>
+              <div>
+                <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Director</div>
+                <div className="break-words">{company.director?.name || "—"}</div>
+              </div>
+              <div>
+                <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Address</div>
+                <div className="break-words text-[11px]">{company.company_address || "—"}</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t">
+              <CompanyDetailsSheet company={company} triggerStyle="compact" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-[10px] px-2 gap-1"
+                onClick={() => onMarkSold(company.id)}
+                disabled={company.status === "Sold/Transferred"}
+              >
+                <Truck className="h-3 w-3 text-info" />
+                Sold
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-[10px] px-2 gap-1"
+                onClick={() => onMarkAd01(company.id)}
+              >
+                <FileText className="h-3 w-3 text-primary" />
+                AD01
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-[10px] px-2 gap-1"
+                onClick={() =>
+                  window.open(
+                    `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
+                    "_blank"
+                  )
+                }
+              >
+                <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                CH
+              </Button>
+              <EditCompanyDialog
+                company={company}
+                directors={directors}
+                onUpdate={onUpdate}
+                triggerStyle="compact"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden md:block rounded-lg border bg-card overflow-hidden">
         <div className="w-full">
           <table className="w-full text-[11px] table-fixed">
             <colgroup>
