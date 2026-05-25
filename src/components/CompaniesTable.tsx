@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { EditableCell } from "@/components/EditableCell";
+import { EditCompanyDialog } from "@/components/EditCompanyDialog";
 import {
   Select,
   SelectContent,
@@ -309,6 +310,11 @@ export function CompaniesTable({
                   </td>
                   <td className="px-2 py-1.5">
                     <div className="flex items-center gap-0.5">
+                      <EditCompanyDialog
+                        company={company}
+                        directors={directors}
+                        onUpdate={onUpdate}
+                      />
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
