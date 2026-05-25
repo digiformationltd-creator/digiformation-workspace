@@ -72,15 +72,13 @@ function DashboardPage() {
     } else if (quickFilter === "ad01") {
       filtered = filtered.filter((c) => !c.ad01_filing_date);
     } else if (quickFilter === "pending-sale") {
-      filtered = filtered.filter((c) => c.status === "Pending Sale");
+      filtered = filtered.filter((c) => c.status === "Available Company");
     } else if (quickFilter === "address") {
       filtered = filtered.filter(
         (c) => c.address_match_status === "Mismatched" || c.address_status === "Changed/Updated"
       );
     } else if (quickFilter === "strike-off") {
-      filtered = filtered.filter(
-        (c) => c.status === "Strike Off Pending" || c.status === "Struck Off"
-      );
+      filtered = filtered.filter((c) => c.status === "Strike Off Notice");
     }
 
     if (searchTerm) {
