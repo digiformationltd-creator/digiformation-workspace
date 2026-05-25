@@ -33,8 +33,6 @@ export function CompaniesTable({
   directors,
   onMarkSold,
   onMarkAd01,
-  onDelete,
-  onVerifyDirector,
   onUpdate,
 }: Props) {
   const [sortField, setSortField] = useState<keyof Company>("company_name");
