@@ -177,7 +177,7 @@ function DashboardPage() {
       <div className="flex items-center justify-between">
         <div className="relative flex items-center gap-5 rounded-xl px-6 py-5 -ml-2">
           {/* Large DG Formation logo behind text */}
-          <div className="absolute left-0 top-1/2 -translate-y-[40%] h-44 w-44 group cursor-pointer">
+          <div className="absolute left-0 top-1/2 -translate-y-[40%] h-32 w-32 group cursor-pointer">
             <img
               src={logo}
               alt="Digiformation"
@@ -194,7 +194,7 @@ function DashboardPage() {
             {/* Glass glow on hover */}
             <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-red-500/20 via-yellow-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl z-0" />
           </div>
-          <div className="relative z-10 pl-48">
+          <div className="relative z-10 pl-36">
             <h1 className="text-2xl font-bold tracking-tight">Company Portfolio</h1>
             <p className="text-sm text-muted-foreground mt-1">
               Manage and track all your UK limited companies
