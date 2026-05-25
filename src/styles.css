@@ -146,3 +146,10 @@
     color: var(--color-foreground);
   }
 }
+
+@keyframes spark-pop {
+  0% { transform: scale(0); opacity: 0; }
+  30% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.4) translateY(-20px); opacity: 0; }
+}
+.spark-pop { animation: spark-pop 0.9s ease-out forwards; }
