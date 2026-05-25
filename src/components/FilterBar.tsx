@@ -23,10 +23,9 @@ interface Props {
 const statusOptions = [
   "All",
   "Active",
-  "Pending Sale",
+  "Available Company",
   "Sold/Transferred",
-  "Strike Off Pending",
-  "Struck Off",
+  "Strike Off Notice",
 ];
 
 export function FilterBar({

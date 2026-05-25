@@ -35,9 +35,9 @@ const quickFilters: Array<{
 }> = [
   { title: "Active", icon: CheckCircle2, search: { filter: "active" } },
   { title: "AD01 Pending", icon: FileText, search: { filter: "ad01" } },
-  { title: "Pending Sale", icon: Truck, search: { filter: "pending-sale" } },
+  { title: "Available", icon: Truck, search: { filter: "pending-sale" } },
   { title: "Address Issues", icon: MapPin, search: { filter: "address" } },
-  { title: "Strike Off", icon: AlertTriangle, search: { filter: "strike-off" } },
+  { title: "Strike Off Notice", icon: AlertTriangle, search: { filter: "strike-off" } },
 ];
 
 export function AppSidebar() {

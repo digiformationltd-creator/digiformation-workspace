@@ -181,10 +181,9 @@ export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Pending Sale">Pending Sale</SelectItem>
+                  <SelectItem value="Available Company">Available Company</SelectItem>
                   <SelectItem value="Sold/Transferred">Sold/Transferred</SelectItem>
-                  <SelectItem value="Strike Off Pending">Strike Off Pending</SelectItem>
-                  <SelectItem value="Struck Off">Struck Off</SelectItem>
+                  <SelectItem value="Strike Off Notice">Strike Off Notice</SelectItem>
                 </SelectContent>
               </Select>
             </div>

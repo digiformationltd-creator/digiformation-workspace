@@ -50,6 +50,7 @@ function DashboardPage() {
     updateCompany,
     deleteCompany,
     createCompany,
+    createDirector,
     refresh,
     isSyncing,
   } = useCompanies();
@@ -59,6 +60,7 @@ function DashboardPage() {
   const [activeStatus, setActiveStatus] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [newDirectorName, setNewDirectorName] = useState("");
 
 
   const { filter: quickFilter } = Route.useSearch();
@@ -72,15 +74,13 @@ function DashboardPage() {
     } else if (quickFilter === "ad01") {
       filtered = filtered.filter((c) => !c.ad01_filing_date);
     } else if (quickFilter === "pending-sale") {
-      filtered = filtered.filter((c) => c.status === "Pending Sale");
+      filtered = filtered.filter((c) => c.status === "Available Company");
     } else if (quickFilter === "address") {
       filtered = filtered.filter(
         (c) => c.address_match_status === "Mismatched" || c.address_status === "Changed/Updated"
       );
     } else if (quickFilter === "strike-off") {
-      filtered = filtered.filter(
-        (c) => c.status === "Strike Off Pending" || c.status === "Struck Off"
-      );
+      filtered = filtered.filter((c) => c.status === "Strike Off Notice");
     }
 
     if (searchTerm) {
@@ -197,10 +197,9 @@ function DashboardPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Pending Sale">Pending Sale</SelectItem>
+                        <SelectItem value="Available Company">Available Company</SelectItem>
                         <SelectItem value="Sold/Transferred">Sold/Transferred</SelectItem>
-                        <SelectItem value="Strike Off Pending">Strike Off Pending</SelectItem>
-                        <SelectItem value="Struck Off">Struck Off</SelectItem>
+                        <SelectItem value="Strike Off Notice">Strike Off Notice</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -237,6 +236,29 @@ function DashboardPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <div className="flex gap-2 pt-1">
+                    <Input
+                      placeholder="Or add a new director name..."
+                      value={newDirectorName}
+                      onChange={(e) => setNewDirectorName(e.target.value)}
+                      className="h-8 text-xs"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      disabled={!newDirectorName.trim()}
+                      onClick={() => {
+                        const name = newDirectorName.trim();
+                        if (!name) return;
+                        createDirector(name);
+                        setNewDirectorName("");
+                      }}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add
+                    </Button>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={submitting}>
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -18,10 +18,8 @@ export function SummaryCards({ companies }: Props) {
   const total = companies.length;
   const active = companies.filter((c) => c.status === "Active").length;
   const sold = companies.filter((c) => c.status === "Sold/Transferred").length;
-  const pendingSale = companies.filter((c) => c.status === "Pending Sale").length;
-  const strikeOff = companies.filter(
-    (c) => c.status === "Strike Off Pending" || c.status === "Struck Off"
-  ).length;
+  const pendingSale = companies.filter((c) => c.status === "Available Company").length;
+  const strikeOff = companies.filter((c) => c.status === "Strike Off Notice").length;
   const addressMismatch = companies.filter(
     (c) => c.address_match_status === "Mismatched"
   ).length;
@@ -48,13 +46,13 @@ export function SummaryCards({ companies }: Props) {
       hint: "Currently trading",
     },
     {
-      title: "Pending Sale",
+      title: "Available Company",
       value: pendingSale,
       icon: TrendingUp,
       accent: "from-amber-500/20 to-orange-500/10",
       ring: "group-hover:ring-amber-500/40",
       iconBg: "bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white",
-      hint: "Awaiting transfer",
+      hint: "Ready to sell",
     },
     {
       title: "Sold / Transferred",
@@ -66,13 +64,13 @@ export function SummaryCards({ companies }: Props) {
       hint: "Completed transfers",
     },
     {
-      title: "Strike Off",
+      title: "Strike Off Notice",
       value: strikeOff,
       icon: AlertTriangle,
       accent: "from-rose-500/20 to-red-500/10",
       ring: "group-hover:ring-rose-500/40",
       iconBg: "bg-rose-500/10 text-rose-500 group-hover:bg-rose-500 group-hover:text-white",
-      hint: "Pending or struck off",
+      hint: "Strike off notice issued",
     },
     {
       title: "AD01 Pending",
