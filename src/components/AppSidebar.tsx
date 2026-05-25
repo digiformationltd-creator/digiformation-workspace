@@ -36,7 +36,7 @@ const quickFilters: Array<{
   { title: "Active", icon: CheckCircle2, search: { filter: "active" } },
   { title: "AD01 Pending", icon: FileText, search: { filter: "ad01" } },
   { title: "Available", icon: Truck, search: { filter: "pending-sale" } },
-  { title: "Address Issues", icon: MapPin, search: { filter: "address" } },
+  { title: "Default Address", icon: MapPin, search: { filter: "default-address" } },
   { title: "Strike Off Notice", icon: AlertTriangle, search: { filter: "strike-off" } },
 ];
 
