@@ -186,7 +186,7 @@ function DashboardPage() {
             />
           </div>
           <div className="flex flex-col justify-center">
-            <h1 className="text-3xl font-bold tracking-tight">Tracking Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Made By Digiformation Dev Studio</h1>
             <p className="text-base text-muted-foreground mt-1">
               Manage and track all your UK limited companies
             </p>
