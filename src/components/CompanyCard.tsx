@@ -102,16 +102,13 @@ export function CompanyCard({
   company,
   onMarkSold,
   onMarkAd01,
-  onSyncCH,
   onDelete,
-  isSyncing,
 }: Props) {
   const ad01Done = !!company.ad01_filing_date;
   const addressChanged = company.address_status === "Changed/Updated";
   const sold = company.status === "Sold/Transferred";
-  const chSynced = !!company.ch_company_status;
 
-  const allDone = ad01Done && addressChanged && sold && chSynced;
+  const allDone = ad01Done && addressChanged && sold;
 
   return (
     <div className="rounded-xl border bg-card p-4 space-y-3">
