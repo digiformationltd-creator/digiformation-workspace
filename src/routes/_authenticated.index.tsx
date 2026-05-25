@@ -176,41 +176,43 @@ function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 rounded-xl px-4 py-3 -ml-2">
-          <div className="h-24 w-24 flex items-center justify-center">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3 rounded-xl px-2 sm:px-4 py-2 sm:py-3 -ml-2 min-w-0">
+          <div className="h-14 w-14 sm:h-24 sm:w-24 shrink-0 flex items-center justify-center">
             <img
               src={logo}
               alt="Digiformation"
               className="h-full w-full object-contain opacity-90"
             />
           </div>
-          <div className="flex flex-col justify-center">
-            <h1 className="text-3xl font-bold tracking-tight">Made By Digiformation Dev Studio</h1>
-            <p className="text-base text-muted-foreground mt-1">
+          <div className="flex flex-col justify-center min-w-0">
+            <h1 className="text-lg sm:text-3xl font-bold tracking-tight leading-tight truncate">
+              Made By Digiformation Dev Studio
+            </h1>
+            <p className="text-xs sm:text-base text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">
               Manage and track all your UK limited companies
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:shrink-0">
           {chKeyMissing && (
             <div className="flex items-center gap-2 text-xs text-warning bg-warning/10 px-3 py-1.5 rounded-lg">
               <ShieldAlert className="h-3.5 w-3.5" />
               CH API key not configured
             </div>
           )}
-          <Button variant="outline" size="sm" onClick={refresh}>
+          <Button variant="outline" size="sm" onClick={refresh} className="flex-1 sm:flex-none min-w-0">
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
           <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
             <DialogTrigger asChild>
-              <Button size="sm">
+              <Button size="sm" className="flex-1 sm:flex-none min-w-0">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Company
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-lg w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Company</DialogTitle>
               </DialogHeader>
@@ -223,7 +225,7 @@ function DashboardPage() {
                   <Label htmlFor="company_number">Company Number *</Label>
                   <Input id="company_number" name="company_number" required />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor="incorporation_date">Incorporation Date</Label>
                     <Input id="incorporation_date" name="incorporation_date" type="date" />
@@ -247,7 +249,7 @@ function DashboardPage() {
                   <Label htmlFor="company_address">Registered Address</Label>
                   <Input id="company_address" name="company_address" />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor="auth_code">Auth Code</Label>
                     <Input id="auth_code" name="auth_code" />
@@ -277,12 +279,12 @@ function DashboardPage() {
                         ))}
                     </SelectContent>
                   </Select>
-                  <div className="flex gap-2 pt-1">
+                  <div className="flex flex-col sm:flex-row gap-2 pt-1">
                     <Input
                       placeholder="Or add a new director name..."
                       value={newDirectorName}
                       onChange={(e) => setNewDirectorName(e.target.value)}
-                      className="h-8 text-xs"
+                      className="h-9 text-xs"
                     />
                     <Button
                       type="button"
@@ -310,6 +312,7 @@ function DashboardPage() {
           </Dialog>
         </div>
       </div>
+
 
       <SummaryCards companies={companies} />
 
@@ -373,8 +376,8 @@ function DashboardPage() {
 
 
 
-      <div className="bg-card rounded-xl border p-6">
-        <h2 className="text-lg font-semibold mb-4">Bulk Import</h2>
+      <div className="bg-card rounded-xl border p-4 sm:p-6">
+        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Bulk Import</h2>
         <CSVImport onSuccess={refresh} />
       </div>
     </div>
