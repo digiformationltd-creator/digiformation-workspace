@@ -48,9 +48,10 @@ interface Props {
   company: Company;
   /**
    * trigger style — "full" shows a full-width labelled button (mobile card),
-   * "icon" shows a 24x24 ghost icon button (desktop table actions row).
+   * "icon" shows a 24x24 ghost icon button (desktop table actions row),
+   * "compact" shows a small text button with label (desktop table actions row).
    */
-  triggerStyle?: "full" | "icon";
+  triggerStyle?: "full" | "icon" | "compact";
 }
 
 export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
@@ -59,6 +60,11 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
       <Button variant="secondary" size="sm" className="w-full h-8 text-xs gap-1.5">
         <Eye className="h-3.5 w-3.5" />
         View More Details
+      </Button>
+    ) : triggerStyle === "compact" ? (
+      <Button variant="outline" size="sm" className="h-7 text-[11px] px-2.5 gap-1">
+        <Eye className="h-3 w-3" />
+        View Details
       </Button>
     ) : (
       <Button variant="ghost" size="icon" className="h-6 w-6">
