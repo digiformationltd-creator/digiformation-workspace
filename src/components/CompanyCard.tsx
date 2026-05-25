@@ -2,7 +2,7 @@ import {
   FileText,
   Truck,
   MapPin,
-  RefreshCw,
+  
   ExternalLink,
   Trash2,
   CheckCircle2,
@@ -25,10 +25,8 @@ interface Props {
   company: Company;
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
-  onSyncCH: (id: string, number: string) => void;
   onDelete: (id: string) => void;
   onVerifyDirector?: (directorId: string) => void;
-  isSyncing?: boolean;
 }
 
 const fmt = (d: string | null | undefined) =>
@@ -104,16 +102,13 @@ export function CompanyCard({
   company,
   onMarkSold,
   onMarkAd01,
-  onSyncCH,
   onDelete,
-  isSyncing,
 }: Props) {
   const ad01Done = !!company.ad01_filing_date;
   const addressChanged = company.address_status === "Changed/Updated";
   const sold = company.status === "Sold/Transferred";
-  const chSynced = !!company.ch_company_status;
 
-  const allDone = ad01Done && addressChanged && sold && chSynced;
+  const allDone = ad01Done && addressChanged && sold;
 
   return (
     <div className="rounded-xl border bg-card p-4 space-y-3">
@@ -174,17 +169,7 @@ export function CompanyCard({
           actionLabel="Mark Sold"
           onAction={() => onMarkSold(company.id)}
         />
-        <StatusRow
-          icon={RefreshCw}
-          label="Companies House"
-          done={chSynced}
-          doneLabel={company.ch_company_status ?? "Synced"}
-          pendingLabel="Not Synced"
-          actionLabel="Sync Now"
-          disabled={isSyncing}
-          onAction={() => onSyncCH(company.id, company.company_number)}
-          meta={chSynced ? fmt(company.last_ch_sync?.split("T")[0]) : undefined}
-        />
+
       </div>
 
       {/* View More */}

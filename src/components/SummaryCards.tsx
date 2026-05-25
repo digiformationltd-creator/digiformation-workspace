@@ -6,7 +6,7 @@ import {
   MapPin,
   Truck,
   FileText,
-  RefreshCw,
+  
 } from "lucide-react";
 import type { Company } from "@/types";
 
@@ -24,7 +24,6 @@ export function SummaryCards({ companies }: Props) {
     (c) => c.address_match_status === "Mismatched"
   ).length;
   const ad01Pending = companies.filter((c) => !c.ad01_filing_date).length;
-  const notSynced = companies.filter((c) => !c.ch_company_status).length;
 
   const cards = [
     {
@@ -89,15 +88,6 @@ export function SummaryCards({ companies }: Props) {
       ring: "group-hover:ring-orange-500/40",
       iconBg: "bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-white",
       hint: "vs Companies House",
-    },
-    {
-      title: "Not Synced",
-      value: notSynced,
-      icon: RefreshCw,
-      accent: "from-slate-500/20 to-zinc-500/10",
-      ring: "group-hover:ring-slate-500/40",
-      iconBg: "bg-slate-500/10 text-slate-500 group-hover:bg-slate-500 group-hover:text-white",
-      hint: "Need CH sync",
     },
   ];
 

@@ -3,7 +3,7 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
-  RefreshCw,
+  
   Truck,
   FileText,
   Trash2,
@@ -33,11 +33,9 @@ interface Props {
   directors: Director[];
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
-  onSyncCH: (id: string, number: string) => void;
   onDelete: (id: string) => void;
   onVerifyDirector: (directorId: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
-  isSyncing?: boolean;
 }
 
 
@@ -46,11 +44,9 @@ export function CompaniesTable({
   directors,
   onMarkSold,
   onMarkAd01,
-  onSyncCH,
   onDelete,
   onVerifyDirector,
   onUpdate,
-  isSyncing,
 }: Props) {
   const [sortField, setSortField] = useState<keyof Company>("company_name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -133,7 +129,7 @@ export function CompaniesTable({
                   { key: "auth_code" as const, label: "Auth" },
                   { key: "utr_number" as const, label: "UTR" },
                   { key: "ad01_filing_date" as const, label: "AD01" },
-                  { key: "ch_company_status" as const, label: "CH", sortable: false },
+                  
                   { key: "actions" as const, label: "Actions", sortable: false },
                 ].map((col) => (
                   <th
@@ -282,30 +278,6 @@ export function CompaniesTable({
                       placeholder="—"
                       className={company.ad01_filing_date ? "text-success" : ""}
                     />
-                  </td>
-                  <td className="px-2 py-1.5">
-                    {company.ch_company_status ? (
-                      <Badge
-                        variant="outline"
-                        className={
-                          company.ch_company_status === "active"
-                            ? "bg-success/10 text-success border-success/20 text-[9px] px-1.5 py-0"
-                            : "bg-destructive/10 text-destructive border-destructive/20 text-[9px] px-1.5 py-0"
-                        }
-                      >
-                        {company.ch_company_status === "active" ? "✓" : company.ch_company_status}
-                      </Badge>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() => onSyncCH(company.id, company.company_number)}
-                        disabled={isSyncing}
-                      >
-                        <RefreshCw className={`h-3 w-3 ${isSyncing ? "animate-spin" : ""}`} />
-                      </Button>
-                    )}
                   </td>
                   <td className="px-2 py-1.5">
                     <div className="flex items-center gap-0.5">

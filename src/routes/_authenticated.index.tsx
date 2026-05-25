@@ -45,16 +45,12 @@ function DashboardPage() {
     loading,
     markAsSold,
     markAd01Filed,
-    syncCompanyCH,
-    syncAllCH,
     verifyDirector,
     updateCompany,
     deleteCompany,
     createCompany,
     createDirector,
     refresh,
-    isSyncing,
-    isBulkSyncing,
   } = useCompanies();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -162,16 +158,6 @@ function DashboardPage() {
               CH API key not configured
             </div>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={syncAllCH}
-            disabled={isBulkSyncing}
-            className="bg-primary/5 border-primary/30 hover:bg-primary/10"
-          >
-            <RefreshCw className={`mr-2 h-4 w-4 ${isBulkSyncing ? "animate-spin" : ""}`} />
-            {isBulkSyncing ? "Syncing all…" : "Sync All with Companies House"}
-          </Button>
           <Button variant="outline" size="sm" onClick={refresh}>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
@@ -319,10 +305,8 @@ function DashboardPage() {
                 company={c}
                 onMarkSold={markAsSold}
                 onMarkAd01={markAd01Filed}
-                onSyncCH={syncCompanyCH}
                 onDelete={deleteCompany}
                 onVerifyDirector={verifyDirector}
-                isSyncing={isSyncing}
               />
             ))
           )}
@@ -336,11 +320,9 @@ function DashboardPage() {
               directors={directors}
               onMarkSold={markAsSold}
               onMarkAd01={markAd01Filed}
-              onSyncCH={syncCompanyCH}
               onDelete={deleteCompany}
               onVerifyDirector={verifyDirector}
               onUpdate={updateCompany}
-              isSyncing={isSyncing}
             />
           </div>
         </div>
