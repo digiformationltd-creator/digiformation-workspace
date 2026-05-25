@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { updateCompanyCHStatus } from "@/lib/companies.functions";
+import { updateCompanyCHStatus, bulkSyncCompaniesHouse } from "@/lib/companies.functions";
 import type { Company, Director, CompanyStatus } from "@/types";
 
 /**
@@ -37,6 +37,7 @@ async function fetchDirectorsDirect(): Promise<Director[]> {
 export function useCompanies() {
   const queryClient = useQueryClient();
   const syncCHFn = useServerFn(updateCompanyCHStatus);
+  const bulkSyncFn = useServerFn(bulkSyncCompaniesHouse);
 
   const companiesQuery = useQuery({
     queryKey: ["companies"],
@@ -168,6 +169,21 @@ export function useCompanies() {
     onError: (e: Error) => toast.error(e.message || "Failed to sync"),
   });
 
+  const bulkSyncMutation = useMutation({
+    mutationFn: async () => bulkSyncFn(),
+    onSuccess: (res: { results: Array<{ success: boolean }>; total: number }) => {
+      const ok = res.results.filter((r) => r.success).length;
+      const failed = res.total - ok;
+      queryClient.invalidateQueries({ queryKey: ["companies"] });
+      if (failed === 0) {
+        toast.success(`Synced all ${ok} companies with Companies House`);
+      } else {
+        toast.warning(`Synced ${ok} of ${res.total} companies (${failed} failed)`);
+      }
+    },
+    onError: (e: Error) => toast.error(e.message || "Bulk sync failed"),
+  });
+
   return {
     companies: (companiesQuery.data ?? []) as Company[],
     directors: (directorsQuery.data ?? []) as Director[],
@@ -176,6 +192,7 @@ export function useCompanies() {
     markAd01Filed: (id: string) => markAd01Mutation.mutate(id),
     syncCompanyCH: (id: string, companyNumber: string) =>
       syncCHMutation.mutate({ data: { id, companyNumber } }),
+    syncAllCH: () => bulkSyncMutation.mutate(),
     createDirector: (name: string) => createDirectorMutation.mutate(name),
     verifyDirector: (directorId: string) => verifyDirectorMutation.mutate(directorId),
     updateCompany: (id: string, updates: Record<string, unknown>) =>
@@ -184,5 +201,6 @@ export function useCompanies() {
     createCompany: (company: Partial<Company>) => createCompanyMutation.mutateAsync(company),
     refresh: invalidate,
     isSyncing: syncCHMutation.isPending,
+    isBulkSyncing: bulkSyncMutation.isPending,
   };
 }
