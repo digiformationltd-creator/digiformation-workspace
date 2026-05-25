@@ -213,9 +213,36 @@ export function CompaniesTable({
                         <div className="flex items-center gap-1">
                           <div className="flex-1 min-w-0">
                             {company.address_status === "Default Address" ? (
-                              <span className="text-[10px] font-mono uppercase text-warning truncate block cursor-help">
-                                PO BOX (Default)
-                              </span>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <button
+                                    type="button"
+                                    className="text-[10px] font-mono uppercase text-warning truncate block underline decoration-dotted underline-offset-2 hover:text-warning/80"
+                                  >
+                                    PO BOX (Default) — view old
+                                  </button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80 text-xs" align="start">
+                                  <div className="font-semibold text-[11px] uppercase tracking-wide text-muted-foreground mb-1">
+                                    Original address (before default)
+                                  </div>
+                                  <div className="break-words">
+                                    {company.previous_address || (
+                                      <span className="italic text-muted-foreground">
+                                        Not recorded
+                                      </span>
+                                    )}
+                                  </div>
+                                  {company.ch_address && (
+                                    <div className="mt-2 pt-2 border-t">
+                                      <div className="font-semibold text-[11px] uppercase tracking-wide text-muted-foreground mb-1">
+                                        Current CH address
+                                      </div>
+                                      <div className="break-words">{company.ch_address}</div>
+                                    </div>
+                                  )}
+                                </PopoverContent>
+                              </Popover>
                             ) : (
                               <EditableCell
                                 value={company.company_address}
