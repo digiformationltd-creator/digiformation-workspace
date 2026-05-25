@@ -3,11 +3,8 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
-  
   Truck,
   FileText,
-  Trash2,
-  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
