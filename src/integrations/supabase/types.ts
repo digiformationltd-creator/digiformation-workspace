@@ -190,9 +190,9 @@ export type Database = {
       address_status: "Default Address" | "Changed/Updated"
       company_status:
         | "Active"
-        | "Pending Sale"
+        | "Available Company"
         | "Sold/Transferred"
-        | "Strike Off Pending"
+        | "Strike Off Notice"
         | "Struck Off"
     }
     CompositeTypes: {
@@ -324,9 +324,9 @@ export const Constants = {
       address_status: ["Default Address", "Changed/Updated"],
       company_status: [
         "Active",
-        "Pending Sale",
+        "Available Company",
         "Sold/Transferred",
-        "Strike Off Pending",
+        "Strike Off Notice",
         "Struck Off",
       ],
     },
