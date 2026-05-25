@@ -180,24 +180,25 @@ function DashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="relative flex items-center gap-5 rounded-xl px-6 py-5 -ml-2">
-          {/* Large DG Formation logo behind text */}
-          <div className="absolute left-1 top-1/2 -translate-y-[30%] h-32 w-32 group cursor-pointer">
-            <img
-              src={logo}
-              alt="Digiformation"
-              className="h-full w-full object-contain opacity-90 relative z-10"
-            />
-            {/* Rainbow glass shine overlay */}
-            <div className="absolute inset-2 z-20 rounded-full opacity-1 pointer-events-none overflow-hidden">
-              <div className="absolute inset-0 translate-x-[-120%] group-hover:translate-x-[120%] transition-transform duration-700 ease-out shine-sweep"
-                style={{
-                  background: 'linear-gradient(120deg, transparent 0%, transparent 25%, rgba(255,0,0,0.35) 30%, rgba(255,165,1,0.35) 40%, rgba(255,255,0,1) 50%, rgba(0,128,0,0.35) 60%, rgba(0,0,255,0.35) 70%, transparent 75%, transparent 100%)',
-                }}
+          <LogoAura className="absolute left-1 top-1/2 -translate-y-[30%] h-32 w-32" radius={240}>
+            <div className="group relative h-full w-full cursor-pointer">
+              <img
+                src={logo}
+                alt="Digiformation"
+                className="h-full w-full object-contain opacity-90 relative z-10"
               />
+              {/* Rainbow glass shine overlay */}
+              <div className="absolute inset-2 z-20 rounded-full opacity-1 pointer-events-none overflow-hidden">
+                <div className="absolute inset-0 translate-x-[-120%] group-hover:translate-x-[120%] transition-transform duration-700 ease-out shine-sweep"
+                  style={{
+                    background: 'linear-gradient(120deg, transparent 0%, transparent 25%, rgba(255,0,0,0.35) 30%, rgba(255,165,1,0.35) 40%, rgba(255,255,0,1) 50%, rgba(0,128,0,0.35) 60%, rgba(0,0,255,0.35) 70%, transparent 75%, transparent 100%)',
+                  }}
+                />
+              </div>
+              {/* Glass glow on hover */}
+              <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-red-500/20 via-yellow-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl z-0" />
             </div>
-            {/* Glass glow on hover */}
-            <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-red-500/20 via-yellow-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl z-0" />
-          </div>
+          </LogoAura>
           <div className="relative z-10 pl-36">
             <h1 className="text-2xl font-bold tracking-tight">Company Portfolio</h1>
             <p className="text-sm text-muted-foreground mt-1">
