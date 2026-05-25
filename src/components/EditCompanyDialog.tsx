@@ -103,13 +103,16 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 hover:text-accent-foreground hover:bg-accent"
-            >
-              <Pencil className="h-3.5 w-3.5 text-warning" />
-            </Button>
+            {triggerStyle === "compact" ? (
+              <Button variant="outline" size="sm" className="h-6 text-[10px] px-2 gap-1">
+                <Pencil className="h-3 w-3 text-warning" />
+                Edit
+              </Button>
+            ) : (
+              <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-accent-foreground hover:bg-accent">
+                <Pencil className="h-3.5 w-3.5 text-warning" />
+              </Button>
+            )}
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>Edit Company</TooltipContent>
