@@ -318,7 +318,7 @@ function DashboardPage() {
             />
           </div>
         </div>
-      </div>
+
 
       <div className="bg-card rounded-xl border p-6">
         <h2 className="text-lg font-semibold mb-4">Bulk Import</h2>
