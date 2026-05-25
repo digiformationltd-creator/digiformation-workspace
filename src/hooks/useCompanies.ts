@@ -169,6 +169,21 @@ export function useCompanies() {
     onError: (e: Error) => toast.error(e.message || "Failed to sync"),
   });
 
+  const bulkSyncMutation = useMutation({
+    mutationFn: async () => bulkSyncFn(),
+    onSuccess: (res: { results: Array<{ success: boolean }>; total: number }) => {
+      const ok = res.results.filter((r) => r.success).length;
+      const failed = res.total - ok;
+      queryClient.invalidateQueries({ queryKey: ["companies"] });
+      if (failed === 0) {
+        toast.success(`Synced all ${ok} companies with Companies House`);
+      } else {
+        toast.warning(`Synced ${ok} of ${res.total} companies (${failed} failed)`);
+      }
+    },
+    onError: (e: Error) => toast.error(e.message || "Bulk sync failed"),
+  });
+
   return {
     companies: (companiesQuery.data ?? []) as Company[],
     directors: (directorsQuery.data ?? []) as Director[],
@@ -177,6 +192,7 @@ export function useCompanies() {
     markAd01Filed: (id: string) => markAd01Mutation.mutate(id),
     syncCompanyCH: (id: string, companyNumber: string) =>
       syncCHMutation.mutate({ data: { id, companyNumber } }),
+    syncAllCH: () => bulkSyncMutation.mutate(),
     createDirector: (name: string) => createDirectorMutation.mutate(name),
     verifyDirector: (directorId: string) => verifyDirectorMutation.mutate(directorId),
     updateCompany: (id: string, updates: Record<string, unknown>) =>
@@ -185,5 +201,6 @@ export function useCompanies() {
     createCompany: (company: Partial<Company>) => createCompanyMutation.mutateAsync(company),
     refresh: invalidate,
     isSyncing: syncCHMutation.isPending,
+    isBulkSyncing: bulkSyncMutation.isPending,
   };
 }
