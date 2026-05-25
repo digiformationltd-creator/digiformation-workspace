@@ -206,11 +206,17 @@ export function CompaniesTable({
                       <TooltipTrigger asChild>
                         <div className="flex items-center gap-1">
                           <div className="flex-1 min-w-0">
-                            <EditableCell
-                              value={company.company_address}
-                              onSave={(v) => onUpdate(company.id, { company_address: v })}
-                              className="text-[10px]"
-                            />
+                            {company.address_status === "Default Address" ? (
+                              <span className="text-[10px] font-mono uppercase text-warning truncate block cursor-help">
+                                PO BOX (Default)
+                              </span>
+                            ) : (
+                              <EditableCell
+                                value={company.company_address}
+                                onSave={(v) => onUpdate(company.id, { company_address: v })}
+                                className="text-[10px]"
+                              />
+                            )}
                           </div>
                           {company.address_match_status && company.address_match_status !== "Unknown" && (
                             <Badge
@@ -223,8 +229,14 @@ export function CompaniesTable({
                         </div>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[400px] text-xs">
+                        {company.address_status === "Default Address" && company.previous_address && (
+                          <div className="mb-1 pb-1 border-b border-border/40">
+                            <strong>Original address (our record):</strong>
+                            <div className="mt-0.5">{company.previous_address}</div>
+                          </div>
+                        )}
                         <div><strong>Current:</strong> {company.company_address || "-"}</div>
-                        {company.previous_address && (
+                        {company.previous_address && company.address_status !== "Default Address" && (
                           <div className="mt-1"><strong>Previous:</strong> {company.previous_address}</div>
                         )}
                         {company.ch_address && (
