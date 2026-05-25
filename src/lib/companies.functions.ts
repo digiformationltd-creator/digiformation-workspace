@@ -1,6 +1,22 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Json } from "@/integrations/supabase/types";
+import type { CompanyStatus } from "@/types";
+
+interface CompanyInsert {
+  company_name: string;
+  company_number: string;
+  incorporation_date?: string | null;
+  company_address?: string | null;
+  sic_codes?: string[] | null;
+  auth_code?: string | null;
+  utr_number?: string | null;
+  status?: CompanyStatus;
+  address_status?: "Default Address" | "Changed/Updated";
+  ad01_filing_date?: string | null;
+  director_id?: string | null;
+  tags?: string[] | null;
+}
 
 export const getCompanies = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -28,7 +44,7 @@ export const getDirectors = createServerFn({ method: "GET" })
 
 export const createCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { company: Record<string, unknown> }) => data)
+  .inputValidator((data: { company: CompanyInsert }) => data)
   .handler(async ({ data, context }) => {
     const { data: result, error } = await context.supabase
       .from("companies")
@@ -43,7 +59,7 @@ export const createCompany = createServerFn({ method: "POST" })
 export const updateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (data: { id: string; updates: Record<string, unknown> }) => data
+    (data: { id: string; updates: Partial<CompanyInsert> }) => data
   )
   .handler(async ({ data, context }) => {
     const { data: result, error } = await context.supabase
@@ -172,12 +188,7 @@ export const importCompaniesCSV = createServerFn({ method: "POST" })
       sic_codes: row["SIC Codes"] ? row["SIC Codes"].split(",").map((s: string) => s.trim()) : null,
       auth_code: row["Auth Code"] || row["auth_code"] || null,
       utr_number: row["UTR Number"] || row["utr_number"] || null,
-      status: (row["Status"] || row["status"] || "Active") as
-        | "Active"
-        | "Pending Sale"
-        | "Sold/Transferred"
-        | "Strike Off Pending"
-        | "Struck Off",
+      status: (row["Status"] || row["status"] || "Active") as CompanyStatus,
       address_status: (row["Address Status"] || row["address_status"] || "Default Address") as
         | "Default Address"
         | "Changed/Updated",
@@ -193,10 +204,20 @@ export const importCompaniesCSV = createServerFn({ method: "POST" })
     return { companies: result ?? [] };
   });
 
+interface CHSyncResponse {
+  success: boolean;
+  error?: string;
+  ch_status?: string;
+  company_name?: string;
+  incorporation_date?: string;
+  ch_address?: string | null;
+  full_profile?: Json;
+}
+
 export const syncWithCompaniesHouse = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { companyNumber: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<CHSyncResponse> => {
     const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
     if (!apiKey) {
       return {
@@ -223,7 +244,7 @@ export const syncWithCompaniesHouse = createServerFn({ method: "POST" })
       };
     }
 
-    const chData = (await response.json()) as Record<string, unknown>;
+    const chData = (await response.json()) as Record<string, Json>;
 
     return {
       success: true,
@@ -233,7 +254,7 @@ export const syncWithCompaniesHouse = createServerFn({ method: "POST" })
       ch_address: chData.registered_office_address
         ? JSON.stringify(chData.registered_office_address)
         : null,
-      full_profile: chData,
+      full_profile: chData as Json,
     };
   });
 
@@ -262,13 +283,13 @@ export const updateCompanyCHStatus = createServerFn({ method: "POST" })
       throw new Error(`CH API error: ${response.status}`);
     }
 
-    const chData = (await response.json()) as Record<string, unknown>;
+    const chData = (await response.json()) as Record<string, Json>;
 
     const { data: result, error } = await context.supabase
       .from("companies")
       .update({
         ch_company_status: chData.company_status as string,
-        ch_company_profile: chData,
+        ch_company_profile: chData as Json,
         ch_address: chData.registered_office_address
           ? JSON.stringify(chData.registered_office_address)
           : null,
@@ -286,20 +307,21 @@ export const updateCompanyCHStatus = createServerFn({ method: "POST" })
       : "";
     const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
 
-    if (addressMatch === "Mismatched") {
-      await context.supabase
-        .from("companies")
-        .update({ address_match_status: "Mismatched" })
-        .eq("id", data.id);
-    } else {
-      await context.supabase
-        .from("companies")
-        .update({ address_match_status: "Matched" })
-        .eq("id", data.id);
-    }
+    await context.supabase
+      .from("companies")
+      .update({ address_match_status: addressMatch })
+      .eq("id", data.id);
 
-    return { company: result, chData };
+    return { company: result };
   });
+
+interface BulkSyncResult {
+  company_id: string;
+  company_number: string;
+  success: boolean;
+  status?: string;
+  error?: string;
+}
 
 export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -315,7 +337,7 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
-    const results: Array<Record<string, unknown>> = [];
+    const results: BulkSyncResult[] = [];
     const auth = btoa(`${apiKey}:`);
 
     for (const company of companies ?? []) {
@@ -338,7 +360,7 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
           continue;
         }
 
-        const chData = (await response.json()) as Record<string, unknown>;
+        const chData = (await response.json()) as Record<string, Json>;
 
         const storedAddress = company.company_address || "";
         const chAddress = chData.registered_office_address
@@ -350,7 +372,7 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
           .from("companies")
           .update({
             ch_company_status: chData.company_status as string,
-            ch_company_profile: chData,
+            ch_company_profile: chData as Json,
             ch_address: chData.registered_office_address
               ? JSON.stringify(chData.registered_office_address)
               : null,
@@ -363,7 +385,7 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
           company_id: company.id,
           company_number: company.company_number,
           success: true,
-          status: chData.company_status,
+          status: chData.company_status as string,
         });
       } catch (err: unknown) {
         results.push({
