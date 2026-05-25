@@ -105,9 +105,9 @@ export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 hover:text-accent-foreground hover:bg-accent"
+              className="h-7 w-7 hover:text-accent-foreground hover:bg-accent"
             >
-              <Pencil className="h-3 w-3 text-warning" />
+              <Pencil className="h-3.5 w-3.5 text-warning" />
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
