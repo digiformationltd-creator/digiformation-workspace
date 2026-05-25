@@ -252,23 +252,25 @@ export function CompaniesTable({
                     </Tooltip>
                   </td>
                   <td className="px-1 py-1.5">
-                    <div className="flex items-center gap-0.5 justify-end">
-                      <CompanyDetailsSheet company={company} triggerStyle="icon" />
+                    <div className="flex items-center gap-1 justify-end flex-wrap">
+                      <CompanyDetailsSheet company={company} triggerStyle="compact" />
                       <EditCompanyDialog
                         company={company}
                         directors={directors}
                         onUpdate={onUpdate}
+                        triggerStyle="compact"
                       />
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
+                            variant="outline"
+                            size="sm"
+                            className="h-6 text-[10px] px-2 gap-1"
                             onClick={() => onMarkSold(company.id)}
                             disabled={company.status === "Sold/Transferred"}
                           >
                             <Truck className="h-3 w-3 text-info" />
+                            Sold
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>Mark Sold</TooltipContent>
@@ -276,12 +278,13 @@ export function CompaniesTable({
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
+                            variant="outline"
+                            size="sm"
+                            className="h-6 text-[10px] px-2 gap-1"
                             onClick={() => onMarkAd01(company.id)}
                           >
                             <FileText className="h-3 w-3 text-primary" />
+                            AD01
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>AD01 Filed {company.ad01_filing_date ? `· ${formatDate(company.ad01_filing_date)}` : ""}</TooltipContent>
@@ -289,9 +292,9 @@ export function CompaniesTable({
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
+                            variant="outline"
+                            size="sm"
+                            className="h-6 text-[10px] px-2 gap-1"
                             onClick={() =>
                               window.open(
                                 `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -300,38 +303,11 @@ export function CompaniesTable({
                             }
                           >
                             <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                            CH
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>View on CH</TooltipContent>
                       </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 hover:text-destructive"
-                            onClick={() => onDelete(company.id)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Delete</TooltipContent>
-                      </Tooltip>
-                      {company.director?.verification_status === "Pending Verification" && company.director?.id && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                              onClick={() => onVerifyDirector(company.director!.id)}
-                            >
-                              <ShieldCheck className="h-3 w-3 text-warning" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Verify Director</TooltipContent>
-                        </Tooltip>
-                      )}
                     </div>
                   </td>
                 </tr>
