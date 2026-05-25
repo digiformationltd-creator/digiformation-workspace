@@ -92,45 +92,55 @@ export function CompaniesTable({
   };
 
   return (
-    <TooltipProvider>
-      <div className="rounded-xl border overflow-hidden bg-card">
+    <TooltipProvider delayDuration={200}>
+      <div className="rounded-lg border bg-card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ minWidth: "1600px" }}>
+          <table className="w-full text-[11px] table-fixed">
+            <colgroup>
+              <col className="w-[18%]" />
+              <col className="w-[8%]" />
+              <col className="w-[9%]" />
+              <col className="w-[11%]" />
+              <col className="w-[20%]" />
+              <col className="w-[7%]" />
+              <col className="w-[8%]" />
+              <col className="w-[5%]" />
+              <col className="w-[5%]" />
+              <col className="w-[9%]" />
+            </colgroup>
             <thead>
-              <tr className="border-b bg-muted/50">
+              <tr className="border-b bg-muted/40 text-muted-foreground">
                 {[
-                  { key: "company_name" as const, label: "Company", w: "min-w-[220px]" },
-                  { key: "company_number" as const, label: "Co. Number", w: "min-w-[110px]" },
-                  { key: "status" as const, label: "Status", w: "min-w-[140px]" },
-                  { key: "director" as const, label: "Director", sortable: false, w: "min-w-[160px]" },
-                  { key: "company_address" as const, label: "Registered Address", w: "min-w-[280px]" },
-                  { key: "address_status" as const, label: "Addr Status", w: "min-w-[140px]" },
-                  { key: "auth_code" as const, label: "Auth Code", w: "min-w-[110px]" },
-                  { key: "utr_number" as const, label: "UTR", w: "min-w-[120px]" },
-                  { key: "incorporation_date" as const, label: "Incorp Date", w: "min-w-[110px]" },
-                  { key: "ad01_filing_date" as const, label: "AD01 Filed", w: "min-w-[110px]" },
-                  { key: "ch_company_status" as const, label: "CH Sync", sortable: false, w: "min-w-[140px]" },
-                  { key: "actions" as const, label: "Actions", sortable: false, w: "min-w-[180px]" },
+                  { key: "company_name" as const, label: "Company" },
+                  { key: "company_number" as const, label: "Number" },
+                  { key: "status" as const, label: "Status" },
+                  { key: "director" as const, label: "Director", sortable: false },
+                  { key: "company_address" as const, label: "Address" },
+                  { key: "auth_code" as const, label: "Auth" },
+                  { key: "utr_number" as const, label: "UTR" },
+                  { key: "ad01_filing_date" as const, label: "AD01" },
+                  { key: "ch_company_status" as const, label: "CH", sortable: false },
+                  { key: "actions" as const, label: "Actions", sortable: false },
                 ].map((col) => (
                   <th
                     key={col.key}
-                    className={`px-3 py-3 text-left font-medium text-muted-foreground whitespace-nowrap ${col.w}`}
+                    className="px-2 py-2 text-left font-medium whitespace-nowrap"
                   >
                     {col.sortable !== false ? (
                       <button
                         onClick={() => handleSort(col.key)}
-                        className="flex items-center gap-1 hover:text-foreground"
+                        className="flex items-center gap-0.5 hover:text-foreground uppercase tracking-wide text-[10px]"
                       >
                         {col.label}
                         {sortField === col.key &&
                           (sortDirection === "asc" ? (
-                            <ChevronUp className="h-3 w-3" />
+                            <ChevronUp className="h-2.5 w-2.5" />
                           ) : (
-                            <ChevronDown className="h-3 w-3" />
+                            <ChevronDown className="h-2.5 w-2.5" />
                           ))}
                       </button>
                     ) : (
-                      col.label
+                      <span className="uppercase tracking-wide text-[10px]">{col.label}</span>
                     )}
                   </th>
                 ))}
@@ -139,7 +149,7 @@ export function CompaniesTable({
             <tbody>
               {sortedCompanies.length === 0 && (
                 <tr>
-                  <td colSpan={12} className="px-4 py-12 text-center text-sm text-muted-foreground">
+                  <td colSpan={10} className="px-4 py-10 text-center text-xs text-muted-foreground">
                     No companies match your filters.
                   </td>
                 </tr>
@@ -147,155 +157,129 @@ export function CompaniesTable({
               {sortedCompanies.map((company) => (
                 <tr
                   key={company.id}
-                  className="border-b last:border-b-0 hover:bg-muted/30 transition-colors"
+                  className="border-b last:border-b-0 hover:bg-muted/20 transition-colors"
                 >
-                  <td className="px-3 py-3">
-                    <div className="font-medium">{company.company_name}</div>
+                  <td className="px-2 py-1.5">
+                    <div className="font-medium truncate" title={company.company_name}>
+                      {company.company_name}
+                    </div>
                   </td>
-                  <td className="px-3 py-3 font-mono text-xs">
+                  <td className="px-2 py-1.5 font-mono text-[10px] truncate">
                     {company.company_number}
                   </td>
-                  <td className="px-3 py-3">
-                    <Badge variant="outline" className={getStatusBadge(company.status)}>
+                  <td className="px-2 py-1.5">
+                    <Badge variant="outline" className={`${getStatusBadge(company.status)} text-[9px] px-1.5 py-0`}>
                       {company.status}
                     </Badge>
                   </td>
-                  <td className="px-3 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className="truncate max-w-[140px]">{company.director?.name || "-"}</span>
+                  <td className="px-2 py-1.5">
+                    <div className="flex items-center gap-1 truncate" title={company.director?.name || ""}>
+                      <span className="truncate">{company.director?.name || "-"}</span>
                       {company.director?.verification_status === "Verified" && (
-                        <ShieldCheck className="h-3.5 w-3.5 text-success shrink-0" />
+                        <ShieldCheck className="h-3 w-3 text-success shrink-0" />
                       )}
                     </div>
                   </td>
-                  <td className="px-3 py-3 text-xs">
-                    <div className="max-w-[280px] truncate" title={company.company_address || ""}>
-                      {company.company_address || "-"}
-                    </div>
-                    {company.ch_address && company.ch_address !== company.company_address && (
-                      <div className="text-[10px] text-muted-foreground truncate max-w-[280px]" title={company.ch_address}>
-                        CH: {company.ch_address}
-                      </div>
-                    )}
+                  <td className="px-2 py-1.5">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="truncate text-[10px]">
+                          {company.company_address || "-"}
+                          {company.address_match_status && company.address_match_status !== "Unknown" && (
+                            <Badge
+                              variant="outline"
+                              className={`ml-1 text-[8px] px-1 py-0 ${getMatchBadge(company.address_match_status)}`}
+                            >
+                              {company.address_match_status === "Matched" ? "✓" : "≠"}
+                            </Badge>
+                          )}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[400px] text-xs">
+                        <div><strong>Registered:</strong> {company.company_address || "-"}</div>
+                        {company.ch_address && (
+                          <div className="mt-1"><strong>CH:</strong> {company.ch_address}</div>
+                        )}
+                        <div className="mt-1 text-muted-foreground">Status: {company.address_status}</div>
+                      </TooltipContent>
+                    </Tooltip>
                   </td>
-                  <td className="px-3 py-3">
-                    <div className="flex flex-col gap-1">
-                      <Badge variant="outline" className={`text-[10px] ${getAddressBadge(company.address_status)}`}>
-                        {company.address_status}
-                      </Badge>
-                      {company.address_match_status && company.address_match_status !== "Unknown" && (
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] ${getMatchBadge(company.address_match_status)}`}
-                        >
-                          {company.address_match_status}
-                        </Badge>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-3 py-3 font-mono text-xs">
+                  <td className="px-2 py-1.5 font-mono text-[10px] truncate">
                     {company.auth_code ? (
-                      <span className="px-2 py-1 rounded bg-muted/60">{company.auth_code}</span>
+                      <span className="px-1 py-0.5 rounded bg-muted/60">{company.auth_code}</span>
                     ) : (
                       <span className="text-muted-foreground">-</span>
                     )}
                   </td>
-                  <td className="px-3 py-3 font-mono text-xs">
+                  <td className="px-2 py-1.5 font-mono text-[10px] truncate">
                     {company.utr_number || <span className="text-muted-foreground">-</span>}
                   </td>
-                  <td className="px-3 py-3 text-xs whitespace-nowrap">
-                    {formatDate(company.incorporation_date)}
-                  </td>
-                  <td className="px-3 py-3 text-xs whitespace-nowrap">
-                    {formatDate(company.ad01_filing_date)}
-                  </td>
-                  <td className="px-3 py-3">
-                    {company.ch_company_status ? (
-                      <div className="flex flex-col gap-1">
-                        <Badge
-                          variant="outline"
-                          className={
-                            company.ch_company_status === "active"
-                              ? "bg-success/10 text-success border-success/20 text-[10px]"
-                              : "bg-destructive/10 text-destructive border-destructive/20 text-[10px]"
-                          }
-                        >
-                          {company.ch_company_status}
-                        </Badge>
-                        {company.last_ch_sync && (
-                          <span className="text-[10px] text-muted-foreground">
-                            {formatDate(company.last_ch_sync.split("T")[0])}
-                          </span>
-                        )}
-                      </div>
+                  <td className="px-2 py-1.5 text-[10px] whitespace-nowrap">
+                    {company.ad01_filing_date ? (
+                      <span className="text-success">{formatDate(company.ad01_filing_date)}</span>
                     ) : (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="gap-1 text-xs h-7"
-                            onClick={() => onSyncCH(company.id, company.company_number)}
-                            disabled={isSyncing}
-                          >
-                            <RefreshCw className={`h-3 w-3 ${isSyncing ? "animate-spin" : ""}`} />
-                            Sync
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Sync with Companies House</TooltipContent>
-                      </Tooltip>
+                      <span className="text-muted-foreground">—</span>
                     )}
                   </td>
-                  <td className="px-3 py-3">
-                    <div className="flex items-center gap-1">
+                  <td className="px-2 py-1.5">
+                    {company.ch_company_status ? (
+                      <Badge
+                        variant="outline"
+                        className={
+                          company.ch_company_status === "active"
+                            ? "bg-success/10 text-success border-success/20 text-[9px] px-1.5 py-0"
+                            : "bg-destructive/10 text-destructive border-destructive/20 text-[9px] px-1.5 py-0"
+                        }
+                      >
+                        {company.ch_company_status === "active" ? "✓" : company.ch_company_status}
+                      </Badge>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => onSyncCH(company.id, company.company_number)}
+                        disabled={isSyncing}
+                      >
+                        <RefreshCw className={`h-3 w-3 ${isSyncing ? "animate-spin" : ""}`} />
+                      </Button>
+                    )}
+                  </td>
+                  <td className="px-2 py-1.5">
+                    <div className="flex items-center gap-0.5">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-6 w-6"
                             onClick={() => onMarkSold(company.id)}
                             disabled={company.status === "Sold/Transferred"}
                           >
-                            <Truck className="h-3.5 w-3.5 text-info" />
+                            <Truck className="h-3 w-3 text-info" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>Mark as Sold/Transferred</TooltipContent>
+                        <TooltipContent>Mark Sold</TooltipContent>
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-6 w-6"
                             onClick={() => onMarkAd01(company.id)}
                           >
-                            <FileText className="h-3.5 w-3.5 text-primary" />
+                            <FileText className="h-3 w-3 text-primary" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>AD01 Filed</TooltipContent>
                       </Tooltip>
-                      {company.director?.verification_status === "Pending Verification" && company.director?.id && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7"
-                              onClick={() => onVerifyDirector(company.director!.id)}
-                            >
-                              <ShieldCheck className="h-3.5 w-3.5 text-warning" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Verify Director ID</TooltipContent>
-                        </Tooltip>
-                      )}
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-6 w-6"
                             onClick={() =>
                               window.open(
                                 `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -303,24 +287,39 @@ export function CompaniesTable({
                               )
                             }
                           >
-                            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>View on Companies House</TooltipContent>
+                        <TooltipContent>View on CH</TooltipContent>
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 hover:text-destructive"
+                            className="h-6 w-6 hover:text-destructive"
                             onClick={() => onDelete(company.id)}
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>Delete company</TooltipContent>
+                        <TooltipContent>Delete</TooltipContent>
                       </Tooltip>
+                      {company.director?.verification_status === "Pending Verification" && company.director?.id && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={() => onVerifyDirector(company.director!.id)}
+                            >
+                              <ShieldCheck className="h-3 w-3 text-warning" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Verify Director</TooltipContent>
+                        </Tooltip>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -328,12 +327,13 @@ export function CompaniesTable({
             </tbody>
           </table>
         </div>
-        <div className="border-t bg-muted/30 px-4 py-2 text-[11px] text-muted-foreground flex items-center justify-between">
-          <span>← Scroll horizontally to see all columns →</span>
+        <div className="border-t bg-muted/20 px-3 py-1.5 text-[10px] text-muted-foreground flex items-center justify-between">
+          <span>Hover address row for full details</span>
           <span>{sortedCompanies.length} rows</span>
         </div>
       </div>
     </TooltipProvider>
   );
 }
+
 
