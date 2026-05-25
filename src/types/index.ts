@@ -5,6 +5,7 @@ export interface Director {
   id: string;
   name: string;
   verification_status: string;
+  is_owner: boolean;
   created_at: string;
 }
 
@@ -12,6 +13,8 @@ export interface Company {
   id: string;
   company_name: string;
   company_number: string;
+  previous_name: string | null;
+  previous_address: string | null;
   incorporation_date: string | null;
   company_address: string | null;
   sic_codes: string[] | null;

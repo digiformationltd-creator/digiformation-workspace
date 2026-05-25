@@ -10,31 +10,34 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Company } from "@/types";
+import { isOwnedCompany, isSoldCompany } from "@/lib/ownership";
 
 interface Props {
   companies: Company[];
 }
 
 export function SummaryCards({ companies }: Props) {
-  const total = companies.length;
-  const active = companies.filter((c) => c.status === "Active").length;
-  const sold = companies.filter((c) => c.status === "Sold/Transferred").length;
-  const pendingSale = companies.filter((c) => c.status === "Available Company").length;
-  const strikeOff = companies.filter((c) => c.status === "Strike Off Notice").length;
-  const defaultAddress = companies.filter((c) => c.address_status === "Default Address").length;
-  const ad01Pending = companies.filter((c) => !c.ad01_filing_date).length;
-  const ad01Filed = companies.filter((c) => !!c.ad01_filing_date).length;
+  const owned = companies.filter(isOwnedCompany);
+  const total = owned.length;
+  const active = owned.filter((c) => c.status === "Active").length;
+  // Sold = explicitly sold OR not under our owner directors (auto-derived)
+  const sold = companies.filter(isSoldCompany).length;
+  const pendingSale = owned.filter((c) => c.status === "Available Company").length;
+  const strikeOff = owned.filter((c) => c.status === "Strike Off Notice").length;
+  const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
+  const ad01Pending = owned.filter((c) => !c.ad01_filing_date).length;
+  const ad01Filed = owned.filter((c) => !!c.ad01_filing_date).length;
 
   const cards = [
     {
-      title: "Total Companies",
+      title: "Our Companies",
       value: total,
       icon: Building2,
       filter: undefined,
       accent: "from-indigo-500/20 to-violet-500/10",
       ring: "group-hover:ring-indigo-500/40",
       iconBg: "bg-indigo-500/10 text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white",
-      hint: "All companies in portfolio",
+      hint: "Under our directors",
     },
     {
       title: "Active",
@@ -64,7 +67,7 @@ export function SummaryCards({ companies }: Props) {
       accent: "from-sky-500/20 to-cyan-500/10",
       ring: "group-hover:ring-sky-500/40",
       iconBg: "bg-sky-500/10 text-sky-500 group-hover:bg-sky-500 group-hover:text-white",
-      hint: "Completed transfers",
+      hint: "Renamed or non-owner director",
     },
     {
       title: "Strike Off Notice",

@@ -158,11 +158,28 @@ export function CompaniesTable({
                   className="border-b last:border-b-0 hover:bg-muted/20 transition-colors"
                 >
                   <td className="px-2 py-1.5">
-                    <EditableCell
-                      value={company.company_name}
-                      onSave={(v) => v && onUpdate(company.id, { company_name: v })}
-                      className="font-medium"
-                    />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div>
+                          <EditableCell
+                            value={company.company_name}
+                            onSave={(v) => v && onUpdate(company.id, { company_name: v })}
+                            className="font-medium"
+                          />
+                          {company.previous_name && (
+                            <div className="text-[9px] text-muted-foreground italic truncate">
+                              new: {company.previous_name}
+                            </div>
+                          )}
+                        </div>
+                      </TooltipTrigger>
+                      {company.previous_name && (
+                        <TooltipContent className="text-xs max-w-[320px]">
+                          <div><strong>Old (our records):</strong> {company.company_name}</div>
+                          <div className="mt-1"><strong>New name:</strong> {company.previous_name}</div>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
                   </td>
                   <td className="px-2 py-1.5">
                     <EditableCell
@@ -206,7 +223,10 @@ export function CompaniesTable({
                         </div>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[400px] text-xs">
-                        <div><strong>Registered:</strong> {company.company_address || "-"}</div>
+                        <div><strong>Current:</strong> {company.company_address || "-"}</div>
+                        {company.previous_address && (
+                          <div className="mt-1"><strong>Previous:</strong> {company.previous_address}</div>
+                        )}
                         {company.ch_address && (
                           <div className="mt-1"><strong>CH:</strong> {company.ch_address}</div>
                         )}

@@ -68,6 +68,8 @@ export type Database = {
           id: string
           incorporation_date: string | null
           last_ch_sync: string | null
+          previous_address: string | null
+          previous_name: string | null
           sic_codes: string[] | null
           status: Database["public"]["Enums"]["company_status"] | null
           tags: string[] | null
@@ -95,6 +97,8 @@ export type Database = {
           id?: string
           incorporation_date?: string | null
           last_ch_sync?: string | null
+          previous_address?: string | null
+          previous_name?: string | null
           sic_codes?: string[] | null
           status?: Database["public"]["Enums"]["company_status"] | null
           tags?: string[] | null
@@ -122,6 +126,8 @@ export type Database = {
           id?: string
           incorporation_date?: string | null
           last_ch_sync?: string | null
+          previous_address?: string | null
+          previous_name?: string | null
           sic_codes?: string[] | null
           status?: Database["public"]["Enums"]["company_status"] | null
           tags?: string[] | null
@@ -177,18 +183,21 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          is_owner: boolean
           name: string
           verification_status: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
+          is_owner?: boolean
           name: string
           verification_status?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
+          is_owner?: boolean
           name?: string
           verification_status?: string | null
         }

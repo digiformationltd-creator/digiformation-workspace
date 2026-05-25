@@ -83,7 +83,7 @@ function DashboardPage() {
     } else if (quickFilter === "pending-sale") {
       filtered = filtered.filter((c) => c.status === "Available Company");
     } else if (quickFilter === "sold") {
-      filtered = filtered.filter((c) => c.status === "Sold/Transferred");
+      filtered = filtered.filter((c) => c.status === "Sold/Transferred" || (c.director ? !c.director.is_owner : true));
     } else if (quickFilter === "default-address") {
       filtered = filtered.filter((c) => c.address_status === "Default Address");
     } else if (quickFilter === "ad01-filed") {
@@ -277,11 +277,13 @@ function DashboardPage() {
                       <SelectValue placeholder="Select director" />
                     </SelectTrigger>
                     <SelectContent>
-                      {directors.map((d) => (
-                        <SelectItem key={d.id} value={d.id}>
-                          {d.name}
-                        </SelectItem>
-                      ))}
+                      {directors
+                        .filter((d) => d.is_owner)
+                        .map((d) => (
+                          <SelectItem key={d.id} value={d.id}>
+                            {d.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <div className="flex gap-2 pt-1">

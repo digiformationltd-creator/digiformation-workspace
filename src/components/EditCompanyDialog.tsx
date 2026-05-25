@@ -37,6 +37,8 @@ export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
   const [form, setForm] = useState({
     company_name: company.company_name ?? "",
     company_number: company.company_number ?? "",
+    previous_name: company.previous_name ?? "",
+    previous_address: company.previous_address ?? "",
     incorporation_date: company.incorporation_date ?? "",
     company_address: company.company_address ?? "",
     auth_code: company.auth_code ?? "",
@@ -52,6 +54,8 @@ export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
       setForm({
         company_name: company.company_name ?? "",
         company_number: company.company_number ?? "",
+        previous_name: company.previous_name ?? "",
+        previous_address: company.previous_address ?? "",
         incorporation_date: company.incorporation_date ?? "",
         company_address: company.company_address ?? "",
         auth_code: company.auth_code ?? "",
@@ -74,6 +78,8 @@ export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
       await onUpdate(company.id, {
         company_name: form.company_name,
         company_number: form.company_number.toUpperCase(),
+        previous_name: form.previous_name || null,
+        previous_address: form.previous_address || null,
         incorporation_date: form.incorporation_date || null,
         company_address: form.company_address || null,
         auth_code: form.auth_code || null,
@@ -113,11 +119,19 @@ export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1.5">
-            <Label>Company Name</Label>
+            <Label>Company Name (our records / old name)</Label>
             <Input
               value={form.company_name}
               onChange={(e) => set("company_name", e.target.value)}
               required
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>New Name (if renamed on Companies House)</Label>
+            <Input
+              value={form.previous_name}
+              onChange={(e) => set("previous_name", e.target.value)}
+              placeholder="Leave empty if not renamed"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -207,11 +221,13 @@ export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">— None —</SelectItem>
-                {directors.map((d) => (
-                  <SelectItem key={d.id} value={d.id}>
-                    {d.name}
-                  </SelectItem>
-                ))}
+                {directors
+                  .filter((d) => d.is_owner)
+                  .map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      {d.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
