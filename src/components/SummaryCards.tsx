@@ -89,15 +89,6 @@ export function SummaryCards({ companies }: Props) {
       iconBg: "bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-white",
       hint: "vs Companies House",
     },
-    {
-      title: "Not Synced",
-      value: notSynced,
-      icon: RefreshCw,
-      accent: "from-slate-500/20 to-zinc-500/10",
-      ring: "group-hover:ring-slate-500/40",
-      iconBg: "bg-slate-500/10 text-slate-500 group-hover:bg-slate-500 group-hover:text-white",
-      hint: "Need CH sync",
-    },
   ];
 
   return (
