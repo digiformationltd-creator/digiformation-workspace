@@ -29,9 +29,10 @@ interface Props {
   company: Company;
   directors: Director[];
   onUpdate: (id: string, updates: Record<string, unknown>) => void | Promise<void>;
+  triggerStyle?: "icon" | "compact";
 }
 
-export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
+export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle = "icon" }: Props) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
@@ -102,13 +103,16 @@ export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 hover:text-accent-foreground hover:bg-accent"
-            >
-              <Pencil className="h-3.5 w-3.5 text-warning" />
-            </Button>
+            {triggerStyle === "compact" ? (
+              <Button variant="outline" size="sm" className="h-6 text-[10px] px-2 gap-1">
+                <Pencil className="h-3 w-3 text-warning" />
+                Edit
+              </Button>
+            ) : (
+              <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-accent-foreground hover:bg-accent">
+                <Pencil className="h-3.5 w-3.5 text-warning" />
+              </Button>
+            )}
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>Edit Company</TooltipContent>

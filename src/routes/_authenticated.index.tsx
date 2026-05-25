@@ -352,8 +352,6 @@ function DashboardPage() {
                 company={c}
                 onMarkSold={markAsSold}
                 onMarkAd01={markAd01Filed}
-                onDelete={deleteCompany}
-                onVerifyDirector={verifyDirector}
               />
             ))
           )}
@@ -367,8 +365,6 @@ function DashboardPage() {
               directors={directors}
               onMarkSold={markAsSold}
               onMarkAd01={markAd01Filed}
-              onDelete={deleteCompany}
-              onVerifyDirector={verifyDirector}
               onUpdate={updateCompany}
             />
           </div>
