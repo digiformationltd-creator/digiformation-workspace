@@ -37,6 +37,7 @@ async function fetchDirectorsDirect(): Promise<Director[]> {
 export function useCompanies() {
   const queryClient = useQueryClient();
   const syncCHFn = useServerFn(updateCompanyCHStatus);
+  const bulkSyncFn = useServerFn(bulkSyncCompaniesHouse);
 
   const companiesQuery = useQuery({
     queryKey: ["companies"],
