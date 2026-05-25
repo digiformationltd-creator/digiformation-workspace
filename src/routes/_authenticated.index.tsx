@@ -6,6 +6,7 @@ import { useCompanies } from "@/hooks/useCompanies";
 import { SummaryCards } from "@/components/SummaryCards";
 import { FilterBar } from "@/components/FilterBar";
 import { CompaniesTable } from "@/components/CompaniesTable";
+import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
 import {
   Dialog,
