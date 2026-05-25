@@ -269,8 +269,8 @@ export function CompaniesTable({
                     />
                   </td>
                   <td className="px-2 py-1.5">
-                    <div className="flex items-center gap-0.5">
-                      <CompanyDetailsSheet company={company} triggerStyle="icon" />
+                    <div className="flex items-center gap-1">
+                      <CompanyDetailsSheet company={company} triggerStyle="compact" />
                       <EditCompanyDialog
                         company={company}
                         directors={directors}
@@ -281,11 +281,11 @@ export function CompaniesTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-7 w-7"
                             onClick={() => onMarkSold(company.id)}
                             disabled={company.status === "Sold/Transferred"}
                           >
-                            <Truck className="h-3 w-3 text-info" />
+                            <Truck className="h-3.5 w-3.5 text-info" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>Mark Sold</TooltipContent>
@@ -295,10 +295,10 @@ export function CompaniesTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-7 w-7"
                             onClick={() => onMarkAd01(company.id)}
                           >
-                            <FileText className="h-3 w-3 text-primary" />
+                            <FileText className="h-3.5 w-3.5 text-primary" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>AD01 Filed</TooltipContent>
@@ -308,7 +308,7 @@ export function CompaniesTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-7 w-7"
                             onClick={() =>
                               window.open(
                                 `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -316,7 +316,7 @@ export function CompaniesTable({
                               )
                             }
                           >
-                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>View on CH</TooltipContent>
@@ -326,10 +326,10 @@ export function CompaniesTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 hover:text-destructive"
+                            className="h-7 w-7 hover:text-destructive"
                             onClick={() => onDelete(company.id)}
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>Delete</TooltipContent>
@@ -340,10 +340,10 @@ export function CompaniesTable({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6"
+                              className="h-7 w-7"
                               onClick={() => onVerifyDirector(company.director!.id)}
                             >
-                              <ShieldCheck className="h-3 w-3 text-warning" />
+                              <ShieldCheck className="h-3.5 w-3.5 text-warning" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>Verify Director</TooltipContent>
