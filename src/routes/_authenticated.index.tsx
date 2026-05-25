@@ -260,64 +260,53 @@ function DashboardPage() {
 
       <SummaryCards companies={companies} />
 
-      <div className="grid gap-4 lg:grid-cols-[280px,1fr]">
-        <div className="space-y-4">
-          <DirectorsPanel
-            companies={companies}
-            directors={directors}
+      <div className="space-y-3 min-w-0">
+        <div className="bg-card rounded-lg border p-3">
+          <FilterBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
             selectedDirector={selectedDirector}
-            onSelectDirector={setSelectedDirector}
+            onDirectorChange={setSelectedDirector}
+            directors={directors}
+            activeStatus={activeStatus}
+            onStatusChange={setActiveStatus}
           />
         </div>
 
-        <div className="space-y-4 min-w-0">
-          <div className="bg-card rounded-xl border p-4">
-            <FilterBar
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              selectedDirector={selectedDirector}
-              onDirectorChange={setSelectedDirector}
-              directors={directors}
-              activeStatus={activeStatus}
-              onStatusChange={setActiveStatus}
-            />
-          </div>
+        <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+          <span>
+            Showing <strong className="text-foreground">{filteredCompanies.length}</strong> of {companies.length} companies
+          </span>
+          {selectedDirector !== "all" && (
+            <span className="text-primary">Filtered by director</span>
+          )}
+        </div>
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-            <span>
-              Showing <strong className="text-foreground">{filteredCompanies.length}</strong> of {companies.length} companies
-            </span>
-            {selectedDirector !== "all" && (
-              <span className="text-primary">
-                Filtered by director
-              </span>
-            )}
-          </div>
+        {/* Mobile: cards */}
+        <div className="grid gap-3 md:hidden">
+          {filteredCompanies.length === 0 ? (
+            <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
+              No companies match your filters.
+            </div>
+          ) : (
+            filteredCompanies.map((c) => (
+              <CompanyCard
+                key={c.id}
+                company={c}
+                onMarkSold={markAsSold}
+                onMarkAd01={markAd01Filed}
+                onSyncCH={syncCompanyCH}
+                onDelete={deleteCompany}
+                onVerifyDirector={verifyDirector}
+                isSyncing={isSyncing}
+              />
+            ))
+          )}
+        </div>
 
-          {/* Mobile: cards with explicit status buttons */}
-          <div className="grid gap-3 md:hidden">
-            {filteredCompanies.length === 0 ? (
-              <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
-                No companies match your filters.
-              </div>
-            ) : (
-              filteredCompanies.map((c) => (
-                <CompanyCard
-                  key={c.id}
-                  company={c}
-                  onMarkSold={markAsSold}
-                  onMarkAd01={markAd01Filed}
-                  onSyncCH={syncCompanyCH}
-                  onDelete={deleteCompany}
-                  onVerifyDirector={verifyDirector}
-                  isSyncing={isSyncing}
-                />
-              ))
-            )}
-          </div>
+        {/* Desktop: compact table */}
+        <div className="hidden md:block">
 
-          {/* Desktop: original table */}
-          <div className="hidden md:block">
             <CompaniesTable
               companies={filteredCompanies}
               onMarkSold={markAsSold}
