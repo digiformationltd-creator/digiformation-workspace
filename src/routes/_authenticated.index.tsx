@@ -177,7 +177,7 @@ function DashboardPage() {
       <div className="flex items-center justify-between">
         <div className="relative flex items-center gap-5 rounded-xl px-6 py-5 -ml-2">
           {/* Large DG Formation logo behind text */}
-          <div className="absolute left-0 top-1/2 -translate-y-[40%] h-32 w-32 group cursor-pointer">
+          <div className="absolute left-1 top-1/2 -translate-y-[30%] h-32 w-32 group cursor-pointer">
             <img
               src={logo}
               alt="Digiformation"
