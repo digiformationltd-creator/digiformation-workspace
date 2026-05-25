@@ -184,47 +184,17 @@ export function CompaniesTable({
                     />
                   </td>
                   <td className="px-2 py-1.5">
-                    <Select
-                      value={company.status}
-                      onValueChange={(val) => onUpdate(company.id, { status: val as CompanyStatus })}
-                    >
-                      <SelectTrigger className="h-6 px-1.5 py-0 text-[10px] border-transparent hover:border-border bg-transparent gap-1">
-                        <Badge variant="outline" className={`${getStatusBadge(company.status)} text-[9px] px-1.5 py-0 truncate`}>
-                          {company.status}
-                        </Badge>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Available Company">Available Company</SelectItem>
-                        <SelectItem value="Sold/Transferred">Sold/Transferred</SelectItem>
-                        <SelectItem value="Strike Off Notice">Strike Off Notice</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Badge variant="outline" className={`${getStatusBadge(company.status)} text-[9px] px-1.5 py-0 truncate`}>
+                      {company.status}
+                    </Badge>
                   </td>
                   <td className="px-2 py-1.5">
-                    <Select
-                      value={company.director_id ?? "none"}
-                      onValueChange={(val) =>
-                        onUpdate(company.id, { director_id: val === "none" ? null : val })
-                      }
-                    >
-                      <SelectTrigger className="h-6 px-1.5 py-0 text-[11px] border-transparent hover:border-border bg-transparent">
-                        <span className="truncate flex items-center gap-1">
-                          {company.director?.name || <span className="text-muted-foreground">—</span>}
-                          {company.director?.verification_status === "Verified" && (
-                            <ShieldCheck className="h-3 w-3 text-success shrink-0" />
-                          )}
-                        </span>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">— None —</SelectItem>
-                        {directors.map((d) => (
-                          <SelectItem key={d.id} value={d.id}>
-                            {d.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <span className="truncate flex items-center gap-1 text-[11px]">
+                      {company.director?.name || <span className="text-muted-foreground">—</span>}
+                      {company.director?.verification_status === "Verified" && (
+                        <ShieldCheck className="h-3 w-3 text-success shrink-0" />
+                      )}
+                    </span>
                   </td>
                   <td className="px-2 py-1.5">
                     <Tooltip>
