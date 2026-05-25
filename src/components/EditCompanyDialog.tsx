@@ -29,6 +29,7 @@ interface Props {
   company: Company;
   directors: Director[];
   onUpdate: (id: string, updates: Record<string, unknown>) => void | Promise<void>;
+  triggerStyle?: "icon" | "compact";
 }
 
 export function EditCompanyDialog({ company, directors, onUpdate }: Props) {
