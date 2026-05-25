@@ -31,9 +31,15 @@ import { createCompany } from "@/lib/companies.functions";
 import { toast } from "sonner";
 import type { Company } from "@/types";
 
+type DashSearch = { filter?: string };
+
 export const Route = createFileRoute("/_authenticated/")({
+  validateSearch: (search: Record<string, unknown>): DashSearch => ({
+    filter: typeof search.filter === "string" ? search.filter : undefined,
+  }),
   component: DashboardPage,
 });
+
 
 function DashboardPage() {
   const {
@@ -68,8 +74,27 @@ function DashboardPage() {
     },
   });
 
+  const { filter: quickFilter } = Route.useSearch();
+
   const filteredCompanies = useMemo(() => {
     let filtered = [...companies];
+
+    // Apply sidebar quick filter
+    if (quickFilter === "active") {
+      filtered = filtered.filter((c) => c.status === "Active");
+    } else if (quickFilter === "ad01") {
+      filtered = filtered.filter((c) => !c.ad01_filing_date);
+    } else if (quickFilter === "pending-sale") {
+      filtered = filtered.filter((c) => c.status === "Pending Sale");
+    } else if (quickFilter === "address") {
+      filtered = filtered.filter(
+        (c) => c.address_match_status === "Mismatched" || c.address_status === "Changed/Updated"
+      );
+    } else if (quickFilter === "strike-off") {
+      filtered = filtered.filter(
+        (c) => c.status === "Strike Off Pending" || c.status === "Struck Off"
+      );
+    }
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -90,7 +115,8 @@ function DashboardPage() {
     }
 
     return filtered;
-  }, [companies, searchTerm, selectedDirector, activeStatus]);
+  }, [companies, searchTerm, selectedDirector, activeStatus, quickFilter]);
+
 
   const handleAddCompany = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
