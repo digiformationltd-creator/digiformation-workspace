@@ -173,35 +173,78 @@ export function CompaniesTable({
                   className="border-b last:border-b-0 hover:bg-muted/20 transition-colors"
                 >
                   <td className="px-2 py-1.5">
-                    <div className="font-medium truncate" title={company.company_name}>
-                      {company.company_name}
-                    </div>
-                  </td>
-                  <td className="px-2 py-1.5 font-mono text-[10px] truncate">
-                    {company.company_number}
-                  </td>
-                  <td className="px-2 py-1.5">
-                    <Badge variant="outline" className={`${getStatusBadge(company.status)} text-[9px] px-1.5 py-0`}>
-                      {company.status}
-                    </Badge>
+                    <EditableCell
+                      value={company.company_name}
+                      onSave={(v) => v && onUpdate(company.id, { company_name: v })}
+                      className="font-medium"
+                    />
                   </td>
                   <td className="px-2 py-1.5">
-                    <div className="flex items-center gap-1 truncate" title={company.director?.name || ""}>
-                      <span className="truncate">{company.director?.name || "-"}</span>
-                      {company.director?.verification_status === "Verified" && (
-                        <ShieldCheck className="h-3 w-3 text-success shrink-0" />
-                      )}
-                    </div>
+                    <EditableCell
+                      value={company.company_number}
+                      onSave={(v) => v && onUpdate(company.id, { company_number: v.toUpperCase() })}
+                      mono
+                    />
+                  </td>
+                  <td className="px-2 py-1.5">
+                    <Select
+                      value={company.status}
+                      onValueChange={(val) => onUpdate(company.id, { status: val as CompanyStatus })}
+                    >
+                      <SelectTrigger className="h-6 px-1.5 py-0 text-[10px] border-transparent hover:border-border bg-transparent gap-1">
+                        <Badge variant="outline" className={`${getStatusBadge(company.status)} text-[9px] px-1.5 py-0 truncate`}>
+                          {company.status}
+                        </Badge>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Pending Sale">Pending Sale</SelectItem>
+                        <SelectItem value="Sold/Transferred">Sold/Transferred</SelectItem>
+                        <SelectItem value="Strike Off Pending">Strike Off Pending</SelectItem>
+                        <SelectItem value="Struck Off">Struck Off</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </td>
+                  <td className="px-2 py-1.5">
+                    <Select
+                      value={company.director_id ?? "none"}
+                      onValueChange={(val) =>
+                        onUpdate(company.id, { director_id: val === "none" ? null : val })
+                      }
+                    >
+                      <SelectTrigger className="h-6 px-1.5 py-0 text-[11px] border-transparent hover:border-border bg-transparent">
+                        <span className="truncate flex items-center gap-1">
+                          {company.director?.name || <span className="text-muted-foreground">—</span>}
+                          {company.director?.verification_status === "Verified" && (
+                            <ShieldCheck className="h-3 w-3 text-success shrink-0" />
+                          )}
+                        </span>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">— None —</SelectItem>
+                        {directors.map((d) => (
+                          <SelectItem key={d.id} value={d.id}>
+                            {d.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </td>
                   <td className="px-2 py-1.5">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="truncate text-[10px]">
-                          {company.company_address || "-"}
+                        <div className="flex items-center gap-1">
+                          <div className="flex-1 min-w-0">
+                            <EditableCell
+                              value={company.company_address}
+                              onSave={(v) => onUpdate(company.id, { company_address: v })}
+                              className="text-[10px]"
+                            />
+                          </div>
                           {company.address_match_status && company.address_match_status !== "Unknown" && (
                             <Badge
                               variant="outline"
-                              className={`ml-1 text-[8px] px-1 py-0 ${getMatchBadge(company.address_match_status)}`}
+                              className={`text-[8px] px-1 py-0 shrink-0 ${getMatchBadge(company.address_match_status)}`}
                             >
                               {company.address_match_status === "Matched" ? "✓" : "≠"}
                             </Badge>
@@ -217,22 +260,28 @@ export function CompaniesTable({
                       </TooltipContent>
                     </Tooltip>
                   </td>
-                  <td className="px-2 py-1.5 font-mono text-[10px] truncate">
-                    {company.auth_code ? (
-                      <span className="px-1 py-0.5 rounded bg-muted/60">{company.auth_code}</span>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
+                  <td className="px-2 py-1.5">
+                    <EditableCell
+                      value={company.auth_code}
+                      onSave={(v) => onUpdate(company.id, { auth_code: v })}
+                      mono
+                    />
                   </td>
-                  <td className="px-2 py-1.5 font-mono text-[10px] truncate">
-                    {company.utr_number || <span className="text-muted-foreground">-</span>}
+                  <td className="px-2 py-1.5">
+                    <EditableCell
+                      value={company.utr_number}
+                      onSave={(v) => onUpdate(company.id, { utr_number: v })}
+                      mono
+                    />
                   </td>
                   <td className="px-2 py-1.5 text-[10px] whitespace-nowrap">
-                    {company.ad01_filing_date ? (
-                      <span className="text-success">{formatDate(company.ad01_filing_date)}</span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
+                    <EditableCell
+                      value={company.ad01_filing_date}
+                      onSave={(v) => onUpdate(company.id, { ad01_filing_date: v })}
+                      type="date"
+                      placeholder="—"
+                      className={company.ad01_filing_date ? "text-success" : ""}
+                    />
                   </td>
                   <td className="px-2 py-1.5">
                     {company.ch_company_status ? (
