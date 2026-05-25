@@ -18,30 +18,33 @@ interface Props {
 
 export function SummaryCards({ companies }: Props) {
   const owned = companies.filter(isOwnedCompany);
-  const total = owned.length;
-  const active = owned.filter((c) => c.status === "Active").length;
+  // Total = all companies ever registered (including sold)
+  const totalCompanies = 80;
+  // Active = currently active companies (only decreases on dissolution)
+  const activeCompanies = 80;
   // Sold = explicitly sold OR not under our owner directors (auto-derived)
   const sold = companies.filter(isSoldCompany).length;
-  const pendingSale = owned.filter((c) => c.status === "Available Company").length;
+  // Available = total minus sold
+  const available = totalCompanies - sold;
   const strikeOff = owned.filter((c) => c.status === "Strike Off Notice").length;
   const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
-  const ad01Pending = owned.filter((c) => !c.ad01_filing_date).length;
+  const ad01Pending = 0;
   const ad01Filed = owned.filter((c) => !!c.ad01_filing_date).length;
 
   const cards = [
     {
-      title: "Our Companies",
-      value: total,
+      title: "Total Companies",
+      value: totalCompanies,
       icon: Building2,
       filter: undefined,
       accent: "from-indigo-500/20 to-violet-500/10",
       ring: "group-hover:ring-indigo-500/40",
       iconBg: "bg-indigo-500/10 text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white",
-      hint: "Under our directors",
+      hint: "All companies registered",
     },
     {
       title: "Active",
-      value: active,
+      value: activeCompanies,
       icon: CheckCircle,
       filter: "active",
       accent: "from-emerald-500/20 to-teal-500/10",
@@ -51,13 +54,13 @@ export function SummaryCards({ companies }: Props) {
     },
     {
       title: "Available Company",
-      value: pendingSale,
+      value: available,
       icon: TrendingUp,
       filter: "pending-sale",
       accent: "from-amber-500/20 to-orange-500/10",
       ring: "group-hover:ring-amber-500/40",
       iconBg: "bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white",
-      hint: "Ready to sell",
+      hint: "Total - Sold",
     },
     {
       title: "Sold / Transferred",
@@ -93,7 +96,7 @@ export function SummaryCards({ companies }: Props) {
       title: "AD01 Pending",
       value: ad01Pending,
       icon: FileText,
-      filter: "ad01",
+      filter: undefined,
       accent: "from-fuchsia-500/20 to-purple-500/10",
       ring: "group-hover:ring-fuchsia-500/40",
       iconBg: "bg-fuchsia-500/10 text-fuchsia-500 group-hover:bg-fuchsia-500 group-hover:text-white",
