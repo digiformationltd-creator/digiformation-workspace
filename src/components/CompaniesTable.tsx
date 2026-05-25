@@ -194,12 +194,25 @@ export function CompaniesTable({
                     </Badge>
                   </td>
                   <td className="px-2 py-1.5">
-                    <span className="truncate flex items-center gap-1 text-[11px]">
-                      {company.director?.name || <span className="text-muted-foreground">—</span>}
-                      {company.director?.verification_status === "Verified" && (
-                        <ShieldCheck className="h-3 w-3 text-success shrink-0" />
-                      )}
-                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="truncate flex items-center gap-1 text-[11px] cursor-help">
+                          {company.director?.name || <span className="text-muted-foreground">—</span>}
+                          {company.director?.verification_status === "Verified" && (
+                            <ShieldCheck className="h-3 w-3 text-success shrink-0" />
+                          )}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-xs max-w-[320px]">
+                        <div><strong>Current:</strong> {company.director?.name || "—"}</div>
+                        {company.previous_director_name && (
+                          <div className="mt-1"><strong>Old director:</strong> {company.previous_director_name}</div>
+                        )}
+                        {!company.previous_director_name && company.director && !company.director.is_owner && (
+                          <div className="mt-1 text-muted-foreground italic">Transferred — old director not recorded</div>
+                        )}
+                      </TooltipContent>
+                    </Tooltip>
                   </td>
                   <td className="px-2 py-1.5">
                     <Tooltip>
