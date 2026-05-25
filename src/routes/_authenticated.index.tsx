@@ -236,6 +236,29 @@ function DashboardPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <div className="flex gap-2 pt-1">
+                    <Input
+                      placeholder="Or add a new director name..."
+                      value={newDirectorName}
+                      onChange={(e) => setNewDirectorName(e.target.value)}
+                      className="h-8 text-xs"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      disabled={!newDirectorName.trim()}
+                      onClick={() => {
+                        const name = newDirectorName.trim();
+                        if (!name) return;
+                        createDirector(name);
+                        setNewDirectorName("");
+                      }}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add
+                    </Button>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={submitting}>
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
