@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, LogOut } from "lucide-react";
+import { Moon, Sun, LogOut, LayoutDashboard } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Footer } from "@/components/Footer";
@@ -51,8 +51,9 @@ function AppLayout() {
           <header className="h-12 flex items-center justify-between border-b px-3 bg-card/50 backdrop-blur-sm">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="-ml-1" />
-              <span className="text-xs font-medium text-muted-foreground">
-                Company Portfolio
+              <LayoutDashboard className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold text-foreground">
+                Tracking Dashboard
               </span>
             </div>
             <div className="flex items-center gap-1">
