@@ -3,7 +3,7 @@ import {
   TrendingUp,
   AlertTriangle,
   CheckCircle,
-  MapPin,
+  CheckCircle2,
   Truck,
   FileText,
   Home,
@@ -22,10 +22,8 @@ export function SummaryCards({ companies }: Props) {
   const pendingSale = companies.filter((c) => c.status === "Available Company").length;
   const strikeOff = companies.filter((c) => c.status === "Strike Off Notice").length;
   const defaultAddress = companies.filter((c) => c.address_status === "Default Address").length;
-  const addressMismatch = companies.filter(
-    (c) => c.address_match_status === "Mismatched"
-  ).length;
   const ad01Pending = companies.filter((c) => !c.ad01_filing_date).length;
+  const ad01Filed = companies.filter((c) => !!c.ad01_filing_date).length;
 
   const cards = [
     {
@@ -99,14 +97,14 @@ export function SummaryCards({ companies }: Props) {
       hint: "Address filings to do",
     },
     {
-      title: "Address Mismatch",
-      value: addressMismatch,
-      icon: MapPin,
-      filter: "address",
-      accent: "from-orange-500/20 to-pink-500/10",
-      ring: "group-hover:ring-orange-500/40",
-      iconBg: "bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-white",
-      hint: "vs Companies House",
+      title: "AD01 Filed",
+      value: ad01Filed,
+      icon: CheckCircle2,
+      filter: "ad01-filed",
+      accent: "from-lime-500/20 to-green-500/10",
+      ring: "group-hover:ring-lime-500/40",
+      iconBg: "bg-lime-500/10 text-lime-600 group-hover:bg-lime-500 group-hover:text-white",
+      hint: "Address change filed",
     },
   ];
 
