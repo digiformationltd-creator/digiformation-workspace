@@ -153,20 +153,60 @@ export const deleteCompany = createServerFn({ method: "POST" })
 export const importCompaniesCSV = createServerFn({ method: "POST" })
   .inputValidator((data: { rows: Array<Record<string, string>> }) => data)
   .handler(async ({ data }) => {
-    const companies = data.rows.map((row) => ({
-      company_name: row["Company Name"] || row["company_name"] || "",
-      company_number: row["Company Number"] || row["company_number"] || "",
-      incorporation_date: row["Incorporation Date"] || row["incorporation_date"] || null,
-      company_address: row["Registered Address"] || row["company_address"] || null,
-      sic_codes: row["SIC Codes"] ? row["SIC Codes"].split(",").map((s: string) => s.trim()) : null,
-      auth_code: row["Auth Code"] || row["auth_code"] || null,
-      utr_number: row["UTR Number"] || row["utr_number"] || null,
-      status: (row["Status"] || row["status"] || "Active") as CompanyStatus,
-      address_status: (row["Address Status"] || row["address_status"] || "Default Address") as
-        | "Default Address"
-        | "Changed/Updated",
-      tags: row["Tags"] ? row["Tags"].split(",").map((s: string) => s.trim()) : null,
-    }));
+    const directorNames = Array.from(
+      new Set(
+        data.rows
+          .map((r) => (r["Director Name"] || r["director_name"] || "").trim())
+          .filter(Boolean)
+      )
+    );
+
+    const directorMap = new Map<string, string>();
+    if (directorNames.length > 0) {
+      const { data: existing } = await supabaseAdmin
+        .from("directors")
+        .select("id, name")
+        .in("name", directorNames);
+      for (const d of existing ?? []) directorMap.set(d.name, d.id);
+
+      const missing = directorNames.filter((n) => !directorMap.has(n));
+      if (missing.length > 0) {
+        const { data: created, error: dErr } = await supabaseAdmin
+          .from("directors")
+          .insert(missing.map((name) => ({ name })))
+          .select("id, name");
+        if (dErr) throw new Error(dErr.message);
+        for (const d of created ?? []) directorMap.set(d.name, d.id);
+      }
+    }
+
+    const companies = data.rows.map((row) => {
+      const dirName = (row["Director Name"] || row["director_name"] || "").trim();
+      return {
+        company_name: row["Company Name"] || row["company_name"] || "",
+        company_number: row["Company Number"] || row["company_number"] || "",
+        incorporation_date:
+          row["Incorporation Date"] || row["incorporation_date"] || null,
+        company_address:
+          row["Company Address"] ||
+          row["Registered Address"] ||
+          row["company_address"] ||
+          null,
+        sic_codes: row["SIC Codes"]
+          ? row["SIC Codes"].split(",").map((s: string) => s.trim()).filter(Boolean)
+          : null,
+        auth_code: row["Auth Code"] || row["auth_code"] || null,
+        utr_number: row["UTR Number"] || row["utr_number"] || null,
+        status: (row["Status"] || row["status"] || "Active") as CompanyStatus,
+        address_status: (row["Address Status"] ||
+          row["address_status"] ||
+          "Default Address") as "Default Address" | "Changed/Updated",
+        director_id: dirName ? directorMap.get(dirName) ?? null : null,
+        tags: row["Tags"]
+          ? row["Tags"].split(",").map((s: string) => s.trim()).filter(Boolean)
+          : null,
+      };
+    });
 
     const { data: result, error } = await supabaseAdmin
       .from("companies")

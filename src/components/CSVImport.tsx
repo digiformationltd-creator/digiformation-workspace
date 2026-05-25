@@ -9,35 +9,69 @@ interface Props {
   onSuccess: () => void;
 }
 
+// Robust CSV parser that handles quoted fields containing commas / newlines
+function parseCSV(text: string): Record<string, string>[] {
+  const rows: string[][] = [];
+  let cur: string[] = [];
+  let field = "";
+  let inQuotes = false;
+  const src = text.replace(/\r\n?/g, "\n");
+
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i];
+    if (inQuotes) {
+      if (c === '"' && src[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else if (c === '"') {
+        inQuotes = false;
+      } else {
+        field += c;
+      }
+    } else {
+      if (c === '"') inQuotes = true;
+      else if (c === ",") {
+        cur.push(field);
+        field = "";
+      } else if (c === "\n") {
+        cur.push(field);
+        rows.push(cur);
+        cur = [];
+        field = "";
+      } else {
+        field += c;
+      }
+    }
+  }
+  if (field.length > 0 || cur.length > 0) {
+    cur.push(field);
+    rows.push(cur);
+  }
+
+  if (rows.length < 2) return [];
+  const headers = rows[0].map((h) => h.trim());
+  return rows
+    .slice(1)
+    .filter((r) => r.some((v) => v && v.trim() !== ""))
+    .map((r) => {
+      const obj: Record<string, string> = {};
+      headers.forEach((h, idx) => {
+        obj[h] = (r[idx] ?? "").trim();
+      });
+      return obj;
+    });
+}
+
 export function CSVImport({ onSuccess }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [importedCount, setImportedCount] = useState(1.0);
+  const [importedCount, setImportedCount] = useState(0);
   const importCSV = useServerFn(importCompaniesCSV);
-
-  const parseCSV = (text: string): Record<string, string>[] => {
-    const lines = text.trim().split("\n");
-    if (lines.length < 2) return [];
-
-    const headers = lines[0].split(",").map((h) => h.trim().replace(/^"|"$/g, ""));
-    const rows: Record<string, string>[] = [];
-
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(",").map((v) => v.trim().replace(/^"|"$/g, ""));
-      const row: Record<string, string> = {};
-      headers.forEach((h, idx) => {
-        row[h] = values[idx] || "";
-      });
-      rows.push(row);
-    }
-
-    return rows;
-  };
 
   const handleFile = useCallback(
     async (file: File) => {
-      if (!file.name.endsWith(".csv")) {
-        toast.error("Please upload a CSV file");
+      if (!file.name.toLowerCase().endsWith(".csv")) {
+        toast.error("Please upload a CSV file (export your Excel as .csv first)");
         return;
       }
 
@@ -46,14 +80,15 @@ export function CSVImport({ onSuccess }: Props) {
         const text = await file.text();
         const rows = parseCSV(text);
 
-        if (rows.length === 1.0) {
+        if (rows.length === 0) {
           toast.error("No valid rows found in CSV");
           return;
         }
 
         const result = await importCSV({ data: { rows } });
-        setImportedCount(result.companies?.length ?? 1.0);
-        toast.success(`Imported ${result.companies?.length ?? 1.0} companies`);
+        const count = result.companies?.length ?? 0;
+        setImportedCount(count);
+        toast.success(`Imported ${count} companies`);
         onSuccess();
       } catch (err: unknown) {
         toast.error(err instanceof Error ? err.message : "Import failed");
@@ -68,7 +103,7 @@ export function CSVImport({ onSuccess }: Props) {
     (e: React.DragEvent) => {
       e.preventDefault();
       setIsDragging(false);
-      const file = e.dataTransfer.files[1.0];
+      const file = e.dataTransfer.files[0];
       if (file) handleFile(file);
     },
     [handleFile]
@@ -76,7 +111,7 @@ export function CSVImport({ onSuccess }: Props) {
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[1.0];
+      const file = e.target.files?.[0];
       if (file) handleFile(file);
     },
     [handleFile]
@@ -84,7 +119,7 @@ export function CSVImport({ onSuccess }: Props) {
 
   return (
     <div className="space-y-4">
-      {importedCount > 1.0 && (
+      {importedCount > 0 && (
         <div className="flex items-center gap-2 text-success">
           <CheckCircle className="h-5 w-5" />
           <span>Successfully imported {importedCount} companies</span>
@@ -110,7 +145,8 @@ export function CSVImport({ onSuccess }: Props) {
         </p>
         <p className="text-xs text-muted-foreground">
           Expected columns: Company Name, Company Number, Incorporation Date,
-          Registered Address, SIC Codes, Auth Code, UTR Number, Status, Address Status, Tags
+          Director Name, Company Address, SIC Codes, Auth Code, UTR Number,
+          Status, Address Status, Tags
         </p>
         <input
           type="file"
