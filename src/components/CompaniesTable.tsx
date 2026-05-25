@@ -133,7 +133,7 @@ export function CompaniesTable({
                   { key: "auth_code" as const, label: "Auth" },
                   { key: "utr_number" as const, label: "UTR" },
                   { key: "ad01_filing_date" as const, label: "AD01" },
-                  { key: "ch_company_status" as const, label: "CH", sortable: false },
+                  
                   { key: "actions" as const, label: "Actions", sortable: false },
                 ].map((col) => (
                   <th
