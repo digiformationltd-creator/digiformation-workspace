@@ -2,23 +2,15 @@ import {
   FileText,
   Truck,
   MapPin,
-  
   ExternalLink,
   Trash2,
   CheckCircle2,
   Clock,
   Building2,
-  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import type { Company } from "@/types";
 
 interface Props {
