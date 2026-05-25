@@ -199,30 +199,3 @@ export function CompanyCard({
     </div>
   );
 }
-
-function DetailRow({
-  label,
-  value,
-  mono,
-  multiline,
-}: {
-  label: string;
-  value: string;
-  mono?: boolean;
-  multiline?: boolean;
-}) {
-  return (
-    <div className="flex flex-col gap-0.5 border-b pb-2 last:border-0">
-      <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
-      <span
-        className={`text-sm ${mono ? "font-mono" : ""} ${
-          multiline ? "whitespace-pre-wrap break-words" : "break-words"
-        }`}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
