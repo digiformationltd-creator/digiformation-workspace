@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Json } from "@/integrations/supabase/types";
 import type { CompanyStatus } from "@/types";
 
@@ -18,99 +18,82 @@ interface CompanyInsert {
   tags?: string[] | null;
 }
 
-export const getCompanies = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
-      .from("companies")
-      .select("*, director:directors(id, name, verification_status)")
-      .order("company_name");
+export const getCompanies = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabaseAdmin
+    .from("companies")
+    .select("*, director:directors(id, name, verification_status)")
+    .order("company_name");
+  if (error) throw new Error(error.message);
+  return { companies: data ?? [] };
+});
 
-    if (error) throw new Error(error.message);
-    return { companies: data ?? [] };
-  });
-
-export const getDirectors = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
-      .from("directors")
-      .select("*")
-      .order("name");
-
-    if (error) throw new Error(error.message);
-    return { directors: data ?? [] };
-  });
+export const getDirectors = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabaseAdmin
+    .from("directors")
+    .select("*")
+    .order("name");
+  if (error) throw new Error(error.message);
+  return { directors: data ?? [] };
+});
 
 export const createCompany = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { company: CompanyInsert }) => data)
-  .handler(async ({ data, context }) => {
-    const { data: result, error } = await context.supabase
+  .handler(async ({ data }) => {
+    const { data: result, error } = await supabaseAdmin
       .from("companies")
       .insert(data.company)
       .select()
       .single();
-
     if (error) throw new Error(error.message);
     return { company: result };
   });
 
 export const updateCompany = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (data: { id: string; updates: Partial<CompanyInsert> }) => data
-  )
-  .handler(async ({ data, context }) => {
-    const { data: result, error } = await context.supabase
+  .inputValidator((data: { id: string; updates: Partial<CompanyInsert> }) => data)
+  .handler(async ({ data }) => {
+    const { data: result, error } = await supabaseAdmin
       .from("companies")
       .update({ ...data.updates, updated_at: new Date().toISOString() })
       .eq("id", data.id)
       .select()
       .single();
-
     if (error) throw new Error(error.message);
     return { company: result };
   });
 
 export const markAsSold = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data, context }) => {
-    const { data: company } = await context.supabase
+  .handler(async ({ data }) => {
+    const { data: company } = await supabaseAdmin
       .from("companies")
       .select("status")
       .eq("id", data.id)
       .single();
-
     if (!company) throw new Error("Company not found");
 
-    const { data: result, error } = await context.supabase
+    const { data: result, error } = await supabaseAdmin
       .from("companies")
       .update({ status: "Sold/Transferred", updated_at: new Date().toISOString() })
       .eq("id", data.id)
       .select()
       .single();
-
     if (error) throw new Error(error.message);
 
-    await context.supabase.from("company_status_logs").insert({
+    await supabaseAdmin.from("company_status_logs").insert({
       company_id: data.id,
       old_status: company.status,
       new_status: "Sold/Transferred",
-      changed_by: context.userId,
+      changed_by: null,
     });
 
     return { company: result };
   });
 
 export const markAd01Filed = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
     const today = new Date().toISOString().split("T")[0];
-
-    const { data: result, error } = await context.supabase
+    const { data: result, error } = await supabaseAdmin
       .from("companies")
       .update({
         address_status: "Changed/Updated",
@@ -120,10 +103,9 @@ export const markAd01Filed = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .select()
       .single();
-
     if (error) throw new Error(error.message);
 
-    await context.supabase.from("ad01_filings").insert({
+    await supabaseAdmin.from("ad01_filings").insert({
       company_id: data.id,
       filed_date: today,
       notes: "Filed via dashboard",
@@ -133,53 +115,44 @@ export const markAd01Filed = createServerFn({ method: "POST" })
   });
 
 export const verifyDirector = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { directorId: string }) => data)
-  .handler(async ({ data, context }) => {
-    const { data: result, error } = await context.supabase
+  .handler(async ({ data }) => {
+    const { data: result, error } = await supabaseAdmin
       .from("directors")
       .update({ verification_status: "Verified" })
       .eq("id", data.directorId)
       .select()
       .single();
-
     if (error) throw new Error(error.message);
     return { director: result };
   });
 
 export const createDirector = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { name: string }) => data)
-  .handler(async ({ data, context }) => {
-    const { data: result, error } = await context.supabase
+  .handler(async ({ data }) => {
+    const { data: result, error } = await supabaseAdmin
       .from("directors")
       .insert({ name: data.name })
       .select()
       .single();
-
     if (error) throw new Error(error.message);
     return { director: result };
   });
 
 export const deleteCompany = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin
       .from("companies")
       .delete()
       .eq("id", data.id);
-
     if (error) throw new Error(error.message);
     return { success: true };
   });
 
 export const importCompaniesCSV = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (data: { rows: Array<Record<string, string>> }) => data
-  )
-  .handler(async ({ data, context }) => {
+  .inputValidator((data: { rows: Array<Record<string, string>> }) => data)
+  .handler(async ({ data }) => {
     const companies = data.rows.map((row) => ({
       company_name: row["Company Name"] || row["company_name"] || "",
       company_number: row["Company Number"] || row["company_number"] || "",
@@ -195,11 +168,10 @@ export const importCompaniesCSV = createServerFn({ method: "POST" })
       tags: row["Tags"] ? row["Tags"].split(",").map((s: string) => s.trim()) : null,
     }));
 
-    const { data: result, error } = await context.supabase
+    const { data: result, error } = await supabaseAdmin
       .from("companies")
       .insert(companies)
       .select();
-
     if (error) throw new Error(error.message);
     return { companies: result ?? [] };
   });
@@ -215,37 +187,21 @@ interface CHSyncResponse {
 }
 
 export const syncWithCompaniesHouse = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { companyNumber: string }) => data)
   .handler(async ({ data }): Promise<CHSyncResponse> => {
     const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
     if (!apiKey) {
-      return {
-        success: false,
-        error: "Companies House API key not configured",
-      };
+      return { success: false, error: "Companies House API key not configured" };
     }
-
     const auth = btoa(`${apiKey}:`);
     const url = `https://api.company-information.service.gov.uk/company/${data.companyNumber}`;
-
     const response = await fetch(url, {
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
     });
-
     if (!response.ok) {
-      const errorText = await response.text();
-      return {
-        success: false,
-        error: `CH API error: ${response.status} - ${errorText}`,
-      };
+      return { success: false, error: `CH API error: ${response.status} - ${await response.text()}` };
     }
-
     const chData = (await response.json()) as Record<string, Json>;
-
     return {
       success: true,
       ch_status: chData.company_status as string,
@@ -259,33 +215,19 @@ export const syncWithCompaniesHouse = createServerFn({ method: "POST" })
   });
 
 export const updateCompanyCHStatus = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (data: { id: string; companyNumber: string }) => data
-  )
-  .handler(async ({ data, context }) => {
+  .inputValidator((data: { id: string; companyNumber: string }) => data)
+  .handler(async ({ data }) => {
     const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
-    if (!apiKey) {
-      throw new Error("Companies House API key not configured");
-    }
-
+    if (!apiKey) throw new Error("Companies House API key not configured");
     const auth = btoa(`${apiKey}:`);
     const url = `https://api.company-information.service.gov.uk/company/${data.companyNumber}`;
-
     const response = await fetch(url, {
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
     });
-
-    if (!response.ok) {
-      throw new Error(`CH API error: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`CH API error: ${response.status}`);
     const chData = (await response.json()) as Record<string, Json>;
 
-    const { data: result, error } = await context.supabase
+    const { data: result, error } = await supabaseAdmin
       .from("companies")
       .update({
         ch_company_status: chData.company_status as string,
@@ -298,7 +240,6 @@ export const updateCompanyCHStatus = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .select()
       .single();
-
     if (error) throw new Error(error.message);
 
     const storedAddress = result?.company_address || "";
@@ -307,7 +248,7 @@ export const updateCompanyCHStatus = createServerFn({ method: "POST" })
       : "";
     const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
 
-    await context.supabase
+    await supabaseAdmin
       .from("companies")
       .update({ address_match_status: addressMatch })
       .eq("id", data.id);
@@ -323,81 +264,69 @@ interface BulkSyncResult {
   error?: string;
 }
 
-export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
-    if (!apiKey) {
-      throw new Error("Companies House API key not configured");
-    }
+export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" }).handler(async () => {
+  const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
+  if (!apiKey) throw new Error("Companies House API key not configured");
 
-    const { data: companies, error } = await context.supabase
-      .from("companies")
-      .select("id, company_number, company_address");
+  const { data: companies, error } = await supabaseAdmin
+    .from("companies")
+    .select("id, company_number, company_address");
+  if (error) throw new Error(error.message);
 
-    if (error) throw new Error(error.message);
+  const results: BulkSyncResult[] = [];
+  const auth = btoa(`${apiKey}:`);
 
-    const results: BulkSyncResult[] = [];
-    const auth = btoa(`${apiKey}:`);
-
-    for (const company of companies ?? []) {
-      try {
-        const url = `https://api.company-information.service.gov.uk/company/${company.company_number}`;
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Basic ${auth}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          results.push({
-            company_id: company.id,
-            company_number: company.company_number,
-            success: false,
-            error: `HTTP ${response.status}`,
-          });
-          continue;
-        }
-
-        const chData = (await response.json()) as Record<string, Json>;
-
-        const storedAddress = company.company_address || "";
-        const chAddress = chData.registered_office_address
-          ? JSON.stringify(chData.registered_office_address)
-          : "";
-        const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
-
-        await context.supabase
-          .from("companies")
-          .update({
-            ch_company_status: chData.company_status as string,
-            ch_company_profile: chData as Json,
-            ch_address: chData.registered_office_address
-              ? JSON.stringify(chData.registered_office_address)
-              : null,
-            address_match_status: addressMatch,
-            last_ch_sync: new Date().toISOString(),
-          })
-          .eq("id", company.id);
-
-        results.push({
-          company_id: company.id,
-          company_number: company.company_number,
-          success: true,
-          status: chData.company_status as string,
-        });
-      } catch (err: unknown) {
+  for (const company of companies ?? []) {
+    try {
+      const url = `https://api.company-information.service.gov.uk/company/${company.company_number}`;
+      const response = await fetch(url, {
+        headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
+      });
+      if (!response.ok) {
         results.push({
           company_id: company.id,
           company_number: company.company_number,
           success: false,
-          error: err instanceof Error ? err.message : String(err),
+          error: `HTTP ${response.status}`,
         });
+        continue;
       }
+      const chData = (await response.json()) as Record<string, Json>;
+      const storedAddress = company.company_address || "";
+      const chAddress = chData.registered_office_address
+        ? JSON.stringify(chData.registered_office_address)
+        : "";
+      const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
 
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await supabaseAdmin
+        .from("companies")
+        .update({
+          ch_company_status: chData.company_status as string,
+          ch_company_profile: chData as Json,
+          ch_address: chData.registered_office_address
+            ? JSON.stringify(chData.registered_office_address)
+            : null,
+          address_match_status: addressMatch,
+          last_ch_sync: new Date().toISOString(),
+        })
+        .eq("id", company.id);
+
+      results.push({
+        company_id: company.id,
+        company_number: company.company_number,
+        success: true,
+        status: chData.company_status as string,
+      });
+    } catch (err: unknown) {
+      results.push({
+        company_id: company.id,
+        company_number: company.company_number,
+        success: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
+    await new Promise((resolve) => setTimeout(resolve, 300));
+  }
 
-    return { results, total: companies?.length ?? 0 };
-  });
+  return { results, total: companies?.length ?? 0 };
+});
