@@ -251,6 +251,7 @@ export function CompaniesTable({
                   </td>
                   <td className="px-2 py-1.5">
                     <div className="flex items-center gap-0.5">
+                      <CompanyDetailsSheet company={company} triggerStyle="icon" />
                       <EditCompanyDialog
                         company={company}
                         directors={directors}
