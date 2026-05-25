@@ -54,26 +54,30 @@ interface Props {
 }
 
 export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
-  const trigger =
+  const triggerButton =
     triggerStyle === "full" ? (
       <Button variant="secondary" size="sm" className="w-full h-8 text-xs gap-1.5">
         <Eye className="h-3.5 w-3.5" />
         View More Details
       </Button>
     ) : (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-6 w-6">
-            <Eye className="h-3 w-3 text-primary" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>View Full Details</TooltipContent>
-      </Tooltip>
+      <Button variant="ghost" size="icon" className="h-6 w-6">
+        <Eye className="h-3 w-3 text-primary" />
+      </Button>
     );
 
   return (
     <Sheet>
-      <SheetTrigger asChild>{trigger}</SheetTrigger>
+      {triggerStyle === "icon" ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+          </TooltipTrigger>
+          <TooltipContent>View Full Details</TooltipContent>
+        </Tooltip>
+      ) : (
+        <SheetTrigger asChild>{triggerButton}</SheetTrigger>
+      )}
       <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
         <SheetHeader className="text-left">
           <SheetTitle className="flex items-center gap-2 text-base">
