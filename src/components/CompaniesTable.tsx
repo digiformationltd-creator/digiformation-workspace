@@ -19,13 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { EditableCell } from "@/components/EditableCell";
 import { EditCompanyDialog } from "@/components/EditCompanyDialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import type { Company, Director, CompanyStatus } from "@/types";
 
 interface Props {
