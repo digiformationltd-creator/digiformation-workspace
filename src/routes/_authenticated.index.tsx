@@ -25,9 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { createCompany } from "@/lib/companies.functions";
 import { toast } from "sonner";
 import type { Company } from "@/types";
 
@@ -52,6 +49,7 @@ function DashboardPage() {
     verifyDirector,
     updateCompany,
     deleteCompany,
+    createCompany,
     refresh,
     isSyncing,
   } = useCompanies();
@@ -60,19 +58,8 @@ function DashboardPage() {
   const [selectedDirector, setSelectedDirector] = useState("all");
   const [activeStatus, setActiveStatus] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const createCompanyFn = useServerFn(createCompany);
-  const createMutation = useMutation({
-    mutationFn: createCompanyFn,
-    onSuccess: () => {
-      refresh();
-      setShowAddForm(false);
-      toast.success("Company added");
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to add company");
-    },
-  });
 
   const { filter: quickFilter } = Route.useSearch();
 
@@ -118,28 +105,33 @@ function DashboardPage() {
   }, [companies, searchTerm, selectedDirector, activeStatus, quickFilter]);
 
 
-  const handleAddCompany = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddCompany = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    createMutation.mutate({
-      data: {
-        company: {
-          company_name: formData.get("company_name") as string,
-          company_number: formData.get("company_number") as string,
-          incorporation_date: (formData.get("incorporation_date") as string) || null,
-          company_address: (formData.get("company_address") as string) || null,
-          sic_codes: (formData.get("sic_codes") as string)
-            ? (formData.get("sic_codes") as string).split(",").map((s) => s.trim())
-            : null,
-          auth_code: (formData.get("auth_code") as string) || null,
-          utr_number: (formData.get("utr_number") as string) || null,
-          director_id: (formData.get("director_id") as string) || null,
-          status: (formData.get("status") as Company["status"]) || "Active",
-        },
-      },
-    });
+    setSubmitting(true);
+    try {
+      await createCompany({
+        company_name: formData.get("company_name") as string,
+        company_number: (formData.get("company_number") as string).toUpperCase(),
+        incorporation_date: (formData.get("incorporation_date") as string) || null,
+        company_address: (formData.get("company_address") as string) || null,
+        sic_codes: (formData.get("sic_codes") as string)
+          ? (formData.get("sic_codes") as string).split(",").map((s) => s.trim())
+          : null,
+        auth_code: (formData.get("auth_code") as string) || null,
+        utr_number: (formData.get("utr_number") as string) || null,
+        director_id: (formData.get("director_id") as string) || null,
+        status: (formData.get("status") as Company["status"]) || "Active",
+      });
+      form.reset();
+      setShowAddForm(false);
+    } catch {
+      // toast handled in hook
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -246,10 +238,8 @@ function DashboardPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="submit" className="w-full" disabled={createMutation.isPending}>
-                  {createMutation.isPending && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
+                <Button type="submit" className="w-full" disabled={submitting}>
+                  {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Add Company
                 </Button>
               </form>
@@ -309,11 +299,13 @@ function DashboardPage() {
 
             <CompaniesTable
               companies={filteredCompanies}
+              directors={directors}
               onMarkSold={markAsSold}
               onMarkAd01={markAd01Filed}
               onSyncCH={syncCompanyCH}
               onDelete={deleteCompany}
               onVerifyDirector={verifyDirector}
+              onUpdate={updateCompany}
               isSyncing={isSyncing}
             />
           </div>

@@ -1,13 +1,13 @@
 import { useState, useCallback } from "react";
 import { Upload, FileSpreadsheet, Loader2, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useServerFn } from "@tanstack/react-start";
-import { importCompaniesCSV } from "@/lib/companies.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface Props {
   onSuccess: () => void;
 }
+
 
 // Robust CSV parser that handles quoted fields containing commas / newlines
 function parseCSV(text: string): Record<string, string>[] {
@@ -66,7 +66,6 @@ export function CSVImport({ onSuccess }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [importedCount, setImportedCount] = useState(0);
-  const importCSV = useServerFn(importCompaniesCSV);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -85,8 +84,52 @@ export function CSVImport({ onSuccess }: Props) {
           return;
         }
 
-        const result = await importCSV({ data: { rows } });
-        const count = result.companies?.length ?? 0;
+        // map flexible header names → our column names
+        const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const pick = (r: Record<string, string>, ...keys: string[]) => {
+          for (const k of keys) {
+            for (const h of Object.keys(r)) {
+              if (norm(h) === norm(k)) return r[h];
+            }
+          }
+          return "";
+        };
+
+        const payload = rows
+          .map((r) => {
+            const name = pick(r, "company name", "company_name", "name");
+            const number = pick(r, "company number", "company_number", "number");
+            if (!name || !number) return null;
+            return {
+              company_name: name,
+              company_number: number.toUpperCase(),
+              incorporation_date: pick(r, "incorporation date", "incorporation_date") || null,
+              company_address: pick(r, "registered address", "company address", "address") || null,
+              sic_codes: pick(r, "sic codes", "sic")
+                ? pick(r, "sic codes", "sic").split(/[,;]/).map((s) => s.trim()).filter(Boolean)
+                : null,
+              auth_code: pick(r, "auth code", "authentication code") || null,
+              utr_number: pick(r, "utr number", "utr") || null,
+              status: (pick(r, "status") || "Active") as never,
+              tags: pick(r, "tags")
+                ? pick(r, "tags").split(/[,;]/).map((s) => s.trim()).filter(Boolean)
+                : null,
+            };
+          })
+          .filter(Boolean) as Array<Record<string, unknown>>;
+
+        if (payload.length === 0) {
+          toast.error("Need at least Company Name and Company Number columns");
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("companies")
+          .insert(payload as never)
+          .select("id");
+        if (error) throw new Error(error.message);
+
+        const count = data?.length ?? 0;
         setImportedCount(count);
         toast.success(`Imported ${count} companies`);
         onSuccess();
@@ -96,8 +139,9 @@ export function CSVImport({ onSuccess }: Props) {
         setIsUploading(false);
       }
     },
-    [importCSV, onSuccess]
+    [onSuccess]
   );
+
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
