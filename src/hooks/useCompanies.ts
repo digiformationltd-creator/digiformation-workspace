@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { updateCompanyCHStatus } from "@/lib/companies.functions";
+import { updateCompanyCHStatus, bulkSyncCompaniesHouse } from "@/lib/companies.functions";
 import type { Company, Director, CompanyStatus } from "@/types";
 
 /**
