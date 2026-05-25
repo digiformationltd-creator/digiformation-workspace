@@ -10,7 +10,7 @@ import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
 import logo from "@/assets/digiformation-logo.png";
 import { isOwnedCompany } from "@/lib/ownership";
-import { RainbowCursor } from "@/components/RainbowCursor";
+
 
 import {
   Dialog,
