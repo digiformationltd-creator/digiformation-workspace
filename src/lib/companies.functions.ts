@@ -13,7 +13,7 @@ interface CompanyInsert {
   auth_code?: string | null;
   utr_number?: string | null;
   status?: CompanyStatus;
-  address_status?: "Default Address" | "Changed/Updated";
+  address_status?: "Default Address" | "Changed/Updated" | "Active";
   ad01_filing_date?: string | null;
   director_id?: string | null;
   tags?: string[] | null;
