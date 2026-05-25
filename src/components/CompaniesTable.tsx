@@ -101,13 +101,13 @@ export function CompaniesTable({
         <div className="overflow-x-auto">
           <table className="w-full text-[11px] table-fixed">
             <colgroup>
-              <col className="w-[22%]" />
+              <col className="w-[20%]" />
+              <col className="w-[9%]" />
               <col className="w-[10%]" />
-              <col className="w-[11%]" />
-              <col className="w-[14%]" />
-              <col className="w-[26%]" />
+              <col className="w-[13%]" />
+              <col className="w-[24%]" />
               <col className="w-[7%]" />
-              <col className="w-[10%]" />
+              <col className="w-[17%]" />
             </colgroup>
             <thead>
               <tr className="border-b bg-muted/40 text-muted-foreground">
