@@ -28,7 +28,8 @@ export function SummaryCards({ companies }: Props) {
   const available = totalCompanies - sold;
   const strikeOff = owned.filter((c) => c.status === "Strike Off Notice").length;
   const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
-  const ad01Pending = 0;
+  // AD01 Pending = owned (non-sold) companies still on Default Address
+  const ad01Pending = defaultAddress;
   const ad01Filed = owned.filter((c) => !!c.ad01_filing_date).length;
 
   const cards = [
