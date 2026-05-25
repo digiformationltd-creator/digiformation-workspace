@@ -25,9 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { createCompany } from "@/lib/companies.functions";
 import { toast } from "sonner";
 import type { Company } from "@/types";
 
@@ -52,6 +49,7 @@ function DashboardPage() {
     verifyDirector,
     updateCompany,
     deleteCompany,
+    createCompany,
     refresh,
     isSyncing,
   } = useCompanies();
@@ -60,19 +58,8 @@ function DashboardPage() {
   const [selectedDirector, setSelectedDirector] = useState("all");
   const [activeStatus, setActiveStatus] = useState("all");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const createCompanyFn = useServerFn(createCompany);
-  const createMutation = useMutation({
-    mutationFn: createCompanyFn,
-    onSuccess: () => {
-      refresh();
-      setShowAddForm(false);
-      toast.success("Company added");
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to add company");
-    },
-  });
 
   const { filter: quickFilter } = Route.useSearch();
 
