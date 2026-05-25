@@ -52,9 +52,11 @@ export type Database = {
           address_match_status: string | null
           address_status: Database["public"]["Enums"]["address_status"] | null
           auth_code: string | null
+          ch_accounts_next_due: string | null
           ch_address: string | null
           ch_company_profile: Json | null
           ch_company_status: string | null
+          ch_confirmation_statement_next_due: string | null
           ch_expiry_date: string | null
           ch_filing_rate: string | null
           ch_operation_date: string | null
@@ -77,9 +79,11 @@ export type Database = {
           address_match_status?: string | null
           address_status?: Database["public"]["Enums"]["address_status"] | null
           auth_code?: string | null
+          ch_accounts_next_due?: string | null
           ch_address?: string | null
           ch_company_profile?: Json | null
           ch_company_status?: string | null
+          ch_confirmation_statement_next_due?: string | null
           ch_expiry_date?: string | null
           ch_filing_rate?: string | null
           ch_operation_date?: string | null
@@ -102,9 +106,11 @@ export type Database = {
           address_match_status?: string | null
           address_status?: Database["public"]["Enums"]["address_status"] | null
           auth_code?: string | null
+          ch_accounts_next_due?: string | null
           ch_address?: string | null
           ch_company_profile?: Json | null
           ch_company_status?: string | null
+          ch_confirmation_statement_next_due?: string | null
           ch_expiry_date?: string | null
           ch_filing_rate?: string | null
           ch_operation_date?: string | null
