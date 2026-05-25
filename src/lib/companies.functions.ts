@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
 import type { CompanyStatus } from "@/types";
 
@@ -18,25 +19,46 @@ interface CompanyInsert {
   tags?: string[] | null;
 }
 
-export const getCompanies = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabaseAdmin
-    .from("companies")
-    .select("*, director:directors(id, name, verification_status)")
-    .order("company_name");
-  if (error) throw new Error(error.message);
-  return { companies: data ?? [] };
-});
+// UK Companies House number format: 8 alphanumeric chars (e.g. 12345678, SC123456, NI123456, OC123456)
+const CH_NUMBER_RE = /^[A-Z0-9]{2}\d{6}$|^\d{8}$/;
+function validateCompanyNumber(n: string): string {
+  const trimmed = (n || "").trim().toUpperCase();
+  if (!CH_NUMBER_RE.test(trimmed)) {
+    throw new Error("Invalid company number format");
+  }
+  return trimmed;
+}
 
-export const getDirectors = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabaseAdmin
-    .from("directors")
-    .select("*")
-    .order("name");
-  if (error) throw new Error(error.message);
-  return { directors: data ?? [] };
-});
+function dbError(error: { message: string; code?: string }, context: string): Error {
+  console.error(`[DB Error] ${context}`, error);
+  if (error.code === "23505") return new Error("A record with that identifier already exists.");
+  return new Error("A database error occurred. Please try again.");
+}
+
+export const getCompanies = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("companies")
+      .select("*, director:directors(id, name, verification_status)")
+      .order("company_name");
+    if (error) throw dbError(error, "getCompanies");
+    return { companies: data ?? [] };
+  });
+
+export const getDirectors = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("directors")
+      .select("*")
+      .order("name");
+    if (error) throw dbError(error, "getDirectors");
+    return { directors: data ?? [] };
+  });
 
 export const createCompany = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { company: CompanyInsert }) => data)
   .handler(async ({ data }) => {
     const { data: result, error } = await supabaseAdmin
@@ -44,11 +66,12 @@ export const createCompany = createServerFn({ method: "POST" })
       .insert(data.company)
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw dbError(error, "createCompany");
     return { company: result };
   });
 
 export const updateCompany = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string; updates: Partial<CompanyInsert> }) => data)
   .handler(async ({ data }) => {
     const { data: result, error } = await supabaseAdmin
@@ -57,11 +80,12 @@ export const updateCompany = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw dbError(error, "updateCompany");
     return { company: result };
   });
 
 export const markAsSold = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     const { data: company } = await supabaseAdmin
@@ -77,7 +101,7 @@ export const markAsSold = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw dbError(error, "markAsSold");
 
     await supabaseAdmin.from("company_status_logs").insert({
       company_id: data.id,
@@ -90,6 +114,7 @@ export const markAsSold = createServerFn({ method: "POST" })
   });
 
 export const markAd01Filed = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     const today = new Date().toISOString().split("T")[0];
@@ -103,7 +128,7 @@ export const markAd01Filed = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw dbError(error, "markAd01Filed");
 
     await supabaseAdmin.from("ad01_filings").insert({
       company_id: data.id,
@@ -115,6 +140,7 @@ export const markAd01Filed = createServerFn({ method: "POST" })
   });
 
 export const verifyDirector = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { directorId: string }) => data)
   .handler(async ({ data }) => {
     const { data: result, error } = await supabaseAdmin
@@ -123,11 +149,12 @@ export const verifyDirector = createServerFn({ method: "POST" })
       .eq("id", data.directorId)
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw dbError(error, "verifyDirector");
     return { director: result };
   });
 
 export const createDirector = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { name: string }) => data)
   .handler(async ({ data }) => {
     const { data: result, error } = await supabaseAdmin
@@ -135,22 +162,24 @@ export const createDirector = createServerFn({ method: "POST" })
       .insert({ name: data.name })
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw dbError(error, "createDirector");
     return { director: result };
   });
 
 export const deleteCompany = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin
       .from("companies")
       .delete()
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw dbError(error, "deleteCompany");
     return { success: true };
   });
 
 export const importCompaniesCSV = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { rows: Array<Record<string, string>> }) => data)
   .handler(async ({ data }) => {
     const directorNames = Array.from(
@@ -175,7 +204,7 @@ export const importCompaniesCSV = createServerFn({ method: "POST" })
           .from("directors")
           .insert(missing.map((name) => ({ name })))
           .select("id, name");
-        if (dErr) throw new Error(dErr.message);
+        if (dErr) throw dbError(dErr, "importCompaniesCSV/directors");
         for (const d of created ?? []) directorMap.set(d.name, d.id);
       }
     }
@@ -212,7 +241,7 @@ export const importCompaniesCSV = createServerFn({ method: "POST" })
       .from("companies")
       .insert(companies)
       .select();
-    if (error) throw new Error(error.message);
+    if (error) throw dbError(error, "importCompaniesCSV");
     return { companies: result ?? [] };
   });
 
@@ -227,19 +256,27 @@ interface CHSyncResponse {
 }
 
 export const syncWithCompaniesHouse = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { companyNumber: string }) => data)
   .handler(async ({ data }): Promise<CHSyncResponse> => {
     const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
     if (!apiKey) {
       return { success: false, error: "Companies House API key not configured" };
     }
+    let companyNumber: string;
+    try {
+      companyNumber = validateCompanyNumber(data.companyNumber);
+    } catch (e) {
+      return { success: false, error: (e as Error).message };
+    }
     const auth = btoa(`${apiKey}:`);
-    const url = `https://api.company-information.service.gov.uk/company/${data.companyNumber}`;
+    const url = `https://api.company-information.service.gov.uk/company/${encodeURIComponent(companyNumber)}`;
     const response = await fetch(url, {
       headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
     });
     if (!response.ok) {
-      return { success: false, error: `CH API error: ${response.status} - ${await response.text()}` };
+      console.error("[CH API]", response.status, await response.text());
+      return { success: false, error: `Companies House request failed (${response.status})` };
     }
     const chData = (await response.json()) as Record<string, Json>;
     return {
@@ -255,16 +292,21 @@ export const syncWithCompaniesHouse = createServerFn({ method: "POST" })
   });
 
 export const updateCompanyCHStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string; companyNumber: string }) => data)
   .handler(async ({ data }) => {
     const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
     if (!apiKey) throw new Error("Companies House API key not configured");
+    const companyNumber = validateCompanyNumber(data.companyNumber);
     const auth = btoa(`${apiKey}:`);
-    const url = `https://api.company-information.service.gov.uk/company/${data.companyNumber}`;
+    const url = `https://api.company-information.service.gov.uk/company/${encodeURIComponent(companyNumber)}`;
     const response = await fetch(url, {
       headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
     });
-    if (!response.ok) throw new Error(`CH API error: ${response.status}`);
+    if (!response.ok) {
+      console.error("[CH API]", response.status);
+      throw new Error(`Companies House request failed (${response.status})`);
+    }
     const chData = (await response.json()) as Record<string, Json>;
 
     const { data: result, error } = await supabaseAdmin
@@ -280,7 +322,7 @@ export const updateCompanyCHStatus = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw dbError(error, "updateCompanyCHStatus");
 
     const storedAddress = result?.company_address || "";
     const chAddress = chData.registered_office_address
@@ -304,69 +346,73 @@ interface BulkSyncResult {
   error?: string;
 }
 
-export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" }).handler(async () => {
-  const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
-  if (!apiKey) throw new Error("Companies House API key not configured");
+export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
+    if (!apiKey) throw new Error("Companies House API key not configured");
 
-  const { data: companies, error } = await supabaseAdmin
-    .from("companies")
-    .select("id, company_number, company_address");
-  if (error) throw new Error(error.message);
+    const { data: companies, error } = await supabaseAdmin
+      .from("companies")
+      .select("id, company_number, company_address");
+    if (error) throw dbError(error, "bulkSyncCompaniesHouse/list");
 
-  const results: BulkSyncResult[] = [];
-  const auth = btoa(`${apiKey}:`);
+    const results: BulkSyncResult[] = [];
+    const auth = btoa(`${apiKey}:`);
 
-  for (const company of companies ?? []) {
-    try {
-      const url = `https://api.company-information.service.gov.uk/company/${company.company_number}`;
-      const response = await fetch(url, {
-        headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
-      });
-      if (!response.ok) {
+    for (const company of companies ?? []) {
+      try {
+        const companyNumber = validateCompanyNumber(company.company_number);
+        const url = `https://api.company-information.service.gov.uk/company/${encodeURIComponent(companyNumber)}`;
+        const response = await fetch(url, {
+          headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
+        });
+        if (!response.ok) {
+          results.push({
+            company_id: company.id,
+            company_number: company.company_number,
+            success: false,
+            error: `HTTP ${response.status}`,
+          });
+          continue;
+        }
+        const chData = (await response.json()) as Record<string, Json>;
+        const storedAddress = company.company_address || "";
+        const chAddress = chData.registered_office_address
+          ? JSON.stringify(chData.registered_office_address)
+          : "";
+        const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
+
+        await supabaseAdmin
+          .from("companies")
+          .update({
+            ch_company_status: chData.company_status as string,
+            ch_company_profile: chData as Json,
+            ch_address: chData.registered_office_address
+              ? JSON.stringify(chData.registered_office_address)
+              : null,
+            address_match_status: addressMatch,
+            last_ch_sync: new Date().toISOString(),
+          })
+          .eq("id", company.id);
+
+        results.push({
+          company_id: company.id,
+          company_number: company.company_number,
+          success: true,
+          status: chData.company_status as string,
+        });
+      } catch (err: unknown) {
+        console.error("[bulkSync]", err);
         results.push({
           company_id: company.id,
           company_number: company.company_number,
           success: false,
-          error: `HTTP ${response.status}`,
+          error: "Sync failed",
         });
-        continue;
       }
-      const chData = (await response.json()) as Record<string, Json>;
-      const storedAddress = company.company_address || "";
-      const chAddress = chData.registered_office_address
-        ? JSON.stringify(chData.registered_office_address)
-        : "";
-      const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
-
-      await supabaseAdmin
-        .from("companies")
-        .update({
-          ch_company_status: chData.company_status as string,
-          ch_company_profile: chData as Json,
-          ch_address: chData.registered_office_address
-            ? JSON.stringify(chData.registered_office_address)
-            : null,
-          address_match_status: addressMatch,
-          last_ch_sync: new Date().toISOString(),
-        })
-        .eq("id", company.id);
-
-      results.push({
-        company_id: company.id,
-        company_number: company.company_number,
-        success: true,
-        status: chData.company_status as string,
-      });
-    } catch (err: unknown) {
-      results.push({
-        company_id: company.id,
-        company_number: company.company_number,
-        success: false,
-        error: err instanceof Error ? err.message : String(err),
-      });
+      await new Promise((resolve) => setTimeout(resolve, 300));
     }
-    await new Promise((resolve) => setTimeout(resolve, 300));
-  }
 
-  return { results, total: companies?.length ?? 0 };
-});
+    return { results, total: companies?.length ?? 0 };
+  });
