@@ -123,13 +123,18 @@ export function useCompanies() {
     companies: (companiesQuery.data?.companies ?? []) as Company[],
     directors: (directorsQuery.data?.directors ?? []) as Director[],
     loading: companiesQuery.isLoading || directorsQuery.isLoading,
-    markAsSold: markSoldMutation.mutate,
-    markAd01Filed: markAd01Mutation.mutate,
-    syncCompanyCH: syncCHMutation.mutate,
-    createDirector: createDirectorMutation.mutate,
-    verifyDirector: verifyDirectorMutation.mutate,
-    updateCompany: updateCompanyMutation.mutate,
-    deleteCompany: deleteCompanyMutation.mutate,
+    markAsSold: (id: string) => markSoldMutation.mutate({ data: { id } }),
+    markAd01Filed: (id: string) => markAd01Mutation.mutate({ data: { id } }),
+    syncCompanyCH: (id: string, companyNumber: string) =>
+      syncCHMutation.mutate({ data: { id, companyNumber } }),
+    createDirector: (name: string) =>
+      createDirectorMutation.mutate({ data: { name } }),
+    verifyDirector: (directorId: string) =>
+      verifyDirectorMutation.mutate({ data: { directorId } }),
+    updateCompany: (id: string, updates: Record<string, unknown>) =>
+      updateCompanyMutation.mutate({ data: { id, updates } }),
+    deleteCompany: (id: string) =>
+      deleteCompanyMutation.mutate({ data: { id } }),
     refresh,
     isSyncing: syncCHMutation.isPending,
   };
