@@ -157,10 +157,6 @@ export function FilterBar({
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Auth</span>
             <ChipGroup options={authOptions} value={authFilter} onChange={onAuthFilterChange} />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">AD01</span>
-            <ChipGroup options={ad01Options} value={ad01Filter} onChange={onAd01FilterChange} />
-          </div>
         </div>
       </div>
 
@@ -170,7 +166,6 @@ export function FilterBar({
           <ChipGroup options={addressOptions} value={addressFilter} onChange={onAddressFilterChange} />
         </div>
         <ChipGroup options={authOptions} value={authFilter} onChange={onAuthFilterChange} />
-        <ChipGroup options={ad01Options} value={ad01Filter} onChange={onAd01FilterChange} />
       </div>
 
       {hasFilters && (
