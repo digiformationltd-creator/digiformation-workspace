@@ -320,11 +320,9 @@ function DashboardPage() {
               directors={directors}
               onMarkSold={markAsSold}
               onMarkAd01={markAd01Filed}
-              onSyncCH={() => {}}
               onDelete={deleteCompany}
               onVerifyDirector={verifyDirector}
               onUpdate={updateCompany}
-              isSyncing={false}
             />
           </div>
         </div>
