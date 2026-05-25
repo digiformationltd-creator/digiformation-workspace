@@ -20,7 +20,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import logo from "@/assets/logo.png";
 
 const mainItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard, search: undefined },
@@ -53,13 +52,6 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <div className="flex items-center gap-2 px-3 py-3">
-          <img
-            src={logo}
-            alt="DigiFormatian LTD"
-            className={collapsed ? "h-8 w-8 object-contain shrink-0" : "h-12 w-auto object-contain shrink-0"}
-          />
-        </div>
 
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
