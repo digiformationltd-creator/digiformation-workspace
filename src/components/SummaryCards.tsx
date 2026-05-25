@@ -3,7 +3,7 @@ import {
   TrendingUp,
   AlertTriangle,
   CheckCircle,
-  MapPin,
+  CheckCircle2,
   Truck,
   FileText,
   Home,
