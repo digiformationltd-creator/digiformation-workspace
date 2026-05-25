@@ -176,7 +176,6 @@ function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <RainbowCursor />
       <div className="flex items-center justify-between">
         <div className="relative flex items-center gap-5 rounded-xl px-6 py-5 -ml-2">
           <div className="relative h-32 w-32 group cursor-pointer">
