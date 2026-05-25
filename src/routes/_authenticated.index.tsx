@@ -50,6 +50,7 @@ function DashboardPage() {
     updateCompany,
     deleteCompany,
     createCompany,
+    createDirector,
     refresh,
     isSyncing,
   } = useCompanies();
