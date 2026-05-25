@@ -8,6 +8,7 @@ import { FilterBar } from "@/components/FilterBar";
 import { CompaniesTable } from "@/components/CompaniesTable";
 import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
+import { DirectorsPanel } from "@/components/DirectorsPanel";
 import {
   Dialog,
   DialogContent,
@@ -233,29 +234,66 @@ function DashboardPage() {
 
       <SummaryCards companies={companies} />
 
-      <div className="bg-card rounded-xl border p-4 space-y-4">
-        <FilterBar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          selectedDirector={selectedDirector}
-          onDirectorChange={setSelectedDirector}
-          directors={directors}
-          activeStatus={activeStatus}
-          onStatusChange={setActiveStatus}
-        />
-      </div>
+      <div className="grid gap-4 lg:grid-cols-[280px,1fr]">
+        <div className="space-y-4">
+          <DirectorsPanel
+            companies={companies}
+            directors={directors}
+            selectedDirector={selectedDirector}
+            onSelectDirector={setSelectedDirector}
+          />
+        </div>
 
-      {/* Mobile: cards with explicit status buttons */}
-      <div className="grid gap-3 md:hidden">
-        {filteredCompanies.length === 0 ? (
-          <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
-            No companies match your filters.
+        <div className="space-y-4 min-w-0">
+          <div className="bg-card rounded-xl border p-4">
+            <FilterBar
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              selectedDirector={selectedDirector}
+              onDirectorChange={setSelectedDirector}
+              directors={directors}
+              activeStatus={activeStatus}
+              onStatusChange={setActiveStatus}
+            />
           </div>
-        ) : (
-          filteredCompanies.map((c) => (
-            <CompanyCard
-              key={c.id}
-              company={c}
+
+          <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
+            <span>
+              Showing <strong className="text-foreground">{filteredCompanies.length}</strong> of {companies.length} companies
+            </span>
+            {selectedDirector !== "all" && (
+              <span className="text-primary">
+                Filtered by director
+              </span>
+            )}
+          </div>
+
+          {/* Mobile: cards with explicit status buttons */}
+          <div className="grid gap-3 md:hidden">
+            {filteredCompanies.length === 0 ? (
+              <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
+                No companies match your filters.
+              </div>
+            ) : (
+              filteredCompanies.map((c) => (
+                <CompanyCard
+                  key={c.id}
+                  company={c}
+                  onMarkSold={markAsSold}
+                  onMarkAd01={markAd01Filed}
+                  onSyncCH={syncCompanyCH}
+                  onDelete={deleteCompany}
+                  onVerifyDirector={verifyDirector}
+                  isSyncing={isSyncing}
+                />
+              ))
+            )}
+          </div>
+
+          {/* Desktop: original table */}
+          <div className="hidden md:block">
+            <CompaniesTable
+              companies={filteredCompanies}
               onMarkSold={markAsSold}
               onMarkAd01={markAd01Filed}
               onSyncCH={syncCompanyCH}
@@ -263,21 +301,8 @@ function DashboardPage() {
               onVerifyDirector={verifyDirector}
               isSyncing={isSyncing}
             />
-          ))
-        )}
-      </div>
-
-      {/* Desktop: original table */}
-      <div className="hidden md:block">
-        <CompaniesTable
-          companies={filteredCompanies}
-          onMarkSold={markAsSold}
-          onMarkAd01={markAd01Filed}
-          onSyncCH={syncCompanyCH}
-          onDelete={deleteCompany}
-          onVerifyDirector={verifyDirector}
-          isSyncing={isSyncing}
-        />
+          </div>
+        </div>
       </div>
 
       <div className="bg-card rounded-xl border p-6">
