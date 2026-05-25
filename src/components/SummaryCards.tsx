@@ -3,9 +3,7 @@ import {
   TrendingUp,
   AlertTriangle,
   CheckCircle,
-  CheckCircle2,
   Truck,
-  FileText,
   Home,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
@@ -28,9 +26,6 @@ export function SummaryCards({ companies }: Props) {
   const available = totalCompanies - sold;
   const strikeOff = owned.filter((c) => c.status === "Strike Off Notice").length;
   const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
-  // AD01 Pending = owned (non-sold) companies still on Default Address
-  const ad01Pending = defaultAddress;
-  const ad01Filed = owned.filter((c) => !!c.ad01_filing_date).length;
 
   const cards = [
     {
@@ -93,30 +88,10 @@ export function SummaryCards({ companies }: Props) {
       iconBg: "bg-yellow-500/10 text-yellow-600 group-hover:bg-yellow-500 group-hover:text-white",
       hint: "PO Box / Cardiff registered",
     },
-    {
-      title: "AD01 Pending",
-      value: ad01Pending,
-      icon: FileText,
-      filter: undefined,
-      accent: "from-fuchsia-500/20 to-purple-500/10",
-      ring: "group-hover:ring-fuchsia-500/40",
-      iconBg: "bg-fuchsia-500/10 text-fuchsia-500 group-hover:bg-fuchsia-500 group-hover:text-white",
-      hint: "Address filings to do",
-    },
-    {
-      title: "AD01 Filed",
-      value: ad01Filed,
-      icon: CheckCircle2,
-      filter: "ad01-filed",
-      accent: "from-lime-500/20 to-green-500/10",
-      ring: "group-hover:ring-lime-500/40",
-      iconBg: "bg-lime-500/10 text-lime-600 group-hover:bg-lime-500 group-hover:text-white",
-      hint: "Address change filed",
-    },
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
       {cards.map((card, i) => {
         const inner = (
           <>
