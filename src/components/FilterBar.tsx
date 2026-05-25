@@ -118,11 +118,13 @@ export function FilterBar({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Directors</SelectItem>
-            {directors.map((dir) => (
-              <SelectItem key={dir.id} value={dir.id}>
-                {dir.name}
-              </SelectItem>
-            ))}
+            {directors
+              .filter((d) => d.is_owner)
+              .map((dir) => (
+                <SelectItem key={dir.id} value={dir.id}>
+                  {dir.name}
+                </SelectItem>
+              ))}
           </SelectContent>
         </Select>
       </div>
