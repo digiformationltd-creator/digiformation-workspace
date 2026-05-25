@@ -277,11 +277,13 @@ function DashboardPage() {
                       <SelectValue placeholder="Select director" />
                     </SelectTrigger>
                     <SelectContent>
-                      {directors.map((d) => (
-                        <SelectItem key={d.id} value={d.id}>
-                          {d.name}
-                        </SelectItem>
-                      ))}
+                      {directors
+                        .filter((d) => d.is_owner)
+                        .map((d) => (
+                          <SelectItem key={d.id} value={d.id}>
+                            {d.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <div className="flex gap-2 pt-1">
