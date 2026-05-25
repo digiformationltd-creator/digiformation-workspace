@@ -41,18 +41,19 @@ export function CompaniesTable({
   const [sortField, setSortField] = useState<keyof Company>("company_name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  const handleSort = (field: keyof Company) => {
+  const handleSort = (field: string) => {
     if (field === sortField) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field);
+      setSortField(field as keyof Company);
       setSortDirection("asc");
     }
   };
 
   const sortedCompanies = [...companies].sort((a, b) => {
-    let aVal = a[sortField] ?? "";
-    let bVal = b[sortField] ?? "";
+    const key = sortField as keyof Company;
+    let aVal = a[key] ?? "";
+    let bVal = b[key] ?? "";
     if (typeof aVal === "string") aVal = aVal.toLowerCase();
     if (typeof bVal === "string") bVal = bVal.toLowerCase();
     if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
