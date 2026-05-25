@@ -27,6 +27,9 @@ export interface Company {
   ch_company_profile: Record<string, unknown> | null;
   ch_address: string | null;
   address_match_status: string | null;
+  ch_expiry_date: string | null;
+  ch_operation_date: string | null;
+  ch_filing_rate: string | null;
   created_at: string;
   updated_at: string;
   director?: Director | null;
