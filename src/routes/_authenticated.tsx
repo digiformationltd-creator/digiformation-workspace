@@ -17,7 +17,13 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AppLayout() {
+  const navigate = useNavigate();
   const [theme, setTheme] = useState<"light" | "dark">("dark");
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/login" });
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem("theme") as "light" | "dark" | null;
