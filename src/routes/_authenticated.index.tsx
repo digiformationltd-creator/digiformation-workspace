@@ -187,6 +187,9 @@ function DashboardPage() {
         company_number: (formData.get("company_number") as string).toUpperCase(),
         incorporation_date: (formData.get("incorporation_date") as string) || null,
         company_address: (formData.get("company_address") as string) || null,
+        previous_name: (formData.get("previous_name") as string) || null,
+        previous_address: (formData.get("previous_address") as string) || null,
+        previous_director_name: (formData.get("previous_director_name") as string) || null,
         sic_codes: (formData.get("sic_codes") as string)
           ? (formData.get("sic_codes") as string).split(",").map((s) => s.trim())
           : null,
@@ -194,6 +197,13 @@ function DashboardPage() {
         utr_number: (formData.get("utr_number") as string) || null,
         director_id: (formData.get("director_id") as string) || null,
         status: (formData.get("status") as Company["status"]) || "Active",
+        address_status: (formData.get("address_status") as Company["address_status"]) || "Default Address",
+        ad01_filing_date: (formData.get("ad01_filing_date") as string) || null,
+        ch_expiry_date: (formData.get("ch_expiry_date") as string) || null,
+        ch_operation_date: (formData.get("ch_operation_date") as string) || null,
+        ch_filing_rate: (formData.get("ch_filing_rate") as string) || null,
+        ch_accounts_next_due: (formData.get("ch_accounts_next_due") as string) || null,
+        ch_confirmation_statement_next_due: (formData.get("ch_confirmation_statement_next_due") as string) || null,
       });
       form.reset();
       setShowAddForm(false);
