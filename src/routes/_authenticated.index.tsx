@@ -218,7 +218,7 @@ function DashboardPage() {
       await createCompany({
         // Current/New name is primary; fall back to original if only old is filled
         company_name: currentName || originalName || "(Unnamed)",
-        company_number: companyNumber.toUpperCase(),
+        company_number: (companyNumber || `TEMP-${Date.now().toString(36).toUpperCase()}`),
         incorporation_date: (formData.get("incorporation_date") as string) || null,
         company_address: currentAddress || originalAddress || null,
         previous_name: originalName || null,
@@ -371,9 +371,52 @@ function DashboardPage() {
                   <Input id="ad01_filing_date" name="ad01_filing_date" type="date" />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="previous_director_name">Previous / New Director Name</Label>
-                  <Input id="previous_director_name" name="previous_director_name" />
+                <div className="rounded-lg border p-3 space-y-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Director</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="previous_director_name">Original / Old Director Name</Label>
+                    <Input id="previous_director_name" name="previous_director_name" placeholder="As originally appointed" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="director_id">Current / New Director</Label>
+                    <Select name="director_id">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select current director" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {directors
+                          .filter((d) => d.is_owner)
+                          .map((d) => (
+                            <SelectItem key={d.id} value={d.id}>
+                              {d.name}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                      <Input
+                        placeholder="Or add a new director name..."
+                        value={newDirectorName}
+                        onChange={(e) => setNewDirectorName(e.target.value)}
+                        className="h-9 text-xs"
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={!newDirectorName.trim()}
+                        onClick={() => {
+                          const name = newDirectorName.trim();
+                          if (!name) return;
+                          createDirector(name);
+                          setNewDirectorName("");
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
+                    </div>
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
@@ -412,46 +455,6 @@ function DashboardPage() {
                 <div className="space-y-2">
                   <Label htmlFor="sic_codes">SIC Codes (comma separated)</Label>
                   <Input id="sic_codes" name="sic_codes" placeholder="62020, 62090" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="director_id">Director</Label>
-                  <Select name="director_id">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select director" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {directors
-                        .filter((d) => d.is_owner)
-                        .map((d) => (
-                          <SelectItem key={d.id} value={d.id}>
-                            {d.name}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                  <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                    <Input
-                      placeholder="Or add a new director name..."
-                      value={newDirectorName}
-                      onChange={(e) => setNewDirectorName(e.target.value)}
-                      className="h-9 text-xs"
-                    />
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      disabled={!newDirectorName.trim()}
-                      onClick={() => {
-                        const name = newDirectorName.trim();
-                        if (!name) return;
-                        createDirector(name);
-                        setNewDirectorName("");
-                      }}
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add
-                    </Button>
-                  </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={submitting}>
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
