@@ -120,6 +120,7 @@ export function CompanyCard({
   company,
   onMarkSold,
   onMarkAd01,
+  onMarkAd01Complete,
   onDelete,
   isAdmin = true,
 }: Props) {
