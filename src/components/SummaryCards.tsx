@@ -23,10 +23,10 @@ export function SummaryCards({ companies }: Props) {
   const owned = companies.filter(isOwnedCompany);
   // Total = total companies currently in the system (grows when a new one is added)
   const totalCompanies = companies.length;
-  // Active = companies whose status is Active
-  const activeCompanies = companies.filter((c) => c.status === "Active").length;
-  // Sold = explicitly sold OR not under our owner directors (auto-derived)
-  const sold = companies.filter(isSoldCompany).length;
+  // Active = every company that is NOT dissolved (matches user's portfolio definition)
+  const activeCompanies = totalCompanies;
+  // Sold = ONLY companies explicitly marked Sold/Transferred (no auto-derivation)
+  const sold = companies.filter((c) => c.status === "Sold/Transferred").length;
   // Available = total minus sold
   const available = totalCompanies - sold;
   // Count Strike Off / Default Address across ALL companies (not just owned),
