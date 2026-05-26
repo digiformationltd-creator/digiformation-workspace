@@ -70,7 +70,17 @@ export function SummaryCards({ companies }: Props) {
       accent: "from-emerald-500/20 to-teal-500/10",
       ring: "group-hover:ring-emerald-500/40",
       iconBg: "bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white",
-      hint: "Currently trading",
+      hint: "Total - Dissolved",
+    },
+    {
+      title: "Dissolved",
+      value: dissolved,
+      icon: AlertTriangle,
+      filter: "dissolved",
+      accent: "from-zinc-500/20 to-slate-500/10",
+      ring: "group-hover:ring-zinc-500/40",
+      iconBg: "bg-zinc-500/10 text-zinc-600 group-hover:bg-zinc-500 group-hover:text-white",
+      hint: "Companies dissolved",
     },
     {
       title: "Available Company",
