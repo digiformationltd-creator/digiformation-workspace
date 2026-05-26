@@ -64,7 +64,7 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
     ) : triggerStyle === "compact" ? (
       <Button variant="outline" size="sm" className="h-7 text-[11px] px-2.5 gap-1">
         <Eye className="h-3 w-3" />
-        View Details
+        View More
       </Button>
     ) : (
       <Button variant="ghost" size="icon" className="h-6 w-6">
