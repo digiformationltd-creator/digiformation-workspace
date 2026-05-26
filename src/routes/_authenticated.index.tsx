@@ -71,6 +71,24 @@ function DashboardPage() {
 
 
   const { filter: quickFilter } = Route.useSearch();
+  const navigate = useNavigate();
+
+  const clearQuickFilter = () => {
+    if (quickFilter) navigate({ to: "/", search: {} });
+  };
+
+  const handleStatusChange = (v: string) => {
+    clearQuickFilter();
+    setActiveStatus(v);
+  };
+  const handleAddressChange = (v: string) => {
+    clearQuickFilter();
+    setAddressFilter(v);
+  };
+  const handleAuthChange = (v: string) => {
+    clearQuickFilter();
+    setAuthFilter(v);
+  };
 
   const directorMap = useMemo(() => {
     const m = new Map<string, string>();
