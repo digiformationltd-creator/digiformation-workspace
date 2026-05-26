@@ -241,7 +241,7 @@ function DashboardPage() {
         : (formData.get("strike_off_status") as string) === "yes";
       const authStatus = markReadyToSell
         ? "available"
-        : (((formData.get("auth_code_status") as string) || "missing") as "available" | "missing";
+        : (((formData.get("auth_code_status") as string) || "missing") as "available" | "missing");
       const addrStatus = markReadyToSell
         ? ("Changed/Updated" as Company["address_status"])
         : ((formData.get("address_status") as Company["address_status"]) || "Default Address");
