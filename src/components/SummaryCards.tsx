@@ -153,7 +153,7 @@ export function SummaryCards({ companies }: Props) {
       hint: "PO Box / Cardiff registered",
     },
     {
-      title: "AD01 Filed",
+      title: "AD01 Complete",
       value: ad01Filed,
       icon: FileCheck,
       filter: "ad01-filed",
