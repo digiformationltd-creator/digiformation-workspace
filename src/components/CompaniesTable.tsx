@@ -213,6 +213,17 @@ export function CompaniesTable({
                   AD01 Filed
                 </Badge>
               )}
+              {company.status === "Active" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
+                  onClick={() => onMarkSold(company.id)}
+                >
+                  <Truck className="h-3 w-3" />
+                  Sold
+                </Button>
+              )}
             </div>
           </div>
         ))}
