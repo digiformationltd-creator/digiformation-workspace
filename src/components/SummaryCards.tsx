@@ -39,8 +39,8 @@ export function SummaryCards({ companies }: Props) {
   const ad01PendingAuth = internal.filter((c) => c.ad01_status === "pending" && c.auth_code_status === "missing").length;
   const ad01PendingDefault = internal.filter((c) => c.ad01_status === "pending" && c.address_status === "Default Address").length;
   const ad01Pending = ad01PendingAuth + ad01PendingDefault;
-  const ad01Processing = companies.filter((c) => c.ad01_status === "processing").length;
-  const ad01Filed = companies.filter((c) => c.ad01_status === "completed").length;
+  const ad01Processing = internal.filter((c) => c.ad01_status === "processing").length;
+  const ad01Filed = internal.filter((c) => c.ad01_status === "completed").length;
   void owned;
 
   const cards = [
