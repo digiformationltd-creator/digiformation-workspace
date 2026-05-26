@@ -110,7 +110,18 @@ export function CompaniesTable({
             <div className="space-y-1.5 text-[12px]">
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Company</div>
-                <div className="font-medium break-words">{company.company_name}</div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={`font-medium break-words ${company.previous_name ? "underline decoration-dotted underline-offset-2 cursor-help" : ""}`}>
+                      {company.company_name}
+                    </div>
+                  </TooltipTrigger>
+                  {company.previous_name && (
+                    <TooltipContent className="text-xs max-w-[280px]">
+                      <div><strong>Now registered as:</strong> {company.previous_name}</div>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
               </div>
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Number</div>
@@ -118,7 +129,25 @@ export function CompaniesTable({
               </div>
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Director</div>
-                <div className="break-words">{company.director?.name || "—"}</div>
+                {(() => {
+                  const original = company.previous_director_name || company.director?.name;
+                  const current = company.director?.name;
+                  const changed = !!company.previous_director_name && current && current !== company.previous_director_name;
+                  return (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className={`break-words ${changed ? "underline decoration-dotted underline-offset-2 cursor-help" : ""}`}>
+                          {original || "—"}
+                        </div>
+                      </TooltipTrigger>
+                      {changed && (
+                        <TooltipContent className="text-xs max-w-[280px]">
+                          <div><strong>Current director:</strong> {current}</div>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  );
+                })()}
               </div>
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Address</div>
