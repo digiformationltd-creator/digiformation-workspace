@@ -282,6 +282,7 @@ function DashboardPage() {
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
+          {isAdmin && (
           <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
             <DialogTrigger asChild>
               <Button size="sm" className="flex-1 sm:flex-none min-w-0">
@@ -294,6 +295,7 @@ function DashboardPage() {
                 <DialogTitle>Add New Company</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddCompany} className="space-y-4">
+
                 <div className="rounded-lg border p-3 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
                   <div className="space-y-2">
@@ -451,6 +453,7 @@ function DashboardPage() {
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
       </div>
 
