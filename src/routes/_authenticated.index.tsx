@@ -113,11 +113,14 @@ function DashboardPage() {
     } else if (quickFilter === "sold") {
       filtered = filtered.filter((c) => c.availability_status === "sold");
     } else if (quickFilter === "default-address") {
-      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.address_status === "Default Address" && c.ad01_status === "pending");
+      // Multi-layer: show ALL companies with Default Address flag (independent of strike-off / auth overlap)
+      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.address_status === "Default Address");
     } else if (quickFilter === "strike-off") {
+      // Multi-layer: show ALL companies with Strike Off flag (independent of address / auth overlap)
       filtered = filtered.filter((c) => c.availability_status !== "sold" && c.strike_off_status === true);
     } else if (quickFilter === "auth-missing") {
-      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.auth_code_status === "missing" && c.ad01_status === "pending");
+      // Multi-layer: show ALL companies with Auth Missing flag
+      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.auth_code_status === "missing");
     } else if (quickFilter === "ready-to-sell") {
       filtered = filtered.filter(
         (c) =>
