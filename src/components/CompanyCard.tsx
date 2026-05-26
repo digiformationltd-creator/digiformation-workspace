@@ -37,6 +37,7 @@ function StatusRow({
   onAction,
   disabled,
   meta,
+  hideAction,
 }: {
   icon: typeof FileText;
   label: string;
@@ -47,6 +48,7 @@ function StatusRow({
   onAction: () => void;
   disabled?: boolean;
   meta?: string;
+  hideAction?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border bg-card/50 px-3 py-2.5">
