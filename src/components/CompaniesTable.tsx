@@ -235,7 +235,7 @@ export function CompaniesTable({
                   AD01 Complete
                 </Badge>
               )}
-
+              {company.status === "Active" && (
                 <Button
                   variant="outline"
                   size="sm"
