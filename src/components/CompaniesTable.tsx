@@ -130,19 +130,22 @@ export function CompaniesTable({
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Director</div>
                 {(() => {
-                  const current = company.director?.name;
-                  const original = company.previous_director_name;
-                  const changed = !!original && !!current && current !== original;
+                  // `previous_director_name` holds the NEW current director for sold companies.
+                  // `director.name` is our original (now-resigned) owner-director.
+                  const newCurrent = company.previous_director_name;
+                  const ours = company.director?.name;
+                  const display = newCurrent || ours;
+                  const changed = !!newCurrent && !!ours && newCurrent !== ours;
                   return (
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className={`break-words ${changed ? "underline decoration-dotted underline-offset-2 cursor-help" : ""}`}>
-                          {current || "—"}
+                          {display || "—"}
                         </div>
                       </TooltipTrigger>
                       {changed && (
                         <TooltipContent className="text-xs max-w-[280px]">
-                          <div><strong>Original director:</strong> {original}</div>
+                          <div><strong>Previously:</strong> {ours}</div>
                         </TooltipContent>
                       )}
                     </Tooltip>
