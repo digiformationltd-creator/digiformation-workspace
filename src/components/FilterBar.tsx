@@ -30,6 +30,7 @@ const statusOptions = [
   { label: "Available Company", value: "Available Company" },
   { label: "Sold/Transferred", value: "Sold/Transferred" },
   { label: "Strike Off Notice", value: "Strike Off Notice" },
+  { label: "Ready to Sell", value: "Ready to Sell" },
 ];
 
 const addressOptions = [
