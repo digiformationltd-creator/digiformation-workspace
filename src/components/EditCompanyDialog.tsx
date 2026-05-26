@@ -48,6 +48,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     company_number: company.company_number ?? "",
     previous_name: company.previous_name ?? "",
     previous_address: company.previous_address ?? "",
+    previous_director_name: company.previous_director_name ?? "",
     incorporation_date: company.incorporation_date ?? "",
     company_address: company.company_address ?? "",
     auth_code: company.auth_code ?? "",
