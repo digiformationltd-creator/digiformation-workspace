@@ -511,13 +511,25 @@ function DashboardPage() {
           />
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+        <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground px-1">
           <span>
             Showing <strong className="text-foreground">{filteredCompanies.length}</strong> of {companies.length} companies
+            {selectedDirector !== "all" && <span className="text-primary ml-2">· Filtered by director</span>}
           </span>
-          {selectedDirector !== "all" && (
-            <span className="text-primary">Filtered by director</span>
-          )}
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 gap-1.5 text-[11px]"
+            disabled={filteredCompanies.length === 0}
+            onClick={() => {
+              const label = quickFilter === "all" ? "all-companies" : quickFilter;
+              exportCompaniesToExcel(filteredCompanies, label);
+              toast.success(`Exported ${filteredCompanies.length} companies`);
+            }}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export Excel
+          </Button>
         </div>
 
         {/* Mobile: cards */}
