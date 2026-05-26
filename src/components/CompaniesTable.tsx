@@ -605,6 +605,41 @@ export function CompaniesTable({
                           triggerStyle="compact"
                         />
                       )}
+                      {isAdmin && onDelete && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-6 text-[10px] px-2 gap-1 border-destructive/40 text-destructive hover:bg-destructive/10"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Delete company</TooltipContent>
+                            </Tooltip>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete this company?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently remove <strong>{company.company_name}</strong> ({company.company_number}) and all related records. This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                onClick={() => onDelete(company.id)}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
                     </div>
                   </td>
                 </tr>
