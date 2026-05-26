@@ -320,9 +320,14 @@ export function CompaniesTable({
                     />
                   </td>
                   <td className="px-2 py-1.5">
-                    <Badge variant="outline" className={`${getStatusBadge(company.status)} text-[9px] px-1.5 py-0 truncate`}>
-                      {company.status}
-                    </Badge>
+                    {(() => {
+                      const cat = deriveCategory(company);
+                      return (
+                        <Badge variant="outline" className={`${categoryBadgeClass(cat)} text-[9px] px-1.5 py-0 truncate`}>
+                          {categoryLabel(cat)}
+                        </Badge>
+                      );
+                    })()}
                   </td>
                   <td className="px-2 py-1.5">
                     {(() => {
