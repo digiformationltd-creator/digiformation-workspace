@@ -2,11 +2,11 @@ import { useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  ExternalLink,
   FileCheck,
   CheckCircle2,
   Truck,
 } from "lucide-react";
+import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
