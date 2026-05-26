@@ -96,6 +96,16 @@ export function SummaryCards({ companies }: Props) {
       hint: `${ad01PendingAuth} no auth + ${ad01PendingDefault} default addr = ${ad01Pending}`,
     },
     {
+      title: "Auth Missing",
+      value: authMissing,
+      icon: KeyRound,
+      filter: "auth-missing",
+      accent: "from-fuchsia-500/20 to-pink-500/10",
+      ring: "group-hover:ring-fuchsia-500/40",
+      iconBg: "bg-fuchsia-500/10 text-fuchsia-600 group-hover:bg-fuchsia-500 group-hover:text-white",
+      hint: "Active companies without auth code",
+    },
+    {
       title: "Default Address",
       value: defaultAddress,
       icon: Home,
