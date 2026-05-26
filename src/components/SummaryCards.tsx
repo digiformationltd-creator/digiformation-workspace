@@ -31,7 +31,6 @@ export function SummaryCards({ companies }: Props) {
   const ad01PendingAuth = owned.filter((c) => !c.ad01_filing_date && isAuthMissing(c)).length;
   const ad01PendingDefault = owned.filter((c) => !c.ad01_filing_date && !isAuthMissing(c) && c.address_status === "Default Address").length;
   const ad01Pending = ad01PendingAuth + ad01PendingDefault;
-  const ad01Filed = owned.filter((c) => !!c.ad01_filing_date).length;
 
   const cards = [
     {
