@@ -26,11 +26,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useUserRole } from "@/hooks/useUserRole";
 
-const mainItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard, search: undefined },
+const dashboardItem = { title: "Dashboard", url: "/", icon: LayoutDashboard, search: undefined };
+const adminOnlyItems = [
   { title: "Import CSV", url: "/import", icon: Upload, search: undefined },
-  { title: "Settings", url: "/settings", icon: Settings, search: undefined },
 ];
 
 // Colors must match the SummaryCards on the dashboard so the icon language
