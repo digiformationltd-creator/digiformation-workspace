@@ -94,6 +94,13 @@ export function CompaniesTable({
     return new Date(date).toLocaleDateString("en-GB");
   };
 
+  const isAuthMissing = (c: Company) =>
+    !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
+  const needsAd01Filing = (c: Company) =>
+    c.status === "Active" && !c.ad01_filing_date && (isAuthMissing(c) || c.address_status === "Default Address");
+  const isAd01Processing = (c: Company) =>
+    c.status === "Active" && !!c.ad01_filing_date && (isAuthMissing(c) || c.address_status === "Default Address");
+
   return (
     <TooltipProvider delayDuration={200}>
       {/* Mobile card view */}
