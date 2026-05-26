@@ -192,9 +192,9 @@ export function CSVImport({ onSuccess }: Props) {
           Drag and drop your CSV file here, or click to browse
         </p>
         <p className="text-xs text-muted-foreground">
-          Expected columns: Company Name, Company Number, Incorporation Date,
-          Director Name, Company Address, SIC Codes, Auth Code, UTR Number,
-          Status, Address Status, Tags
+          Expected columns: Current Company Name, Company Number, Old Company Name,
+          Current Address, Old Address, Current Director (name), Old Director,
+          Incorporation Date, SIC Codes, Auth Code, UTR Number, Status, Tags
         </p>
         <input
           type="file"
