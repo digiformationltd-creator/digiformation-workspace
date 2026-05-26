@@ -1,6 +1,11 @@
 export type CompanyStatus = 'Active' | 'Available Company' | 'Sold/Transferred' | 'Strike Off Notice' | 'Dissolved';
 export type AddressStatus = 'Default Address' | 'Changed/Updated' | 'Active';
 
+export type LifecycleStatus = 'active' | 'dissolved';
+export type AvailabilityStatus = 'available' | 'sold';
+export type AuthCodeStatus = 'available' | 'missing';
+export type Ad01Status = 'pending' | 'processing' | 'completed';
+
 export interface Director {
   id: string;
   name: string;
@@ -23,6 +28,11 @@ export interface Company {
   utr_number: string | null;
   status: CompanyStatus;
   address_status: AddressStatus;
+  lifecycle_status: LifecycleStatus;
+  availability_status: AvailabilityStatus;
+  strike_off_status: boolean;
+  auth_code_status: AuthCodeStatus;
+  ad01_status: Ad01Status;
   ad01_filing_date: string | null;
   director_id: string | null;
   tags: string[] | null;
