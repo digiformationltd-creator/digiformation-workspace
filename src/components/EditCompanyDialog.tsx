@@ -99,19 +99,32 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     e.preventDefault();
     setSubmitting(true);
     try {
-      // Ready to Sell override — sets every field to clean/sale-ready values
-      const effLifecycle: LifecycleStatus = markReadyToSell ? "active" : form.lifecycle_status;
-      const effAvailability: AvailabilityStatus = markReadyToSell ? "available" : form.availability_status;
-      const effAuthStatus: AuthCodeStatus = markReadyToSell ? "available" : form.auth_code_status;
-      const effAddressStatus: AddressStatus = markReadyToSell
-        ? "Changed/Updated"
-        : form.address_status;
-      const effAd01Status: Ad01Status = markReadyToSell ? "completed" : form.ad01_status;
+      // Primary Category override (takes precedence when chosen)
+      const catOverride = primaryCategory !== "custom" ? applyCategory(primaryCategory) : null;
+
+      // Ready to Sell checkbox override — sets every field to clean/sale-ready values
+      const effLifecycle: LifecycleStatus = catOverride
+        ? catOverride.lifecycle_status
+        : markReadyToSell ? "active" : form.lifecycle_status;
+      const effAvailability: AvailabilityStatus = catOverride
+        ? catOverride.availability_status
+        : markReadyToSell ? "available" : form.availability_status;
+      const effAuthStatus: AuthCodeStatus = catOverride
+        ? catOverride.auth_code_status
+        : markReadyToSell ? "available" : form.auth_code_status;
+      const effAddressStatus: AddressStatus = catOverride
+        ? catOverride.address_status
+        : markReadyToSell ? "Changed/Updated" : form.address_status;
+      const effAd01Status: Ad01Status = catOverride
+        ? catOverride.ad01_status
+        : markReadyToSell ? "completed" : form.ad01_status;
 
       // Auto-clear strike-off when AD01 is completed and address is no longer default
       const autoClearStrikeOff =
         effAd01Status === "completed" && effAddressStatus !== "Default Address";
-      const effectiveStrikeOff = markReadyToSell
+      const effectiveStrikeOff = catOverride
+        ? catOverride.strike_off_status
+        : markReadyToSell
         ? false
         : autoClearStrikeOff
         ? false
