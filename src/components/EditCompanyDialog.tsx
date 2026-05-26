@@ -149,6 +149,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
         company_number: form.company_number.toUpperCase(),
         previous_name: form.previous_name || null,
         previous_address: form.previous_address || null,
+        previous_director_name: form.previous_director_name || null,
         incorporation_date: form.incorporation_date || null,
         company_address: form.company_address || null,
         auth_code: form.auth_code || null,
