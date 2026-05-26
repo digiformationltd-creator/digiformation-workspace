@@ -142,7 +142,7 @@ export function CompanyCard({
               <span className="text-xs font-mono text-muted-foreground">
                 #{company.company_number}
               </span>
-              {originalDirector && (
+              {displayedDirector && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span
@@ -150,13 +150,13 @@ export function CompanyCard({
                         directorChanged ? "underline decoration-dotted underline-offset-2 cursor-help" : ""
                       }`}
                     >
-                      · {originalDirector}
+                      · {displayedDirector}
                     </span>
                   </TooltipTrigger>
                   {directorChanged && (
                     <TooltipContent className="text-xs max-w-[280px]">
                       <div>
-                        <strong>Current director:</strong> {currentDirector}
+                        <strong>Previously:</strong> {ourDirector}
                       </div>
                     </TooltipContent>
                   )}
