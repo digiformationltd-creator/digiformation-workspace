@@ -449,6 +449,7 @@ function DashboardPage() {
               directors={directors}
               onMarkSold={markAsSold}
               onMarkAd01={markAd01Filed}
+              onMarkAd01Complete={markAd01Complete}
               onUpdate={updateCompany}
             />
           </div>
