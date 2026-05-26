@@ -16,6 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
+import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
 import type { Company } from "@/types";
 
 interface Props {
