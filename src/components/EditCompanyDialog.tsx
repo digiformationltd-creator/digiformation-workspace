@@ -239,21 +239,24 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
             </div>
           </label>
 
-          <div className="space-y-1.5">
-            <Label>Company Name (our records / old name)</Label>
-            <Input
-              value={form.company_name}
-              onChange={(e) => set("company_name", e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>New Name (if renamed on Companies House)</Label>
-            <Input
-              value={form.previous_name}
-              onChange={(e) => set("previous_name", e.target.value)}
-              placeholder="Leave empty if not renamed"
-            />
+          <div className="rounded-lg border p-3 space-y-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
+            <div className="space-y-1.5">
+              <Label>Old Company Name</Label>
+              <Input
+                value={form.previous_name}
+                onChange={(e) => set("previous_name", e.target.value)}
+                placeholder="Leave empty if never renamed"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Current Company Name</Label>
+              <Input
+                value={form.company_name}
+                onChange={(e) => set("company_name", e.target.value)}
+                required
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
