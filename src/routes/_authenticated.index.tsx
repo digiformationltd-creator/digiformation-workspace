@@ -102,7 +102,14 @@ function DashboardPage() {
     if (quickFilter === "active") {
       filtered = filtered.filter((c) => c.status === "Active");
     } else if (quickFilter === "ad01") {
-      filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && !c.ad01_filing_date && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address"));
+      filtered = filtered.filter((c) => {
+        if (!isOwnedCompany(c)) return false;
+        if (c.ad01_filing_date) return false;
+        if (Array.isArray(c.tags) && c.tags.includes("ad01-complete")) return false;
+        const authMissing = !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
+        const defaultAddr = c.address_status === "Default Address";
+        return defaultAddr || (c.status === "Active" && authMissing);
+      });
     } else if (quickFilter === "ad01-processing") {
       filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && !!c.ad01_filing_date && !(Array.isArray(c.tags) && c.tags.includes("ad01-complete")) && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address"));
     } else if (quickFilter === "ad01-filed") {
