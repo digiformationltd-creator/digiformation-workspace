@@ -272,7 +272,7 @@ function DashboardPage() {
         ? catOverride.ad01_status
         : markReadyToSell
         ? "completed"
-        : (((formData.get("ad01_status") as string) || "pending") as "pending" | "processing" | "completed");
+        : (((formData.get("ad01_status") as string) || "pending") as Ad01Status);
 
       // Legacy single-enum "status" — kept in sync for backward compatibility
       const legacyStatus: Company["status"] =
