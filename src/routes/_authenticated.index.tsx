@@ -84,7 +84,9 @@ function DashboardPage() {
     } else if (quickFilter === "ad01") {
       filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && !c.ad01_filing_date && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address"));
     } else if (quickFilter === "ad01-processing") {
-      filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && !!c.ad01_filing_date && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address"));
+      filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && !!c.ad01_filing_date && !(Array.isArray(c.tags) && c.tags.includes("ad01-complete")) && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address"));
+    } else if (quickFilter === "ad01-filed") {
+      filtered = filtered.filter((c) => isOwnedCompany(c) && Array.isArray(c.tags) && c.tags.includes("ad01-complete"));
     } else if (quickFilter === "pending-sale") {
       filtered = filtered.filter((c) => c.status === "Available Company");
     } else if (quickFilter === "sold") {
