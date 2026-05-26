@@ -332,6 +332,7 @@ function DashboardPage() {
                         <SelectItem value="Available Company">Available Company</SelectItem>
                         <SelectItem value="Sold/Transferred">Sold/Transferred</SelectItem>
                         <SelectItem value="Strike Off Notice">Strike Off Notice</SelectItem>
+                        <SelectItem value="Dissolved">Dissolved</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
