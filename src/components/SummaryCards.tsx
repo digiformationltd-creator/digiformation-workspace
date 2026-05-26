@@ -98,7 +98,17 @@ export function SummaryCards({ companies }: Props) {
       accent: "from-orange-500/20 to-red-500/10",
       ring: "group-hover:ring-orange-500/40",
       iconBg: "bg-orange-500/10 text-orange-600 group-hover:bg-orange-500 group-hover:text-white",
-      hint: `${ad01PendingAuth} no auth + ${ad01PendingDefault} default addr = ${ad01Pending}`,
+      hint: `${ad01PendingAuth} auth + ${ad01PendingDefault} addr = ${ad01Pending}`,
+    },
+    {
+      title: "AD01 Processing",
+      value: ad01Processing,
+      icon: Clock,
+      filter: "ad01-processing",
+      accent: "from-blue-500/20 to-cyan-500/10",
+      ring: "group-hover:ring-blue-500/40",
+      iconBg: "bg-blue-500/10 text-blue-600 group-hover:bg-blue-500 group-hover:text-white",
+      hint: "Filed — awaiting new auth/address",
     },
     {
       title: "Auth Missing",
