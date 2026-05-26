@@ -2,7 +2,6 @@ import {
   FileText,
   Truck,
   MapPin,
-  ExternalLink,
   CheckCircle2,
   Clock,
   Building2,
