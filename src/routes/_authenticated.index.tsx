@@ -216,8 +216,26 @@ function DashboardPage() {
       const originalAddress = ((formData.get("previous_address") as string) || "").trim();
       const companyNumber = ((formData.get("company_number") as string) || "").trim();
 
+      const lifecycle = ((formData.get("lifecycle_status") as string) || "active") as "active" | "dissolved";
+      const availability = ((formData.get("availability_status") as string) || "available") as "available" | "sold";
+      const strikeOff = (formData.get("strike_off_status") as string) === "yes";
+      const authStatus = ((formData.get("auth_code_status") as string) || "missing") as "available" | "missing";
+      const addrStatus = (formData.get("address_status") as Company["address_status"]) || "Default Address";
+      const ad01Status = ((formData.get("ad01_status") as string) || "pending") as "pending" | "processing" | "completed";
+
+      // Legacy single-enum "status" — kept in sync for backward compatibility
+      const legacyStatus: Company["status"] =
+        lifecycle === "dissolved"
+          ? "Dissolved"
+          : strikeOff
+          ? "Strike Off Notice"
+          : availability === "sold"
+          ? "Sold/Transferred"
+          : availability === "available"
+          ? "Available Company"
+          : "Active";
+
       await createCompany({
-        // Current/New name is primary; fall back to original if only old is filled
         company_name: currentName || originalName || "(Unnamed)",
         company_number: (companyNumber || `TEMP-${Date.now().toString(36).toUpperCase()}`),
         incorporation_date: (formData.get("incorporation_date") as string) || null,
@@ -231,15 +249,13 @@ function DashboardPage() {
         auth_code: (formData.get("auth_code") as string) || null,
         utr_number: (formData.get("utr_number") as string) || null,
         director_id: (formData.get("director_id") as string) || null,
-        status: ((): Company["status"] => {
-          const lifecycle = (formData.get("lifecycle_status") as string) || "Active";
-          const availability = (formData.get("availability_status") as string) || "Available";
-          if (lifecycle === "Dissolved") return "Dissolved";
-          if (availability === "Sold Out") return "Sold/Transferred";
-          if (availability === "Available") return "Available Company";
-          return "Active";
-        })(),
-        address_status: (formData.get("address_status") as Company["address_status"]) || "Default Address",
+        status: legacyStatus,
+        address_status: addrStatus,
+        lifecycle_status: lifecycle,
+        availability_status: availability,
+        strike_off_status: strikeOff,
+        auth_code_status: authStatus,
+        ad01_status: ad01Status,
         ch_accounts_next_due: (formData.get("ch_accounts_next_due") as string) || null,
         ch_confirmation_statement_next_due: (formData.get("ch_confirmation_statement_next_due") as string) || null,
       });
