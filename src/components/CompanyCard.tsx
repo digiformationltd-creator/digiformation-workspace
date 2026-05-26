@@ -208,25 +208,22 @@ export function CompanyCard({
           <StatusRow
             icon={FileText}
             label="AD01 Filing"
-            done={ad01Done}
-            doneLabel="Filed"
-            pendingLabel="Pending"
-            actionLabel="Mark Filed"
-            onAction={() => onMarkAd01(company.id)}
-            meta={ad01Done ? fmt(company.ad01_filing_date) : undefined}
-            hideAction={!isAdmin}
-          />
-          <StatusRow
-            icon={MapPin}
-            label="AD01 Complete"
-            done={addressChanged}
+            done={ad01State === "complete"}
             doneLabel="Complete"
-            pendingLabel="Processing"
-            actionLabel="AD01 Complete"
-            onAction={() => onMarkAd01(company.id)}
-            hideAction={!isAdmin}
-            actionVariant="success"
+            pendingLabel={ad01State === "processing" ? "Processing" : "Pending"}
+            actionLabel={ad01State === "pending" ? "Processing" : "AD01 Complete"}
+            onAction={() => {
+              if (ad01State === "pending") {
+                onMarkAd01(company.id);
+              } else if (ad01State === "processing" && onMarkAd01Complete) {
+                onMarkAd01Complete(company.id);
+              }
+            }}
+            meta={ad01Filed ? fmt(company.ad01_filing_date) : undefined}
+            hideAction={!isAdmin || ad01State === "complete"}
+            actionVariant={ad01State === "processing" ? "success" : "default"}
           />
+
           <StatusRow
             icon={Truck}
             label="Sale / Transfer"
