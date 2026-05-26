@@ -4,6 +4,7 @@ import {
   ChevronUp,
   ExternalLink,
   FileCheck,
+  CheckCircle2,
   Truck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
