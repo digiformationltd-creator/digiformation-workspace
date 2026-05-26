@@ -57,6 +57,7 @@ function DashboardPage() {
     createDirector,
     refresh,
   } = useCompanies();
+  const { isAdmin } = useUserRole();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDirector, setSelectedDirector] = useState("all");
