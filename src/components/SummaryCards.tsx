@@ -21,36 +21,26 @@ interface Props {
 
 export function SummaryCards({ companies }: Props) {
   const owned = companies.filter(isOwnedCompany);
-  // Total = total companies currently in the system (grows when a new one is added)
   const totalCompanies = companies.length;
-  // Dissolved companies (paired with Active)
-  const dissolved = companies.filter((c) => c.status === "Dissolved").length;
-  // Active = total minus dissolved (auto-decrements as companies are dissolved)
-  const activeCompanies = totalCompanies - dissolved;
-  // Sold = ONLY companies explicitly marked Sold/Transferred (no auto-derivation)
-  const sold = companies.filter((c) => c.status === "Sold/Transferred").length;
-  // Available = total minus sold
-  const available = totalCompanies - sold;
-  // Sold companies are excluded from Strike Off / Default Address / Dissolved buckets —
-  // once a company is sold from our end it's no longer in our active record.
-  const notSold = (c: Company) => c.status !== "Sold/Transferred";
-  const strikeOff = companies.filter((c) => c.status === "Strike Off Notice" && notSold(c)).length;
-  const defaultAddress = companies.filter((c) => c.address_status === "Default Address" && notSold(c)).length;
-  const isAuthMissing = (c: typeof owned[number]) => !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
-  const authMissing = owned.filter((c) => c.status === "Active" && isAuthMissing(c)).length;
-  // AD01 Pending = active owned companies that need AD01 filing (auth missing OR default address) and have NOT been filed yet
-  const needsAd01 = (c: typeof owned[number]) =>
-    c.status === "Active" && (isAuthMissing(c) || c.address_status === "Default Address");
-  const isAd01Complete = (c: typeof owned[number]) => Array.isArray(c.tags) && c.tags.includes("ad01-complete");
-  const isAd01Processing = (c: typeof owned[number]) => Array.isArray(c.tags) && c.tags.includes("ad01-processing");
-  const ad01PendingAuth = owned.filter((c) => c.status === "Active" && isAuthMissing(c) && !isAd01Processing(c) && !isAd01Complete(c)).length;
-  const ad01PendingDefault = owned.filter((c) => c.address_status === "Default Address" && !isAd01Processing(c) && !isAd01Complete(c)).length;
-  // Additive total: Auth Missing + Default Address (as requested, even if overlapping)
+
+  // Explicit status fields drive every counter — no derivation, no overlap math.
+  const dissolved = companies.filter((c) => c.lifecycle_status === "dissolved").length;
+  const activeCompanies = companies.filter((c) => c.lifecycle_status === "active").length;
+  const sold = companies.filter((c) => c.availability_status === "sold").length;
+  const available = companies.filter((c) => c.availability_status === "available").length;
+  const strikeOff = companies.filter((c) => c.strike_off_status === true).length;
+  const authMissing = companies.filter((c) => c.auth_code_status === "missing").length;
+  const defaultAddress = companies.filter((c) => c.address_status === "Default Address").length;
+
+  // AD01 Pending = (Auth Missing) + (Default Address)  [additive, per spec]
+  // Only count companies whose ad01_status is still "pending" — once a company moves
+  // to processing or completed, it leaves both pools.
+  const ad01PendingAuth = companies.filter((c) => c.ad01_status === "pending" && c.auth_code_status === "missing").length;
+  const ad01PendingDefault = companies.filter((c) => c.ad01_status === "pending" && c.address_status === "Default Address").length;
   const ad01Pending = ad01PendingAuth + ad01PendingDefault;
-  // AD01 Processing = explicitly tagged ad01-processing (not yet completed)
-  const ad01Processing = owned.filter((c) => isAd01Processing(c) && !isAd01Complete(c)).length;
-  // AD01 Complete = tagged ad01-complete
-  const ad01Filed = owned.filter((c) => isAd01Complete(c)).length;
+  const ad01Processing = companies.filter((c) => c.ad01_status === "processing").length;
+  const ad01Filed = companies.filter((c) => c.ad01_status === "completed").length;
+  void owned;
 
   const cards = [
     {
