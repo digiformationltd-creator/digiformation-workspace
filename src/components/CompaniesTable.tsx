@@ -468,64 +468,6 @@ export function CompaniesTable({
                           View on Companies House
                         </Button>
                       )}
-                      {isAdmin && needsAd01Filing(company) && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-6 text-[10px] px-2 gap-1 border-orange-500/40 text-orange-600 hover:bg-orange-500/10"
-                              onClick={() => onMarkAd01(company.id)}
-                            >
-                              <FileCheck className="h-3 w-3" />
-                              AD01
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Mark AD01 as filed</TooltipContent>
-                        </Tooltip>
-                      )}
-                      {isAdmin && isAd01Processing(company) && (
-                        <>
-                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
-                            AD01 Filed {formatDate(company.ad01_filing_date)}
-                          </Badge>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-6 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
-                                onClick={() => onMarkAd01Complete(company.id)}
-                              >
-                                <CheckCircle2 className="h-3 w-3" />
-                                Complete
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Mark AD01 as complete</TooltipContent>
-                          </Tooltip>
-                        </>
-                      )}
-                      {isAdmin && isAd01Complete(company) && (
-                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
-                          AD01 Complete
-                        </Badge>
-                      )}
-                      {isAdmin && company.status === "Active" && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-6 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
-                              onClick={() => onMarkSold(company.id)}
-                            >
-                              <Truck className="h-3 w-3" />
-                              Sold
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Mark as Sold/Transferred</TooltipContent>
-                        </Tooltip>
-                      )}
                       {isAdmin && (
                         <EditCompanyDialog
                           company={company}
@@ -537,22 +479,18 @@ export function CompaniesTable({
                       {isAdmin && onDelete && (
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-6 text-[10px] px-2 gap-1 border-destructive/40 text-destructive hover:bg-destructive/10"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Delete company</TooltipContent>
-                            </Tooltip>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 text-[10px] px-2 gap-1 border-destructive/40 text-destructive hover:bg-destructive/10"
+                              title="Delete company"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete this company?</AlertDialogTitle>
+                              <AlertDialogTitle>Are you sure you want to delete this company?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 This will permanently remove <strong>{company.company_name}</strong> ({company.company_number}) and all related records. This action cannot be undone.
                               </AlertDialogDescription>
@@ -563,7 +501,7 @@ export function CompaniesTable({
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 onClick={() => onDelete(company.id)}
                               >
-                                Delete
+                                Yes, Delete
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
