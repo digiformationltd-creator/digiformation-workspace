@@ -348,29 +348,57 @@ function DashboardPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor="lifecycle_status">Company Status</Label>
-                    <Select name="lifecycle_status" defaultValue="Active">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                    <Select name="lifecycle_status" defaultValue="active">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Dissolved">Dissolved</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="dissolved">Dissolved</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="availability_status">Availability</Label>
-                    <Select name="availability_status" defaultValue="Available">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                    <Select name="availability_status" defaultValue="available">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Available">Available</SelectItem>
-                        <SelectItem value="Sold Out">Sold Out</SelectItem>
+                        <SelectItem value="available">Available</SelectItem>
+                        <SelectItem value="sold">Sold Out</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="strike_off_status">Strike Off Status</Label>
+                    <Select name="strike_off_status" defaultValue="no">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="no">No Strike Off</SelectItem>
+                        <SelectItem value="yes">Strike Off Notice</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="auth_code_status">Authentication Code</Label>
+                    <Select name="auth_code_status" defaultValue="missing">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="available">Available</SelectItem>
+                        <SelectItem value="missing">Missing</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ad01_status">AD01 Status</Label>
+                    <Select name="ad01_status" defaultValue="pending">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="processing">Processing</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
+
 
                 <div className="rounded-lg border p-3 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Registered Address</p>
