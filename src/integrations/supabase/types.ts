@@ -49,9 +49,12 @@ export type Database = {
       companies: {
         Row: {
           ad01_filing_date: string | null
+          ad01_status: string
           address_match_status: string | null
           address_status: Database["public"]["Enums"]["address_status"] | null
           auth_code: string | null
+          auth_code_status: string
+          availability_status: string
           ch_accounts_next_due: string | null
           ch_address: string | null
           ch_company_profile: Json | null
@@ -68,20 +71,25 @@ export type Database = {
           id: string
           incorporation_date: string | null
           last_ch_sync: string | null
+          lifecycle_status: string
           previous_address: string | null
           previous_director_name: string | null
           previous_name: string | null
           sic_codes: string[] | null
           status: Database["public"]["Enums"]["company_status"] | null
+          strike_off_status: boolean
           tags: string[] | null
           updated_at: string | null
           utr_number: string | null
         }
         Insert: {
           ad01_filing_date?: string | null
+          ad01_status?: string
           address_match_status?: string | null
           address_status?: Database["public"]["Enums"]["address_status"] | null
           auth_code?: string | null
+          auth_code_status?: string
+          availability_status?: string
           ch_accounts_next_due?: string | null
           ch_address?: string | null
           ch_company_profile?: Json | null
@@ -98,20 +106,25 @@ export type Database = {
           id?: string
           incorporation_date?: string | null
           last_ch_sync?: string | null
+          lifecycle_status?: string
           previous_address?: string | null
           previous_director_name?: string | null
           previous_name?: string | null
           sic_codes?: string[] | null
           status?: Database["public"]["Enums"]["company_status"] | null
+          strike_off_status?: boolean
           tags?: string[] | null
           updated_at?: string | null
           utr_number?: string | null
         }
         Update: {
           ad01_filing_date?: string | null
+          ad01_status?: string
           address_match_status?: string | null
           address_status?: Database["public"]["Enums"]["address_status"] | null
           auth_code?: string | null
+          auth_code_status?: string
+          availability_status?: string
           ch_accounts_next_due?: string | null
           ch_address?: string | null
           ch_company_profile?: Json | null
@@ -128,11 +141,13 @@ export type Database = {
           id?: string
           incorporation_date?: string | null
           last_ch_sync?: string | null
+          lifecycle_status?: string
           previous_address?: string | null
           previous_director_name?: string | null
           previous_name?: string | null
           sic_codes?: string[] | null
           status?: Database["public"]["Enums"]["company_status"] | null
+          strike_off_status?: boolean
           tags?: string[] | null
           updated_at?: string | null
           utr_number?: string | null
