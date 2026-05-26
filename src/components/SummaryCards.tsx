@@ -37,9 +37,10 @@ export function SummaryCards({ companies }: Props) {
   const needsAd01 = (c: typeof owned[number]) =>
     c.status === "Active" && (isAuthMissing(c) || c.address_status === "Default Address");
   const isAd01Complete = (c: typeof owned[number]) => Array.isArray(c.tags) && c.tags.includes("ad01-complete");
-  const ad01PendingAuth = owned.filter((c) => needsAd01(c) && isAuthMissing(c) && !c.ad01_filing_date).length;
-  const ad01PendingDefault = owned.filter((c) => needsAd01(c) && c.address_status === "Default Address" && !c.ad01_filing_date).length;
-  const ad01Pending = owned.filter((c) => needsAd01(c) && !c.ad01_filing_date).length;
+  const ad01PendingAuth = owned.filter((c) => c.status === "Active" && isAuthMissing(c) && !c.ad01_filing_date).length;
+  const ad01PendingDefault = owned.filter((c) => c.status === "Active" && c.address_status === "Default Address" && !c.ad01_filing_date).length;
+  // Additive total: Auth Missing + Default Address (as requested, even if overlapping)
+  const ad01Pending = ad01PendingAuth + ad01PendingDefault;
   // AD01 Processing = filed but still pending new auth code / address update (and not yet completed)
   const ad01Processing = owned.filter((c) => needsAd01(c) && !!c.ad01_filing_date && !isAd01Complete(c)).length;
   // AD01 Filed = completed (tagged ad01-complete)
