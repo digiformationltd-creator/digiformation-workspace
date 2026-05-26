@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { Plus, Loader2, RefreshCw, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -71,6 +71,24 @@ function DashboardPage() {
 
 
   const { filter: quickFilter } = Route.useSearch();
+  const navigate = useNavigate();
+
+  const clearQuickFilter = () => {
+    if (quickFilter) navigate({ to: "/", search: {} });
+  };
+
+  const handleStatusChange = (v: string) => {
+    clearQuickFilter();
+    setActiveStatus(v);
+  };
+  const handleAddressChange = (v: string) => {
+    clearQuickFilter();
+    setAddressFilter(v);
+  };
+  const handleAuthChange = (v: string) => {
+    clearQuickFilter();
+    setAuthFilter(v);
+  };
 
   const directorMap = useMemo(() => {
     const m = new Map<string, string>();
@@ -492,11 +510,11 @@ function DashboardPage() {
             onDirectorChange={setSelectedDirector}
             directors={directors}
             activeStatus={activeStatus}
-            onStatusChange={setActiveStatus}
+            onStatusChange={handleStatusChange}
             addressFilter={addressFilter}
-            onAddressFilterChange={setAddressFilter}
+            onAddressFilterChange={handleAddressChange}
             authFilter={authFilter}
-            onAuthFilterChange={setAuthFilter}
+            onAuthFilterChange={handleAuthChange}
           />
         </div>
 
