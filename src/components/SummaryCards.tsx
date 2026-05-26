@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Company } from "@/types";
-import { isOwnedCompany, isSoldCompany } from "@/lib/ownership";
+import { isOwnedCompany } from "@/lib/ownership";
 
 interface Props {
   companies: Company[];
