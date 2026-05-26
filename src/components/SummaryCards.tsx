@@ -24,7 +24,7 @@ export function SummaryCards({ companies }: Props) {
   // Total = total companies currently in the system (grows when a new one is added)
   const totalCompanies = companies.length;
   // Active = every company that is NOT dissolved (matches user's portfolio definition)
-  const activeCompanies = companies.filter((c) => c.status !== "Dissolved").length;
+  const activeCompanies = totalCompanies;
   // Sold = ONLY companies explicitly marked Sold/Transferred (no auto-derivation)
   const sold = companies.filter((c) => c.status === "Sold/Transferred").length;
   // Available = total minus sold
