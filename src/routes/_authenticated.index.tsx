@@ -218,7 +218,7 @@ function DashboardPage() {
       await createCompany({
         // Current/New name is primary; fall back to original if only old is filled
         company_name: currentName || originalName || "(Unnamed)",
-        company_number: companyNumber.toUpperCase(),
+        company_number: (companyNumber || `TEMP-${Date.now().toString(36).toUpperCase()}`),
         incorporation_date: (formData.get("incorporation_date") as string) || null,
         company_address: currentAddress || originalAddress || null,
         previous_name: originalName || null,
