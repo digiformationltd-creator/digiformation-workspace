@@ -92,20 +92,33 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Ready to Sell override — sets every field to clean/sale-ready values
+      const effLifecycle: LifecycleStatus = markReadyToSell ? "active" : form.lifecycle_status;
+      const effAvailability: AvailabilityStatus = markReadyToSell ? "available" : form.availability_status;
+      const effAuthStatus: AuthCodeStatus = markReadyToSell ? "available" : form.auth_code_status;
+      const effAddressStatus: AddressStatus = markReadyToSell
+        ? "Changed/Updated"
+        : form.address_status;
+      const effAd01Status: Ad01Status = markReadyToSell ? "completed" : form.ad01_status;
+
       // Auto-clear strike-off when AD01 is completed and address is no longer default
       const autoClearStrikeOff =
-        form.ad01_status === "completed" && form.address_status !== "Default Address";
-      const effectiveStrikeOff = autoClearStrikeOff ? false : form.strike_off_status;
+        effAd01Status === "completed" && effAddressStatus !== "Default Address";
+      const effectiveStrikeOff = markReadyToSell
+        ? false
+        : autoClearStrikeOff
+        ? false
+        : form.strike_off_status;
 
       // Keep legacy `status` in sync with explicit fields
       const legacyStatus: CompanyStatus =
-        form.lifecycle_status === "dissolved"
+        effLifecycle === "dissolved"
           ? "Dissolved"
           : effectiveStrikeOff
           ? "Strike Off Notice"
-          : form.availability_status === "sold"
+          : effAvailability === "sold"
           ? "Sold/Transferred"
-          : form.availability_status === "available"
+          : effAvailability === "available"
           ? "Available Company"
           : "Active";
 
@@ -123,14 +136,15 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
           : null,
         director_id: form.director_id === "none" ? null : form.director_id,
         status: legacyStatus,
-        address_status: form.address_status,
-        lifecycle_status: form.lifecycle_status,
-        availability_status: form.availability_status,
+        address_status: effAddressStatus,
+        lifecycle_status: effLifecycle,
+        availability_status: effAvailability,
         strike_off_status: effectiveStrikeOff,
-        auth_code_status: form.auth_code_status,
-        ad01_status: form.ad01_status,
+        auth_code_status: effAuthStatus,
+        ad01_status: effAd01Status,
         ad01_filing_date: form.ad01_filing_date || null,
       });
+
 
       setOpen(false);
     } finally {
