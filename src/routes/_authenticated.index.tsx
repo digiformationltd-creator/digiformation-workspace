@@ -367,9 +367,16 @@ function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="ad01_filing_date">AD01 Filing Date</Label>
-                  <Input id="ad01_filing_date" name="ad01_filing_date" type="date" />
+                <div className="rounded-lg border p-3 space-y-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">AD01 Filing</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="ad01_filing_date">AD01 Filing Date</Label>
+                    <Input id="ad01_filing_date" name="ad01_filing_date" type="date" />
+                  </div>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" name="ad01_complete" className="h-4 w-4 rounded border-input" />
+                    <span>Mark AD01 as Complete</span>
+                  </label>
                 </div>
 
                 <div className="rounded-lg border p-3 space-y-3">
