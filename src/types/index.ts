@@ -4,7 +4,7 @@ export type AddressStatus = 'Default Address' | 'Changed/Updated' | 'Active';
 export type LifecycleStatus = 'active' | 'dissolved';
 export type AvailabilityStatus = 'available' | 'sold';
 export type AuthCodeStatus = 'available' | 'missing';
-export type Ad01Status = 'pending' | 'processing' | 'completed';
+export type Ad01Status = 'pending' | 'processing' | 'completed' | 'not_required';
 
 export interface Director {
   id: string;
