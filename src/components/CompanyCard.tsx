@@ -1,7 +1,7 @@
 import {
   FileText,
   Truck,
-  MapPin,
+  
   CheckCircle2,
   Clock,
   Building2,
@@ -34,6 +34,7 @@ interface Props {
   company: Company;
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
+  onMarkAd01Complete?: (id: string) => void;
   onDelete?: (id: string) => void;
   isAdmin?: boolean;
 }
@@ -119,14 +120,21 @@ export function CompanyCard({
   company,
   onMarkSold,
   onMarkAd01,
+  onMarkAd01Complete,
   onDelete,
   isAdmin = true,
 }: Props) {
-  const ad01Done = !!company.ad01_filing_date;
+  const ad01Filed = !!company.ad01_filing_date;
+  const ad01Complete = Array.isArray(company.tags) && company.tags.includes("ad01-complete");
   const addressChanged = company.address_status === "Changed/Updated";
   const sold = company.status === "Sold/Transferred";
 
-  const allDone = ad01Done && addressChanged && sold;
+  // AD01 pipeline state: pending → processing → complete
+  const ad01State: "pending" | "processing" | "complete" =
+    ad01Complete ? "complete" : ad01Filed ? "processing" : "pending";
+
+  const allDone = ad01Complete && addressChanged && sold;
+
 
   // For sold/transferred companies, `previous_director_name` holds the NEW current director
   // (the buyer's director). `director.name` is our original (now-resigned) director.
@@ -200,25 +208,22 @@ export function CompanyCard({
           <StatusRow
             icon={FileText}
             label="AD01 Filing"
-            done={ad01Done}
-            doneLabel="Filed"
-            pendingLabel="Pending"
-            actionLabel="Mark Filed"
-            onAction={() => onMarkAd01(company.id)}
-            meta={ad01Done ? fmt(company.ad01_filing_date) : undefined}
-            hideAction={!isAdmin}
-          />
-          <StatusRow
-            icon={MapPin}
-            label="AD01 Complete"
-            done={addressChanged}
+            done={ad01State === "complete"}
             doneLabel="Complete"
-            pendingLabel="Processing"
-            actionLabel="AD01 Complete"
-            onAction={() => onMarkAd01(company.id)}
-            hideAction={!isAdmin}
-            actionVariant="success"
+            pendingLabel={ad01State === "processing" ? "Processing" : "Pending"}
+            actionLabel={ad01State === "pending" ? "Processing" : "AD01 Complete"}
+            onAction={() => {
+              if (ad01State === "pending") {
+                onMarkAd01(company.id);
+              } else if (ad01State === "processing" && onMarkAd01Complete) {
+                onMarkAd01Complete(company.id);
+              }
+            }}
+            meta={ad01Filed ? fmt(company.ad01_filing_date) : undefined}
+            hideAction={!isAdmin || ad01State === "complete"}
+            actionVariant={ad01State === "processing" ? "success" : "default"}
           />
+
           <StatusRow
             icon={Truck}
             label="Sale / Transfer"

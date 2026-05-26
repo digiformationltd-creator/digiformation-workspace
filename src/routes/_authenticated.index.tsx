@@ -545,6 +545,7 @@ function DashboardPage() {
                 company={c}
                 onMarkSold={markAsSold}
                 onMarkAd01={markAd01Filed}
+                onMarkAd01Complete={markAd01Complete}
                 onDelete={isAdmin ? deleteCompany : undefined}
                 isAdmin={isAdmin}
               />
