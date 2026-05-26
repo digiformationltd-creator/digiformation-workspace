@@ -1,4 +1,4 @@
-import { Search, X } from "lucide-react";
+import { Search, X, SlidersHorizontal, MapPin, KeyRound, Activity } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,49 +25,78 @@ interface Props {
 }
 
 const statusOptions = [
-  "All",
-  "Active",
-  "Available Company",
-  "Sold/Transferred",
-  "Strike Off Notice",
+  { label: "All", value: "all" },
+  { label: "Active", value: "Active" },
+  { label: "Available Company", value: "Available Company" },
+  { label: "Sold/Transferred", value: "Sold/Transferred" },
+  { label: "Strike Off Notice", value: "Strike Off Notice" },
 ];
 
 const addressOptions = [
-  { label: "All Addresses", value: "all" },
+  { label: "All", value: "all" },
   { label: "Address Active", value: "Active" },
   { label: "Default Address", value: "Default Address" },
   { label: "Changed/Updated", value: "Changed/Updated" },
 ];
 
 const authOptions = [
-  { label: "All Auth", value: "all" },
-  { label: "Auth Code Present", value: "has" },
-  { label: "Auth Code Missing", value: "missing" },
+  { label: "All", value: "all" },
+  { label: "Auth Present", value: "has" },
+  { label: "Auth Missing", value: "missing" },
 ];
 
-
-function ChipGroup({
-  options,
-  value,
-  onChange,
-}: {
+interface FilterCardProps {
+  title: string;
+  icon: React.ReactNode;
   options: { label: string; value: string }[];
   value: string;
   onChange: (v: string) => void;
-}) {
+  accentColor: string;
+  activeColor: string;
+}
+
+function FilterCard({ title, icon, options, value, onChange, accentColor, activeColor }: FilterCardProps) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
-      {options.map((opt) => (
-        <Button
-          key={opt.value}
-          variant={value === opt.value ? "default" : "outline"}
-          size="sm"
-          onClick={() => onChange(opt.value)}
-          className="rounded-full text-xs h-7 px-3"
-        >
-          {opt.label}
-        </Button>
-      ))}
+    <div className="relative overflow-hidden rounded-xl border bg-card/80 backdrop-blur-sm p-3.5 shadow-sm hover:shadow-md transition-all duration-300 group">
+      {/* Subtle top accent bar */}
+      <div className={`absolute top-0 left-0 right-0 h-1 ${accentColor} opacity-60`} />
+      {/* Hover glow */}
+      <div className={`absolute -inset-px rounded-xl ${accentColor} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+
+      <div className="relative">
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className={`p-1.5 rounded-lg ${accentColor} bg-opacity-10 text-opacity-80`}>
+            {icon}
+          </div>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {title}
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {options.map((opt) => {
+            const isActive = value === opt.value;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => onChange(opt.value)}
+                className={`
+                  relative px-3 py-1.5 rounded-lg text-[11px] font-medium
+                  transition-all duration-200 ease-out
+                  ${isActive
+                    ? `${activeColor} text-white shadow-md shadow-black/10 scale-[1.02] font-semibold`
+                    : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground hover:shadow-sm"
+                  }
+                `}
+              >
+                {opt.label}
+                {isActive && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-white/40 animate-pulse" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -101,22 +130,23 @@ export function FilterBar({
     authFilter !== "all";
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      {/* Search + Director row */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative flex-1 group">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Search name, number, director, address, UTR, auth code, SIC..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-9"
+            className="pl-10 h-10 rounded-xl border-border/60 bg-card/60 backdrop-blur-sm focus-visible:ring-2 focus-visible:ring-primary/30 transition-all"
           />
         </div>
         <Select value={selectedDirector} onValueChange={onDirectorChange}>
-          <SelectTrigger className="w-full sm:w-[200px]">
+          <SelectTrigger className="w-full sm:w-[200px] h-10 rounded-xl border-border/60 bg-card/60 backdrop-blur-sm">
             <SelectValue placeholder="All Directors" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-xl">
             <SelectItem value="all">All Directors</SelectItem>
             {directors
               .filter((d) => d.is_owner)
@@ -129,58 +159,50 @@ export function FilterBar({
         </Select>
       </div>
 
-      {/* Status chips */}
-      <div className="flex flex-wrap items-center gap-1.5">
-        {statusOptions.map((status) => (
-          <Button
-            key={status}
-            variant={
-              status === activeStatus || (status === "All" && activeStatus === "all")
-                ? "default"
-                : "outline"
-            }
-            size="sm"
-            onClick={() => onStatusChange(status === "All" ? "all" : status)}
-            className="rounded-full text-xs h-7 px-3"
-          >
-            {status}
-          </Button>
-        ))}
-      </div>
-
-      {/* Extra filter groups — desktop friendly, wrap on mobile */}
-      <div className="hidden md:flex flex-col gap-2 pt-1 border-t">
-        <div className="flex flex-wrap items-center gap-4 pt-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Address</span>
-            <ChipGroup options={addressOptions} value={addressFilter} onChange={onAddressFilterChange} />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Auth</span>
-            <ChipGroup options={authOptions} value={authFilter} onChange={onAuthFilterChange} />
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile: stacked compact chip groups */}
-      <div className="md:hidden space-y-2 pt-1 border-t">
-        <div className="pt-2">
-          <ChipGroup options={addressOptions} value={addressFilter} onChange={onAddressFilterChange} />
-        </div>
-        <ChipGroup options={authOptions} value={authFilter} onChange={onAuthFilterChange} />
+      {/* Filter cards grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <FilterCard
+          title="Status"
+          icon={<Activity className="h-3.5 w-3.5" />}
+          options={statusOptions}
+          value={activeStatus}
+          onChange={(v) => onStatusChange(v)}
+          accentColor="bg-indigo-500"
+          activeColor="bg-indigo-500"
+        />
+        <FilterCard
+          title="Address"
+          icon={<MapPin className="h-3.5 w-3.5" />}
+          options={addressOptions}
+          value={addressFilter}
+          onChange={onAddressFilterChange}
+          accentColor="bg-amber-500"
+          activeColor="bg-amber-500"
+        />
+        <FilterCard
+          title="Auth Code"
+          icon={<KeyRound className="h-3.5 w-3.5" />}
+          options={authOptions}
+          value={authFilter}
+          onChange={onAuthFilterChange}
+          accentColor="bg-emerald-500"
+          activeColor="bg-emerald-500"
+        />
       </div>
 
       {hasFilters && (
-        <div>
+        <div className="flex items-center gap-2 pt-1">
+          <div className="h-px flex-1 bg-border/40" />
           <Button
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="gap-1 text-muted-foreground h-7"
+            className="gap-1.5 text-muted-foreground hover:text-destructive h-8 rounded-full px-4 text-xs font-medium"
           >
-            <X className="h-3 w-3" />
+            <X className="h-3.5 w-3.5" />
             Clear all filters
           </Button>
+          <div className="h-px flex-1 bg-border/40" />
         </div>
       )}
     </div>
