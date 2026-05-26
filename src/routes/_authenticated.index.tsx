@@ -522,6 +522,7 @@ function DashboardPage() {
                 company={c}
                 onMarkSold={markAsSold}
                 onMarkAd01={markAd01Filed}
+                isAdmin={isAdmin}
               />
             ))
           )}
@@ -537,6 +538,7 @@ function DashboardPage() {
               onMarkAd01={markAd01Filed}
               onMarkAd01Complete={markAd01Complete}
               onUpdate={updateCompany}
+              isAdmin={isAdmin}
             />
           </div>
         </div>
