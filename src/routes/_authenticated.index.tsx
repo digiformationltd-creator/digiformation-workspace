@@ -599,9 +599,8 @@ function DashboardPage() {
               <CompanyCard
                 key={c.id}
                 company={c}
-                onMarkSold={markAsSold}
-                onMarkAd01={markAd01Filed}
-                onMarkAd01Complete={markAd01Complete}
+                directors={directors}
+                onUpdate={updateCompany}
                 onDelete={isAdmin ? deleteCompany : undefined}
                 isAdmin={isAdmin}
               />
@@ -615,9 +614,6 @@ function DashboardPage() {
             <CompaniesTable
               companies={filteredCompanies}
               directors={directors}
-              onMarkSold={markAsSold}
-              onMarkAd01={markAd01Filed}
-              onMarkAd01Complete={markAd01Complete}
               onUpdate={updateCompany}
               onDelete={isAdmin ? deleteCompany : undefined}
               isAdmin={isAdmin}
