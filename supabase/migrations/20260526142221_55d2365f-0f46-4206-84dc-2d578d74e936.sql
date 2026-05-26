@@ -1,0 +1,1 @@
+DELETE FROM public.companies WHERE id = 'f1615692-16d5-4e71-9a46-af81aadaafc3';
