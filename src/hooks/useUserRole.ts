@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const ADMIN_EMAILS = ["info@digiformation.uk"];
+const ADMIN_EMAILS = [
+  "info@digiformation.uk",
+  "umarshabir2008@gmail.com",
+  "zhkj717@gmail.com",
+];
 
 export function useUserRole() {
   const [email, setEmail] = useState<string | null>(null);
