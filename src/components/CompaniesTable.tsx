@@ -5,6 +5,7 @@ import {
   FileCheck,
   CheckCircle2,
   Truck,
+  Trash2,
 } from "lucide-react";
 import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { EditableCell } from "@/components/EditableCell";
 import { EditCompanyDialog } from "@/components/EditCompanyDialog";
@@ -32,6 +44,7 @@ interface Props {
   onMarkAd01: (id: string) => void;
   onMarkAd01Complete: (id: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
+  onDelete?: (id: string) => void;
   isAdmin?: boolean;
 }
 
@@ -43,6 +56,7 @@ export function CompaniesTable({
   onMarkAd01,
   onMarkAd01Complete,
   onUpdate,
+  onDelete,
   isAdmin = true,
 }: Props) {
   const [sortField, setSortField] = useState<keyof Company | null>(null);
