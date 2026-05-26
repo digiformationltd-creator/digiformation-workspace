@@ -228,12 +228,26 @@ function DashboardPage() {
       const originalAddress = ((formData.get("previous_address") as string) || "").trim();
       const companyNumber = ((formData.get("company_number") as string) || "").trim();
 
-      const lifecycle = ((formData.get("lifecycle_status") as string) || "active") as "active" | "dissolved";
-      const availability = ((formData.get("availability_status") as string) || "available") as "available" | "sold";
-      const strikeOff = (formData.get("strike_off_status") as string) === "yes";
-      const authStatus = ((formData.get("auth_code_status") as string) || "missing") as "available" | "missing";
-      const addrStatus = (formData.get("address_status") as Company["address_status"]) || "Default Address";
-      const ad01Status = ((formData.get("ad01_status") as string) || "pending") as "pending" | "processing" | "completed";
+      const markReadyToSell = formData.get("mark_ready_to_sell") === "on";
+
+      const lifecycle = markReadyToSell
+        ? "active"
+        : (((formData.get("lifecycle_status") as string) || "active") as "active" | "dissolved");
+      const availability = markReadyToSell
+        ? "available"
+        : (((formData.get("availability_status") as string) || "available") as "available" | "sold");
+      const strikeOff = markReadyToSell
+        ? false
+        : (formData.get("strike_off_status") as string) === "yes";
+      const authStatus = markReadyToSell
+        ? "available"
+        : (((formData.get("auth_code_status") as string) || "missing") as "available" | "missing");
+      const addrStatus = markReadyToSell
+        ? ("Changed/Updated" as Company["address_status"])
+        : ((formData.get("address_status") as Company["address_status"]) || "Default Address");
+      const ad01Status = markReadyToSell
+        ? "completed"
+        : (((formData.get("ad01_status") as string) || "pending") as "pending" | "processing" | "completed");
 
       // Legacy single-enum "status" — kept in sync for backward compatibility
       const legacyStatus: Company["status"] =
@@ -279,6 +293,7 @@ function DashboardPage() {
       setSubmitting(false);
     }
   };
+
 
   if (loading) {
     return (
@@ -334,6 +349,23 @@ function DashboardPage() {
                 <DialogTitle>Add New Company</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddCompany} className="space-y-4">
+
+                <label className="flex items-start gap-3 rounded-lg border-2 border-emerald-500/40 bg-emerald-500/5 p-3 cursor-pointer hover:bg-emerald-500/10 transition">
+                  <input
+                    type="checkbox"
+                    name="mark_ready_to_sell"
+                    className="mt-0.5 h-4 w-4 accent-emerald-500"
+                  />
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                      💎 Mark as Ready to Sell
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Auto-sets: Active · Available · No Strike Off · Auth Code Available · Address Updated · AD01 Completed
+                    </p>
+                  </div>
+                </label>
+
 
                 <div className="rounded-lg border p-3 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
