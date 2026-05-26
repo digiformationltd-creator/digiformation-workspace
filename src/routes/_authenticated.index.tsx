@@ -88,8 +88,6 @@ function DashboardPage() {
       filtered = filtered.filter((c) => c.status === "Sold/Transferred" || (c.director ? !c.director.is_owner : true));
     } else if (quickFilter === "default-address") {
       filtered = filtered.filter((c) => c.address_status === "Default Address");
-    } else if (quickFilter === "ad01-filed") {
-      filtered = filtered.filter((c) => !!c.ad01_filing_date);
     } else if (quickFilter === "strike-off") {
       filtered = filtered.filter((c) => c.status === "Strike Off Notice");
     }
@@ -327,7 +325,6 @@ function DashboardPage() {
           { key: "strike-off", label: "Strike Off", count: owned.filter((c) => c.status === "Strike Off Notice").length },
           { key: "default-address", label: "Default Addr.", count: owned.filter((c) => c.address_status === "Default Address").length },
           { key: "ad01", label: "AD01 Pending", count: owned.filter((c) => !c.ad01_filing_date && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address")).length },
-          { key: "ad01-filed", label: "AD01 Filed", count: owned.filter((c) => !!c.ad01_filing_date).length },
         ];
         return (
           <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">

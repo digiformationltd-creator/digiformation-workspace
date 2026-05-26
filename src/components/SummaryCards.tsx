@@ -6,7 +6,6 @@ import {
   Truck,
   Home,
   Clock,
-  FileCheck,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Company } from "@/types";
@@ -32,7 +31,6 @@ export function SummaryCards({ companies }: Props) {
   const ad01PendingAuth = owned.filter((c) => !c.ad01_filing_date && isAuthMissing(c)).length;
   const ad01PendingDefault = owned.filter((c) => !c.ad01_filing_date && !isAuthMissing(c) && c.address_status === "Default Address").length;
   const ad01Pending = ad01PendingAuth + ad01PendingDefault;
-  const ad01Filed = owned.filter((c) => !!c.ad01_filing_date).length;
 
   const cards = [
     {
@@ -94,16 +92,6 @@ export function SummaryCards({ companies }: Props) {
       ring: "group-hover:ring-orange-500/40",
       iconBg: "bg-orange-500/10 text-orange-600 group-hover:bg-orange-500 group-hover:text-white",
       hint: `${ad01PendingAuth} no auth + ${ad01PendingDefault} default addr = ${ad01Pending}`,
-    },
-    {
-      title: "AD01 Filed",
-      value: ad01Filed,
-      icon: FileCheck,
-      filter: "ad01-filed",
-      accent: "from-teal-500/20 to-emerald-500/10",
-      ring: "group-hover:ring-teal-500/40",
-      iconBg: "bg-teal-500/10 text-teal-600 group-hover:bg-teal-500 group-hover:text-white",
-      hint: "AD01 already filed",
     },
     {
       title: "Default Address",
