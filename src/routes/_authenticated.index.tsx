@@ -481,6 +481,7 @@ function DashboardPage() {
                     <Select name="ad01_status" defaultValue="pending">
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="not_required">Not Required</SelectItem>
                         <SelectItem value="pending">Pending</SelectItem>
                         <SelectItem value="processing">Processing</SelectItem>
                         <SelectItem value="completed">Completed</SelectItem>
