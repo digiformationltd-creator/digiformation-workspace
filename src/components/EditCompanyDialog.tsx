@@ -35,6 +35,8 @@ interface Props {
 export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle = "icon" }: Props) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [markReadyToSell, setMarkReadyToSell] = useState(false);
+
   const [form, setForm] = useState({
     company_name: company.company_name ?? "",
     company_number: company.company_number ?? "",
