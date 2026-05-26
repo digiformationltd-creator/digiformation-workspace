@@ -122,11 +122,17 @@ export function CompanyCard({
   onDelete,
   isAdmin = true,
 }: Props) {
-  const ad01Done = !!company.ad01_filing_date;
+  const ad01Filed = !!company.ad01_filing_date;
+  const ad01Complete = Array.isArray(company.tags) && company.tags.includes("ad01-complete");
   const addressChanged = company.address_status === "Changed/Updated";
   const sold = company.status === "Sold/Transferred";
 
-  const allDone = ad01Done && addressChanged && sold;
+  // AD01 pipeline state: pending → processing → complete
+  const ad01State: "pending" | "processing" | "complete" =
+    ad01Complete ? "complete" : ad01Filed ? "processing" : "pending";
+
+  const allDone = ad01Complete && addressChanged && sold;
+
 
   // For sold/transferred companies, `previous_director_name` holds the NEW current director
   // (the buyer's director). `director.name` is our original (now-resigned) director.
