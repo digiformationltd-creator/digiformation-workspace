@@ -124,9 +124,11 @@ function DashboardPage() {
           c.availability_status === "available" &&
           c.strike_off_status === false &&
           c.auth_code_status !== "missing" &&
+          !!c.auth_code && c.auth_code.trim() !== "" &&
           c.address_status !== "Default Address",
       );
     }
+
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
