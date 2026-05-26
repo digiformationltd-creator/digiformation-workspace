@@ -219,23 +219,67 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label>Status</Label>
-              <Select
-                value={form.status}
-                onValueChange={(v) => set("status", v as CompanyStatus)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
+              <Label>Company Status</Label>
+              <Select value={form.lifecycle_status} onValueChange={(v) => set("lifecycle_status", v as LifecycleStatus)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Available Company">Available Company</SelectItem>
-                  <SelectItem value="Sold/Transferred">Sold/Transferred</SelectItem>
-                  <SelectItem value="Strike Off Notice">Strike Off Notice</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="dissolved">Dissolved</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
+              <Label>Availability</Label>
+              <Select value={form.availability_status} onValueChange={(v) => set("availability_status", v as AvailabilityStatus)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="sold">Sold Out</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Strike Off Status</Label>
+              <Select value={form.strike_off_status ? "yes" : "no"} onValueChange={(v) => set("strike_off_status", v === "yes")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="no">No Strike Off</SelectItem>
+                  <SelectItem value="yes">Strike Off Notice</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Auth Code Status</Label>
+              <Select value={form.auth_code_status} onValueChange={(v) => set("auth_code_status", v as AuthCodeStatus)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="missing">Missing</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Address Status</Label>
+              <Select value={form.address_status} onValueChange={(v) => set("address_status", v as AddressStatus)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Default Address">Default</SelectItem>
+                  <SelectItem value="Changed/Updated">Normal</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>AD01 Status</Label>
+              <Select value={form.ad01_status} onValueChange={(v) => set("ad01_status", v as Ad01Status)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="processing">Processing</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5 col-span-2">
               <Label>AD01 Filing Date</Label>
               <Input
                 type="date"
