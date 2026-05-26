@@ -48,6 +48,7 @@ function DashboardPage() {
     loading,
     markAsSold,
     markAd01Filed,
+    markAd01Complete,
     verifyDirector,
     updateCompany,
     deleteCompany,
