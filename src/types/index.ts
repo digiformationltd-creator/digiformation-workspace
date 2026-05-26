@@ -1,4 +1,4 @@
-export type CompanyStatus = 'Active' | 'Available Company' | 'Sold/Transferred' | 'Strike Off Notice';
+export type CompanyStatus = 'Active' | 'Available Company' | 'Sold/Transferred' | 'Strike Off Notice' | 'Dissolved';
 export type AddressStatus = 'Default Address' | 'Changed/Updated' | 'Active';
 
 export interface Director {
