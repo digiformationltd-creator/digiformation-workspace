@@ -88,11 +88,16 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Auto-clear strike-off when AD01 is completed and address is no longer default
+      const autoClearStrikeOff =
+        form.ad01_status === "completed" && form.address_status !== "Default Address";
+      const effectiveStrikeOff = autoClearStrikeOff ? false : form.strike_off_status;
+
       // Keep legacy `status` in sync with explicit fields
       const legacyStatus: CompanyStatus =
         form.lifecycle_status === "dissolved"
           ? "Dissolved"
-          : form.strike_off_status
+          : effectiveStrikeOff
           ? "Strike Off Notice"
           : form.availability_status === "sold"
           ? "Sold/Transferred"
@@ -117,11 +122,12 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
         address_status: form.address_status,
         lifecycle_status: form.lifecycle_status,
         availability_status: form.availability_status,
-        strike_off_status: form.strike_off_status,
+        strike_off_status: effectiveStrikeOff,
         auth_code_status: form.auth_code_status,
         ad01_status: form.ad01_status,
         ad01_filing_date: form.ad01_filing_date || null,
       });
+
       setOpen(false);
     } finally {
       setSubmitting(false);
