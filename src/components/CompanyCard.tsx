@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   Clock,
   Building2,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
 import type { Company } from "@/types";
@@ -22,6 +34,7 @@ interface Props {
   company: Company;
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
+  onDelete?: (id: string) => void;
   isAdmin?: boolean;
 }
 
@@ -100,6 +113,7 @@ export function CompanyCard({
   company,
   onMarkSold,
   onMarkAd01,
+  onDelete,
   isAdmin = true,
 }: Props) {
   const ad01Done = !!company.ad01_filing_date;
@@ -214,7 +228,7 @@ export function CompanyCard({
         <CompanyDetailsSheet company={company} triggerStyle="full" />
 
         {/* Footer actions */}
-        <div className="flex items-center justify-center pt-2 border-t">
+        <div className="flex items-center justify-center gap-2 pt-2 border-t">
           <Button
             variant="outline"
             size="sm"
@@ -229,6 +243,36 @@ export function CompanyCard({
             <CompaniesHouseLogo className="h-6 w-6" />
             View on Companies House
           </Button>
+          {isAdmin && onDelete && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3 gap-1 border-destructive/40 text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this company?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently remove <strong>{company.company_name}</strong> ({company.company_number}) and all related records. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => onDelete(company.id)}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </div>
     </TooltipProvider>
