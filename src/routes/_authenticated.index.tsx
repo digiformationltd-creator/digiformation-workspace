@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import type { Company } from "@/types";
+import type { Company, Ad01Status } from "@/types";
 import { applyCategory, PRIMARY_CATEGORY_OPTIONS, type PrimaryCategory } from "@/lib/companyCategory";
 
 type DashSearch = { filter?: string };
