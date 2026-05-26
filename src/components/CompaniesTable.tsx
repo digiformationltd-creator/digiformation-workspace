@@ -4,6 +4,7 @@ import {
   ChevronUp,
   ExternalLink,
   FileCheck,
+  CheckCircle2,
   Truck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ interface Props {
   directors: Director[];
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
+  onMarkAd01Complete: (id: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
 }
 
@@ -38,6 +40,7 @@ export function CompaniesTable({
   directors,
   onMarkSold,
   onMarkAd01,
+  onMarkAd01Complete,
   onUpdate,
 }: Props) {
   const [sortField, setSortField] = useState<keyof Company | null>(null);
@@ -97,10 +100,13 @@ export function CompaniesTable({
 
   const isAuthMissing = (c: Company) =>
     !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
+  const isAd01Complete = (c: Company) => Array.isArray(c.tags) && c.tags.includes("ad01-complete");
   const needsAd01Filing = (c: Company) =>
     c.status === "Active" && !c.ad01_filing_date && (isAuthMissing(c) || c.address_status === "Default Address");
   const isAd01Processing = (c: Company) =>
-    c.status === "Active" && !!c.ad01_filing_date && (isAuthMissing(c) || c.address_status === "Default Address");
+    c.status === "Active" && !!c.ad01_filing_date && !isAd01Complete(c) && (isAuthMissing(c) || c.address_status === "Default Address");
+
+
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -209,8 +215,24 @@ export function CompaniesTable({
                 </Button>
               )}
               {isAd01Processing(company) && (
-                <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
-                  AD01 Filed
+                <>
+                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
+                    AD01 Filed
+                  </Badge>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
+                    onClick={() => onMarkAd01Complete(company.id)}
+                  >
+                    <CheckCircle2 className="h-3 w-3" />
+                    Complete
+                  </Button>
+                </>
+              )}
+              {isAd01Complete(company) && (
+                <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
+                  AD01 Complete
                 </Badge>
               )}
               {company.status === "Active" && (
@@ -466,8 +488,29 @@ export function CompaniesTable({
                         </Tooltip>
                       )}
                       {isAd01Processing(company) && (
-                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
-                          AD01 Filed {formatDate(company.ad01_filing_date)}
+                        <>
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
+                            AD01 Filed {formatDate(company.ad01_filing_date)}
+                          </Badge>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-6 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
+                                onClick={() => onMarkAd01Complete(company.id)}
+                              >
+                                <CheckCircle2 className="h-3 w-3" />
+                                Complete
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Mark AD01 as complete</TooltipContent>
+                          </Tooltip>
+                        </>
+                      )}
+                      {isAd01Complete(company) && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
+                          AD01 Complete
                         </Badge>
                       )}
                       {company.status === "Active" && (

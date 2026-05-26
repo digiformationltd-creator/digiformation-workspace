@@ -48,6 +48,7 @@ function DashboardPage() {
     loading,
     markAsSold,
     markAd01Filed,
+    markAd01Complete,
     verifyDirector,
     updateCompany,
     deleteCompany,
@@ -83,7 +84,9 @@ function DashboardPage() {
     } else if (quickFilter === "ad01") {
       filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && !c.ad01_filing_date && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address"));
     } else if (quickFilter === "ad01-processing") {
-      filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && !!c.ad01_filing_date && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address"));
+      filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && !!c.ad01_filing_date && !(Array.isArray(c.tags) && c.tags.includes("ad01-complete")) && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address"));
+    } else if (quickFilter === "ad01-filed") {
+      filtered = filtered.filter((c) => isOwnedCompany(c) && Array.isArray(c.tags) && c.tags.includes("ad01-complete"));
     } else if (quickFilter === "pending-sale") {
       filtered = filtered.filter((c) => c.status === "Available Company");
     } else if (quickFilter === "sold") {
@@ -364,7 +367,8 @@ function DashboardPage() {
           { key: "strike-off", label: "Strike Off", count: owned.filter((c) => c.status === "Strike Off Notice").length },
           { key: "default-address", label: "Default Addr.", count: owned.filter((c) => c.address_status === "Default Address").length },
           { key: "ad01", label: "AD01 Pending", count: owned.filter((c) => c.status === "Active" && !c.ad01_filing_date && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address")).length },
-          { key: "ad01-processing", label: "AD01 Processing", count: owned.filter((c) => c.status === "Active" && !!c.ad01_filing_date && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address")).length },
+          { key: "ad01-processing", label: "AD01 Processing", count: owned.filter((c) => c.status === "Active" && !!c.ad01_filing_date && !(Array.isArray(c.tags) && c.tags.includes("ad01-complete")) && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address")).length },
+          { key: "ad01-filed", label: "AD01 Filed", count: owned.filter((c) => Array.isArray(c.tags) && c.tags.includes("ad01-complete")).length },
         ];
         return (
           <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
@@ -448,6 +452,7 @@ function DashboardPage() {
               directors={directors}
               onMarkSold={markAsSold}
               onMarkAd01={markAd01Filed}
+              onMarkAd01Complete={markAd01Complete}
               onUpdate={updateCompany}
             />
           </div>
