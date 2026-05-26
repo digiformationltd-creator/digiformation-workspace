@@ -54,7 +54,7 @@ function AppLayout() {
               <LayoutDashboard className="h-4 w-4 text-primary shrink-0" />
               <span className="text-xs sm:text-sm font-semibold text-foreground truncate">
                 <span className="sm:hidden">Digiformation Dev Studio</span>
-                <span className="hidden sm:inline">Made By Digiformation Dev Studio</span>
+                <span className="hidden sm:inline">Digiformation Dev Studio</span>
               </span>
             </div>
             <div className="flex items-center gap-1 shrink-0">
