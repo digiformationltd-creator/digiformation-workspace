@@ -2,7 +2,6 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Upload,
-  Settings,
   FileText,
   Truck,
   Home,
