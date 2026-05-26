@@ -80,7 +80,7 @@ function StatusRow({
           </div>
         </div>
       </div>
-      {!done && (
+      {!done && !hideAction && (
         <Button
           size="sm"
           variant="outline"
