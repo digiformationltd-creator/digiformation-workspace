@@ -112,11 +112,22 @@ function DashboardPage() {
     } else if (quickFilter === "sold") {
       filtered = filtered.filter((c) => c.availability_status === "sold");
     } else if (quickFilter === "default-address") {
-      filtered = filtered.filter((c) => c.address_status === "Default Address");
+      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.address_status === "Default Address" && c.ad01_status === "pending");
     } else if (quickFilter === "strike-off") {
-      filtered = filtered.filter((c) => c.strike_off_status === true);
+      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.strike_off_status === true);
     } else if (quickFilter === "auth-missing") {
-      filtered = filtered.filter((c) => c.auth_code_status === "missing");
+      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.auth_code_status === "missing" && c.ad01_status === "pending");
+    } else if (quickFilter === "ready-to-sell") {
+      filtered = filtered.filter(
+        (c) =>
+          c.lifecycle_status === "active" &&
+          c.availability_status === "available" &&
+          c.strike_off_status === false &&
+          c.auth_code_status !== "missing" &&
+          c.address_status !== "Default Address" &&
+          c.ad01_status !== "pending" &&
+          c.ad01_status !== "processing",
+      );
     }
 
     if (searchTerm) {
