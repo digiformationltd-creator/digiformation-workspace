@@ -172,16 +172,6 @@ export function SummaryCards({ companies }: Props) {
       iconBg: "bg-purple-500/10 text-purple-600 group-hover:bg-purple-500 group-hover:text-white",
       hint: "Pending confirmation statements",
     },
-    {
-      title: "Annual Accounts",
-      value: 0,
-      icon: BookOpen,
-      filter: undefined,
-      accent: "from-teal-500/20 to-cyan-500/10",
-      ring: "group-hover:ring-teal-500/40",
-      iconBg: "bg-teal-500/10 text-teal-600 group-hover:bg-teal-500 group-hover:text-white",
-      hint: "Pending annual accounts",
-    },
   ];
 
   return (
