@@ -276,12 +276,23 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
               />
             </div>
           </div>
-          <div className="space-y-1.5">
-            <Label>Registered Address</Label>
-            <Input
-              value={form.company_address}
-              onChange={(e) => set("company_address", e.target.value)}
-            />
+          <div className="rounded-lg border p-3 space-y-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Registered Address</p>
+            <div className="space-y-1.5">
+              <Label>Old Address</Label>
+              <Input
+                value={form.previous_address}
+                onChange={(e) => set("previous_address", e.target.value)}
+                placeholder="Leave empty if never changed"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Current Address</Label>
+              <Input
+                value={form.company_address}
+                onChange={(e) => set("company_address", e.target.value)}
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
