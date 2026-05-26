@@ -2,7 +2,6 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Upload,
-  Settings,
   FileText,
   Truck,
   Home,
@@ -26,11 +25,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useUserRole } from "@/hooks/useUserRole";
 
-const mainItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard, search: undefined },
+const dashboardItem = { title: "Dashboard", url: "/", icon: LayoutDashboard, search: undefined };
+const adminOnlyItems = [
   { title: "Import CSV", url: "/import", icon: Upload, search: undefined },
-  { title: "Settings", url: "/settings", icon: Settings, search: undefined },
 ];
 
 // Colors must match the SummaryCards on the dashboard so the icon language
@@ -59,6 +58,8 @@ const quickFilters: Array<{
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const { isAdmin } = useUserRole();
+  const mainItems = isAdmin ? [dashboardItem, ...adminOnlyItems] : [dashboardItem];
   const currentPath = useRouterState({
     select: (router) => router.location.pathname,
   });

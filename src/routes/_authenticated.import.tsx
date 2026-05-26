@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useCompanies } from "@/hooks/useCompanies";
 import { CSVImport } from "@/components/CSVImport";
+import { useUserRole } from "@/hooks/useUserRole";
 
 export const Route = createFileRoute("/_authenticated/import")({
   component: ImportPage,
@@ -8,6 +9,10 @@ export const Route = createFileRoute("/_authenticated/import")({
 
 function ImportPage() {
   const { refresh } = useCompanies();
+  const { isAdmin, loading } = useUserRole();
+
+  if (loading) return null;
+  if (!isAdmin) return <Navigate to="/" />;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
