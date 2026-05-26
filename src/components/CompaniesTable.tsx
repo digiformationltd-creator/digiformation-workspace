@@ -4,6 +4,7 @@ import {
   ChevronUp,
   ExternalLink,
   FileCheck,
+  Truck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -211,6 +212,17 @@ export function CompaniesTable({
                 <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
                   AD01 Filed
                 </Badge>
+              )}
+              {company.status === "Active" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
+                  onClick={() => onMarkSold(company.id)}
+                >
+                  <Truck className="h-3 w-3" />
+                  Sold
+                </Button>
               )}
             </div>
           </div>
@@ -457,6 +469,22 @@ export function CompaniesTable({
                         <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
                           AD01 Filed {formatDate(company.ad01_filing_date)}
                         </Badge>
+                      )}
+                      {company.status === "Active" && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
+                              onClick={() => onMarkSold(company.id)}
+                            >
+                              <Truck className="h-3 w-3" />
+                              Sold
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Mark as Sold/Transferred</TooltipContent>
+                        </Tooltip>
                       )}
                       <EditCompanyDialog
                         company={company}
