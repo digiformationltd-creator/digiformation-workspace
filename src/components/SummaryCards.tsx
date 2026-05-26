@@ -31,6 +31,7 @@ export function SummaryCards({ companies }: Props) {
   const activeCompanies = companies.filter((c) => c.lifecycle_status === "active").length;
   const sold = companies.filter((c) => c.availability_status === "sold").length;
   const available = companies.filter((c) => c.availability_status === "available").length;
+  const strikeOff = internal.filter((c) => c.strike_off_status === true).length;
   // Auth Missing & Default Address counters reflect OPEN issues only
   // (companies still requiring AD01 action — i.e., ad01_status = pending).
   // Once a company moves to processing/completed, it leaves these counters.
