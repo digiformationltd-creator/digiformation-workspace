@@ -59,6 +59,8 @@ const quickFilters: Array<{
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const { isAdmin } = useUserRole();
+  const mainItems = isAdmin ? [dashboardItem, ...adminOnlyItems] : [dashboardItem];
   const currentPath = useRouterState({
     select: (router) => router.location.pathname,
   });
