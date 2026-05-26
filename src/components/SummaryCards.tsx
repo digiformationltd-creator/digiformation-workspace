@@ -9,7 +9,7 @@ import {
   KeyRound,
   FileCheck,
   FileText,
-  BookOpen,
+  
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Company } from "@/types";
