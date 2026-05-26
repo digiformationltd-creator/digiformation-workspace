@@ -182,13 +182,20 @@ function DashboardPage() {
 
     setSubmitting(true);
     try {
+      const currentName = ((formData.get("company_name") as string) || "").trim();
+      const originalName = ((formData.get("previous_name") as string) || "").trim();
+      const currentAddress = ((formData.get("company_address") as string) || "").trim();
+      const originalAddress = ((formData.get("previous_address") as string) || "").trim();
+      const companyNumber = ((formData.get("company_number") as string) || "").trim();
+
       await createCompany({
-        company_name: formData.get("company_name") as string,
-        company_number: (formData.get("company_number") as string).toUpperCase(),
+        // Current/New name is primary; fall back to original if only old is filled
+        company_name: currentName || originalName || "(Unnamed)",
+        company_number: companyNumber.toUpperCase(),
         incorporation_date: (formData.get("incorporation_date") as string) || null,
-        company_address: (formData.get("company_address") as string) || null,
-        previous_name: (formData.get("previous_name") as string) || null,
-        previous_address: (formData.get("previous_address") as string) || null,
+        company_address: currentAddress || originalAddress || null,
+        previous_name: originalName || null,
+        previous_address: originalAddress || null,
         previous_director_name: (formData.get("previous_director_name") as string) || null,
         sic_codes: (formData.get("sic_codes") as string)
           ? (formData.get("sic_codes") as string).split(",").map((s) => s.trim())
