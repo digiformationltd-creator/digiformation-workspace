@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import type { Company } from "@/types";
+import type { Company, Ad01Status } from "@/types";
 import { applyCategory, PRIMARY_CATEGORY_OPTIONS, type PrimaryCategory } from "@/lib/companyCategory";
 
 type DashSearch = { filter?: string };
@@ -272,7 +272,7 @@ function DashboardPage() {
         ? catOverride.ad01_status
         : markReadyToSell
         ? "completed"
-        : (((formData.get("ad01_status") as string) || "pending") as "pending" | "processing" | "completed");
+        : (((formData.get("ad01_status") as string) || "pending") as Ad01Status);
 
       // Legacy single-enum "status" — kept in sync for backward compatibility
       const legacyStatus: Company["status"] =
@@ -481,6 +481,7 @@ function DashboardPage() {
                     <Select name="ad01_status" defaultValue="pending">
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="not_required">Not Required</SelectItem>
                         <SelectItem value="pending">Pending</SelectItem>
                         <SelectItem value="processing">Processing</SelectItem>
                         <SelectItem value="completed">Completed</SelectItem>

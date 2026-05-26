@@ -121,7 +121,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
 
       // Auto-clear strike-off when AD01 is completed and address is no longer default
       const autoClearStrikeOff =
-        effAd01Status === "completed" && effAddressStatus !== "Default Address";
+        (effAd01Status === "completed" || effAd01Status === "not_required") && effAddressStatus !== "Default Address";
       const effectiveStrikeOff = catOverride
         ? catOverride.strike_off_status
         : markReadyToSell
@@ -357,6 +357,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
               <Select value={form.ad01_status} onValueChange={(v) => set("ad01_status", v as Ad01Status)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="not_required">Not Required</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="processing">Processing</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
