@@ -2,9 +2,6 @@ import { useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  FileCheck,
-  CheckCircle2,
-  Truck,
   Trash2,
 } from "lucide-react";
 import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
@@ -40,9 +37,6 @@ import type { Company, Director } from "@/types";
 interface Props {
   companies: Company[];
   directors: Director[];
-  onMarkSold: (id: string) => void;
-  onMarkAd01: (id: string) => void;
-  onMarkAd01Complete: (id: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
   onDelete?: (id: string) => void;
   isAdmin?: boolean;
@@ -52,9 +46,6 @@ interface Props {
 export function CompaniesTable({
   companies,
   directors,
-  onMarkSold,
-  onMarkAd01,
-  onMarkAd01Complete,
   onUpdate,
   onDelete,
   isAdmin = true,
@@ -90,15 +81,7 @@ export function CompaniesTable({
       "Available Company": "bg-warning/10 text-warning border-warning/20",
       "Sold/Transferred": "bg-info/10 text-info border-info/20",
       "Strike Off Notice": "bg-destructive/10 text-destructive border-destructive/20",
-    };
-    return variants[status] || "bg-muted text-muted-foreground";
-  };
-
-  const getAddressBadge = (status: string) => {
-    const variants: Record<string, string> = {
-      "Default Address": "bg-warning/10 text-warning border-warning/20",
-      "Changed/Updated": "bg-primary/10 text-primary border-primary/20",
-      "Active": "bg-success/10 text-success border-success/20",
+      "Dissolved": "bg-destructive/10 text-destructive border-destructive/20",
     };
     return variants[status] || "bg-muted text-muted-foreground";
   };
@@ -109,18 +92,7 @@ export function CompaniesTable({
     return "bg-muted text-muted-foreground";
   };
 
-  const formatDate = (date: string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("en-GB");
-  };
 
-  const isAuthMissing = (c: Company) =>
-    !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
-  const isAd01Complete = (c: Company) => Array.isArray(c.tags) && c.tags.includes("ad01-complete");
-  const needsAd01Filing = (c: Company) =>
-    c.status === "Active" && !c.ad01_filing_date && (isAuthMissing(c) || c.address_status === "Default Address");
-  const isAd01Processing = (c: Company) =>
-    c.status === "Active" && !!c.ad01_filing_date && !isAd01Complete(c) && (isAuthMissing(c) || c.address_status === "Default Address");
 
 
 
