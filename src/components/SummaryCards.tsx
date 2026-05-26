@@ -29,6 +29,7 @@ export function SummaryCards({ companies }: Props) {
   const strikeOff = owned.filter((c) => c.status === "Strike Off Notice").length;
   const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
   const isAuthMissing = (c: typeof owned[number]) => !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
+  const authMissing = owned.filter((c) => c.status === "Active" && isAuthMissing(c)).length;
   const ad01PendingAuth = 0; // manually set to 0 as no AD01 filed yet
   const ad01PendingDefault = 0; // manually set to 0 as no AD01 filed yet
   const ad01Pending = 0;
