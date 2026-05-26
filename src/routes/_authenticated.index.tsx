@@ -228,12 +228,26 @@ function DashboardPage() {
       const originalAddress = ((formData.get("previous_address") as string) || "").trim();
       const companyNumber = ((formData.get("company_number") as string) || "").trim();
 
-      const lifecycle = ((formData.get("lifecycle_status") as string) || "active") as "active" | "dissolved";
-      const availability = ((formData.get("availability_status") as string) || "available") as "available" | "sold";
-      const strikeOff = (formData.get("strike_off_status") as string) === "yes";
-      const authStatus = ((formData.get("auth_code_status") as string) || "missing") as "available" | "missing";
-      const addrStatus = (formData.get("address_status") as Company["address_status"]) || "Default Address";
-      const ad01Status = ((formData.get("ad01_status") as string) || "pending") as "pending" | "processing" | "completed";
+      const markReadyToSell = formData.get("mark_ready_to_sell") === "on";
+
+      const lifecycle = markReadyToSell
+        ? "active"
+        : (((formData.get("lifecycle_status") as string) || "active") as "active" | "dissolved");
+      const availability = markReadyToSell
+        ? "available"
+        : (((formData.get("availability_status") as string) || "available") as "available" | "sold");
+      const strikeOff = markReadyToSell
+        ? false
+        : (formData.get("strike_off_status") as string) === "yes";
+      const authStatus = markReadyToSell
+        ? "available"
+        : (((formData.get("auth_code_status") as string) || "missing") as "available" | "missing";
+      const addrStatus = markReadyToSell
+        ? ("Changed/Updated" as Company["address_status"])
+        : ((formData.get("address_status") as Company["address_status"]) || "Default Address");
+      const ad01Status = markReadyToSell
+        ? "completed"
+        : (((formData.get("ad01_status") as string) || "pending") as "pending" | "processing" | "completed");
 
       // Legacy single-enum "status" — kept in sync for backward compatibility
       const legacyStatus: Company["status"] =
@@ -279,6 +293,7 @@ function DashboardPage() {
       setSubmitting(false);
     }
   };
+
 
   if (loading) {
     return (
