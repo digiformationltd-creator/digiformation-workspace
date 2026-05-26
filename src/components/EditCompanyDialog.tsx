@@ -357,6 +357,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
               <Select value={form.ad01_status} onValueChange={(v) => set("ad01_status", v as Ad01Status)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="not_required">Not Required</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="processing">Processing</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
