@@ -31,9 +31,15 @@ export function SummaryCards({ companies }: Props) {
   const activeCompanies = companies.filter((c) => c.lifecycle_status === "active").length;
   const sold = companies.filter((c) => c.availability_status === "sold").length;
   const available = companies.filter((c) => c.availability_status === "available").length;
-  const strikeOff = internal.filter((c) => c.strike_off_status === true).length;
-  const authMissing = internal.filter((c) => c.auth_code_status === "missing").length;
-  const defaultAddress = internal.filter((c) => c.address_status === "Default Address").length;
+  // Auth Missing & Default Address counters reflect OPEN issues only
+  // (companies still requiring AD01 action — i.e., ad01_status = pending).
+  // Once a company moves to processing/completed, it leaves these counters.
+  const authMissing = internal.filter(
+    (c) => c.auth_code_status === "missing" && c.ad01_status === "pending",
+  ).length;
+  const defaultAddress = internal.filter(
+    (c) => c.address_status === "Default Address" && c.ad01_status === "pending",
+  ).length;
 
   // AD01 Pending = (Auth Missing) + (Default Address) — available companies only.
   const ad01PendingAuth = internal.filter((c) => c.ad01_status === "pending" && c.auth_code_status === "missing").length;
@@ -41,6 +47,18 @@ export function SummaryCards({ companies }: Props) {
   const ad01Pending = ad01PendingAuth + ad01PendingDefault;
   const ad01Processing = internal.filter((c) => c.ad01_status === "processing").length;
   const ad01Filed = internal.filter((c) => c.ad01_status === "completed").length;
+
+  // Ready to Sell = clean, available, active companies with NO open issues.
+  const readyToSell = companies.filter(
+    (c) =>
+      c.lifecycle_status === "active" &&
+      c.availability_status === "available" &&
+      c.strike_off_status === false &&
+      c.auth_code_status !== "missing" &&
+      c.address_status !== "Default Address" &&
+      c.ad01_status !== "pending" &&
+      c.ad01_status !== "processing",
+  ).length;
   void owned;
 
   const cards = [
