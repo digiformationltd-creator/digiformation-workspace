@@ -23,7 +23,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Company, Director, CompanyStatus } from "@/types";
+import type { Company, Director, CompanyStatus, LifecycleStatus, AvailabilityStatus, AuthCodeStatus, Ad01Status, AddressStatus } from "@/types";
 
 interface Props {
   company: Company;
@@ -47,6 +47,12 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     sic_codes: (company.sic_codes ?? []).join(", "),
     director_id: company.director_id ?? "none",
     status: company.status as CompanyStatus,
+    address_status: (company.address_status ?? "Default Address") as AddressStatus,
+    lifecycle_status: (company.lifecycle_status ?? "active") as LifecycleStatus,
+    availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
+    strike_off_status: company.strike_off_status ?? false,
+    auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
+    ad01_status: (company.ad01_status ?? "pending") as Ad01Status,
     ad01_filing_date: company.ad01_filing_date ?? "",
   });
 
@@ -64,6 +70,12 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
         sic_codes: (company.sic_codes ?? []).join(", "),
         director_id: company.director_id ?? "none",
         status: company.status as CompanyStatus,
+        address_status: (company.address_status ?? "Default Address") as AddressStatus,
+        lifecycle_status: (company.lifecycle_status ?? "active") as LifecycleStatus,
+        availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
+        strike_off_status: company.strike_off_status ?? false,
+        auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
+        ad01_status: (company.ad01_status ?? "pending") as Ad01Status,
         ad01_filing_date: company.ad01_filing_date ?? "",
       });
     }
