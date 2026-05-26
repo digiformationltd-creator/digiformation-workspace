@@ -100,10 +100,13 @@ export function CompaniesTable({
 
   const isAuthMissing = (c: Company) =>
     !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
+  const isAd01Complete = (c: Company) => Array.isArray(c.tags) && c.tags.includes("ad01-complete");
   const needsAd01Filing = (c: Company) =>
     c.status === "Active" && !c.ad01_filing_date && (isAuthMissing(c) || c.address_status === "Default Address");
   const isAd01Processing = (c: Company) =>
-    c.status === "Active" && !!c.ad01_filing_date && (isAuthMissing(c) || c.address_status === "Default Address");
+    c.status === "Active" && !!c.ad01_filing_date && !isAd01Complete(c) && (isAuthMissing(c) || c.address_status === "Default Address");
+
+
 
   return (
     <TooltipProvider delayDuration={200}>
