@@ -89,7 +89,7 @@ function DashboardPage() {
     } else if (quickFilter === "default-address") {
       filtered = filtered.filter((c) => c.address_status === "Default Address");
     } else if (quickFilter === "strike-off") {
-      filtered = filtered.filter((c) => c.status === "Strike Off Notice");
+      filtered = filtered.filter((c) => c.status === "Strike Off Notice" && isOwnedCompany(c));
     }
 
     if (searchTerm) {
