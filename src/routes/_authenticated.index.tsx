@@ -510,11 +510,11 @@ function DashboardPage() {
             onDirectorChange={setSelectedDirector}
             directors={directors}
             activeStatus={activeStatus}
-            onStatusChange={setActiveStatus}
+            onStatusChange={handleStatusChange}
             addressFilter={addressFilter}
-            onAddressFilterChange={setAddressFilter}
+            onAddressFilterChange={handleAddressChange}
             authFilter={authFilter}
-            onAuthFilterChange={setAuthFilter}
+            onAuthFilterChange={handleAuthChange}
           />
         </div>
 
