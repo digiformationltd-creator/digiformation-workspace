@@ -182,13 +182,20 @@ function DashboardPage() {
 
     setSubmitting(true);
     try {
+      const currentName = ((formData.get("company_name") as string) || "").trim();
+      const originalName = ((formData.get("previous_name") as string) || "").trim();
+      const currentAddress = ((formData.get("company_address") as string) || "").trim();
+      const originalAddress = ((formData.get("previous_address") as string) || "").trim();
+      const companyNumber = ((formData.get("company_number") as string) || "").trim();
+
       await createCompany({
-        company_name: formData.get("company_name") as string,
-        company_number: (formData.get("company_number") as string).toUpperCase(),
+        // Current/New name is primary; fall back to original if only old is filled
+        company_name: currentName || originalName || "(Unnamed)",
+        company_number: companyNumber.toUpperCase(),
         incorporation_date: (formData.get("incorporation_date") as string) || null,
-        company_address: (formData.get("company_address") as string) || null,
-        previous_name: (formData.get("previous_name") as string) || null,
-        previous_address: (formData.get("previous_address") as string) || null,
+        company_address: currentAddress || originalAddress || null,
+        previous_name: originalName || null,
+        previous_address: originalAddress || null,
         previous_director_name: (formData.get("previous_director_name") as string) || null,
         sic_codes: (formData.get("sic_codes") as string)
           ? (formData.get("sic_codes") as string).split(",").map((s) => s.trim())
@@ -267,14 +274,23 @@ function DashboardPage() {
                 <DialogTitle>Add New Company</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddCompany} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="company_name">Company Name *</Label>
-                  <Input id="company_name" name="company_name" required />
+                <div className="rounded-lg border p-3 space-y-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="previous_name">Original / Old Company Name</Label>
+                    <Input id="previous_name" name="previous_name" placeholder="As originally incorporated" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="company_name">Current / New Company Name</Label>
+                    <Input id="company_name" name="company_name" placeholder="Current trading name" />
+                  </div>
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="company_number">Company Number *</Label>
-                  <Input id="company_number" name="company_number" required />
+                  <Label htmlFor="company_number">Company Number</Label>
+                  <Input id="company_number" name="company_number" />
                 </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor="incorporation_date">Incorporation Date</Label>
@@ -295,11 +311,17 @@ function DashboardPage() {
                     </Select>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company_address">Registered Address</Label>
-                  <Input id="company_address" name="company_address" />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                <div className="rounded-lg border p-3 space-y-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Registered Address</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="previous_address">Original Address</Label>
+                    <Input id="previous_address" name="previous_address" placeholder="As originally registered" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="company_address">New / Current Address</Label>
+                    <Input id="company_address" name="company_address" placeholder="Current registered address" />
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="address_status">Address Status</Label>
                     <Select name="address_status" defaultValue="Default Address">
@@ -313,19 +335,13 @@ function DashboardPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="ad01_filing_date">AD01 Filing Date</Label>
-                    <Input id="ad01_filing_date" name="ad01_filing_date" type="date" />
-                  </div>
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="previous_name">Previous Company Name</Label>
-                  <Input id="previous_name" name="previous_name" />
+                  <Label htmlFor="ad01_filing_date">AD01 Filing Date</Label>
+                  <Input id="ad01_filing_date" name="ad01_filing_date" type="date" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="previous_address">Previous Address</Label>
-                  <Input id="previous_address" name="previous_address" />
-                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="previous_director_name">Previous / New Director Name</Label>
                   <Input id="previous_director_name" name="previous_director_name" />
