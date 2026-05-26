@@ -176,6 +176,23 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
           <DialogTitle>Edit Company</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
+          <label className="flex items-start gap-3 rounded-lg border-2 border-emerald-500/40 bg-emerald-500/5 p-3 cursor-pointer hover:bg-emerald-500/10 transition">
+            <input
+              type="checkbox"
+              checked={markReadyToSell}
+              onChange={(e) => setMarkReadyToSell(e.target.checked)}
+              className="mt-0.5 h-4 w-4 accent-emerald-500"
+            />
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                💎 Mark as Ready to Sell
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Overrides all status fields: Active · Available · No Strike Off · Auth Available · Address Updated · AD01 Completed
+              </p>
+            </div>
+          </label>
+
           <div className="space-y-1.5">
             <Label>Company Name (our records / old name)</Label>
             <Input
