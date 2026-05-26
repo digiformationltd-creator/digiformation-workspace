@@ -112,6 +112,14 @@ export function CompaniesTable({
             className="rounded-lg border bg-card p-3 space-y-2 overflow-hidden"
           >
             <div className="space-y-1.5 text-[12px]">
+              {(() => {
+                const cat = deriveCategory(company);
+                return (
+                  <Badge variant="outline" className={`${categoryBadgeClass(cat)} text-[9px] px-1.5 py-0`}>
+                    {categoryLabel(cat)}
+                  </Badge>
+                );
+              })()}
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Company</div>
                 <Tooltip>
