@@ -32,17 +32,12 @@ export function SummaryCards({ companies }: Props) {
   const sold = companies.filter((c) => c.availability_status === "sold").length;
   const available = companies.filter((c) => c.availability_status === "available").length;
   const strikeOff = internal.filter((c) => c.strike_off_status === true).length;
-  // Auth Missing & Default Address counters reflect OPEN issues only
-  // (companies still requiring AD01 action — i.e., ad01_status = pending).
-  // Once a company moves to processing/completed, it leaves these counters.
-  const authMissing = internal.filter(
-    (c) => c.auth_code_status === "missing" && c.ad01_status === "pending",
-  ).length;
-  const defaultAddress = internal.filter(
-    (c) => c.address_status === "Default Address" && c.ad01_status === "pending",
-  ).length;
+  // Auth Missing & Default Address counters reflect ALL companies with that flag
+  // (multi-layer model — a company can appear in multiple issue counters at once).
+  const authMissing = internal.filter((c) => c.auth_code_status === "missing").length;
+  const defaultAddress = internal.filter((c) => c.address_status === "Default Address").length;
 
-  // AD01 Pending = (Auth Missing) + (Default Address) — available companies only.
+  // AD01 Pending = subset of above, restricted to ad01_status = pending.
   const ad01PendingAuth = internal.filter((c) => c.ad01_status === "pending" && c.auth_code_status === "missing").length;
   const ad01PendingDefault = internal.filter((c) => c.ad01_status === "pending" && c.address_status === "Default Address").length;
   const ad01Pending = ad01PendingAuth + ad01PendingDefault;
