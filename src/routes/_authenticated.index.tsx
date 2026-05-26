@@ -129,26 +129,32 @@ function DashboardPage() {
       filtered = filtered.filter((c) => !c.auth_code || c.auth_code.trim() === "");
     }
 
-    // Sort: clean active owned first, then grouped by address, sold/non-owned at the very end
+    // Sort tiers:
+    //  0 = owned, Active, non-default-address, NOT strike-off, has auth code
+    //  1 = owned, Active, non-default-address, NOT strike-off, missing auth code
+    //  2 = other owned (default address / strike off / available / pending)
+    //  3 = sold / non-owned
     const normalizeAddr = (a: string | null | undefined) =>
       (a ?? "").toLowerCase().replace(/[,.\s]+/g, " ").trim();
 
-    const isCleanActive = (c: typeof filtered[number]) =>
-      isOwnedCompany(c) &&
-      c.status === "Active" &&
-      c.address_status !== "Default Address" &&
+    const hasAuth = (c: typeof filtered[number]) =>
       !!c.auth_code &&
       c.auth_code.trim() !== "" &&
       c.auth_code.trim().toLowerCase() !== "pending";
 
-    filtered.sort((a, b) => {
-      const aSold = !isOwnedCompany(a);
-      const bSold = !isOwnedCompany(b);
-      if (aSold !== bSold) return aSold ? 1 : -1;
+    const tier = (c: typeof filtered[number]) => {
+      if (!isOwnedCompany(c)) return 3;
+      const cleanActive =
+        c.status === "Active" &&
+        c.address_status !== "Default Address";
+      if (!cleanActive) return 2;
+      return hasAuth(c) ? 0 : 1;
+    };
 
-      const aClean = isCleanActive(a);
-      const bClean = isCleanActive(b);
-      if (aClean !== bClean) return aClean ? -1 : 1;
+    filtered.sort((a, b) => {
+      const ta = tier(a);
+      const tb = tier(b);
+      if (ta !== tb) return ta - tb;
 
       const addrA = normalizeAddr(a.company_address);
       const addrB = normalizeAddr(b.company_address);
