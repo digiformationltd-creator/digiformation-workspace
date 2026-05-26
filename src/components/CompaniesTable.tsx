@@ -196,7 +196,22 @@ export function CompaniesTable({
                 onUpdate={onUpdate}
                 triggerStyle="compact"
               />
-            </div>
+              {needsAd01Filing(company) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-[10px] px-2 gap-1 border-orange-500/40 text-orange-600 hover:bg-orange-500/10"
+                  onClick={() => onMarkAd01(company.id)}
+                >
+                  <FileCheck className="h-3 w-3" />
+                  AD01
+                </Button>
+              )}
+              {isAd01Processing(company) && (
+                <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
+                  AD01 Filed
+                </Badge>
+              )}
           </div>
         ))}
       </div>
