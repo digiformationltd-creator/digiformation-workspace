@@ -90,6 +90,8 @@ function DashboardPage() {
       filtered = filtered.filter((c) => c.address_status === "Default Address");
     } else if (quickFilter === "strike-off") {
       filtered = filtered.filter((c) => c.status === "Strike Off Notice" && isOwnedCompany(c));
+    } else if (quickFilter === "auth-missing") {
+      filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && (!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending"));
     }
 
     if (searchTerm) {

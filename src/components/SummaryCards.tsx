@@ -6,6 +6,7 @@ import {
   Truck,
   Home,
   Clock,
+  KeyRound,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Company } from "@/types";
@@ -28,6 +29,7 @@ export function SummaryCards({ companies }: Props) {
   const strikeOff = owned.filter((c) => c.status === "Strike Off Notice").length;
   const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
   const isAuthMissing = (c: typeof owned[number]) => !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
+  const authMissing = owned.filter((c) => c.status === "Active" && isAuthMissing(c)).length;
   const ad01PendingAuth = 0; // manually set to 0 as no AD01 filed yet
   const ad01PendingDefault = 0; // manually set to 0 as no AD01 filed yet
   const ad01Pending = 0;
@@ -92,6 +94,16 @@ export function SummaryCards({ companies }: Props) {
       ring: "group-hover:ring-orange-500/40",
       iconBg: "bg-orange-500/10 text-orange-600 group-hover:bg-orange-500 group-hover:text-white",
       hint: `${ad01PendingAuth} no auth + ${ad01PendingDefault} default addr = ${ad01Pending}`,
+    },
+    {
+      title: "Auth Missing",
+      value: authMissing,
+      icon: KeyRound,
+      filter: "auth-missing",
+      accent: "from-fuchsia-500/20 to-pink-500/10",
+      ring: "group-hover:ring-fuchsia-500/40",
+      iconBg: "bg-fuchsia-500/10 text-fuchsia-600 group-hover:bg-fuchsia-500 group-hover:text-white",
+      hint: "Active companies without auth code",
     },
     {
       title: "Default Address",
