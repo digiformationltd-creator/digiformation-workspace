@@ -33,6 +33,7 @@ import { EditableCell } from "@/components/EditableCell";
 import { EditCompanyDialog } from "@/components/EditCompanyDialog";
 import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import type { Company, Director } from "@/types";
+import { deriveCategory, categoryBadgeClass, categoryLabel } from "@/lib/companyCategory";
 
 interface Props {
   companies: Company[];
@@ -111,6 +112,14 @@ export function CompaniesTable({
             className="rounded-lg border bg-card p-3 space-y-2 overflow-hidden"
           >
             <div className="space-y-1.5 text-[12px]">
+              {(() => {
+                const cat = deriveCategory(company);
+                return (
+                  <Badge variant="outline" className={`${categoryBadgeClass(cat)} text-[9px] px-1.5 py-0`}>
+                    {categoryLabel(cat)}
+                  </Badge>
+                );
+              })()}
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Company</div>
                 <Tooltip>
@@ -319,9 +328,14 @@ export function CompaniesTable({
                     />
                   </td>
                   <td className="px-2 py-1.5">
-                    <Badge variant="outline" className={`${getStatusBadge(company.status)} text-[9px] px-1.5 py-0 truncate`}>
-                      {company.status}
-                    </Badge>
+                    {(() => {
+                      const cat = deriveCategory(company);
+                      return (
+                        <Badge variant="outline" className={`${categoryBadgeClass(cat)} text-[9px] px-1.5 py-0 truncate`}>
+                          {categoryLabel(cat)}
+                        </Badge>
+                      );
+                    })()}
                   </td>
                   <td className="px-2 py-1.5">
                     {(() => {

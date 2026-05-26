@@ -24,6 +24,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Company, Director, CompanyStatus, LifecycleStatus, AvailabilityStatus, AuthCodeStatus, Ad01Status, AddressStatus } from "@/types";
+import {
+  applyCategory,
+  PRIMARY_CATEGORY_OPTIONS,
+  type PrimaryCategory,
+} from "@/lib/companyCategory";
 
 interface Props {
   company: Company;
@@ -36,6 +41,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [markReadyToSell, setMarkReadyToSell] = useState(false);
+  const [primaryCategory, setPrimaryCategory] = useState<PrimaryCategory | "custom">("custom");
 
   const [form, setForm] = useState({
     company_name: company.company_name ?? "",
@@ -61,6 +67,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
   useEffect(() => {
     if (open) {
       setMarkReadyToSell(false);
+      setPrimaryCategory("custom");
 
       setForm({
         company_name: company.company_name ?? "",
@@ -92,19 +99,32 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     e.preventDefault();
     setSubmitting(true);
     try {
-      // Ready to Sell override — sets every field to clean/sale-ready values
-      const effLifecycle: LifecycleStatus = markReadyToSell ? "active" : form.lifecycle_status;
-      const effAvailability: AvailabilityStatus = markReadyToSell ? "available" : form.availability_status;
-      const effAuthStatus: AuthCodeStatus = markReadyToSell ? "available" : form.auth_code_status;
-      const effAddressStatus: AddressStatus = markReadyToSell
-        ? "Changed/Updated"
-        : form.address_status;
-      const effAd01Status: Ad01Status = markReadyToSell ? "completed" : form.ad01_status;
+      // Primary Category override (takes precedence when chosen)
+      const catOverride = primaryCategory !== "custom" ? applyCategory(primaryCategory) : null;
+
+      // Ready to Sell checkbox override — sets every field to clean/sale-ready values
+      const effLifecycle: LifecycleStatus = catOverride
+        ? catOverride.lifecycle_status
+        : markReadyToSell ? "active" : form.lifecycle_status;
+      const effAvailability: AvailabilityStatus = catOverride
+        ? catOverride.availability_status
+        : markReadyToSell ? "available" : form.availability_status;
+      const effAuthStatus: AuthCodeStatus = catOverride
+        ? catOverride.auth_code_status
+        : markReadyToSell ? "available" : form.auth_code_status;
+      const effAddressStatus: AddressStatus = catOverride
+        ? catOverride.address_status
+        : markReadyToSell ? "Changed/Updated" : form.address_status;
+      const effAd01Status: Ad01Status = catOverride
+        ? catOverride.ad01_status
+        : markReadyToSell ? "completed" : form.ad01_status;
 
       // Auto-clear strike-off when AD01 is completed and address is no longer default
       const autoClearStrikeOff =
         effAd01Status === "completed" && effAddressStatus !== "Default Address";
-      const effectiveStrikeOff = markReadyToSell
+      const effectiveStrikeOff = catOverride
+        ? catOverride.strike_off_status
+        : markReadyToSell
         ? false
         : autoClearStrikeOff
         ? false
@@ -176,6 +196,29 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
           <DialogTitle>Edit Company</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="space-y-1.5 rounded-lg border-2 border-primary/40 bg-primary/5 p-3">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-primary">
+              🏷️ Primary Category
+            </Label>
+            <Select
+              value={primaryCategory}
+              onValueChange={(v) => setPrimaryCategory(v as PrimaryCategory | "custom")}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="custom">— Custom (use fields below) —</SelectItem>
+                {PRIMARY_CATEGORY_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>
+                    {o.emoji} {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-muted-foreground">
+              Selecting a category auto-sets all status fields below.
+            </p>
+          </div>
+
           <label className="flex items-start gap-3 rounded-lg border-2 border-emerald-500/40 bg-emerald-500/5 p-3 cursor-pointer hover:bg-emerald-500/10 transition">
             <input
               type="checkbox"

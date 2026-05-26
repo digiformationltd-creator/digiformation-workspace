@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import type { Company } from "@/types";
+import { applyCategory, PRIMARY_CATEGORY_OPTIONS, type PrimaryCategory } from "@/lib/companyCategory";
 
 type DashSearch = { filter?: string };
 
@@ -233,23 +234,40 @@ function DashboardPage() {
       const companyNumber = ((formData.get("company_number") as string) || "").trim();
 
       const markReadyToSell = formData.get("mark_ready_to_sell") === "on";
+      const primaryCategory = (formData.get("primary_category") as string) || "custom";
+      const catOverride =
+        primaryCategory !== "custom"
+          ? applyCategory(primaryCategory as PrimaryCategory)
+          : null;
 
-      const lifecycle = markReadyToSell
+      const lifecycle = catOverride
+        ? catOverride.lifecycle_status
+        : markReadyToSell
         ? "active"
         : (((formData.get("lifecycle_status") as string) || "active") as "active" | "dissolved");
-      const availability = markReadyToSell
+      const availability = catOverride
+        ? catOverride.availability_status
+        : markReadyToSell
         ? "available"
         : (((formData.get("availability_status") as string) || "available") as "available" | "sold");
-      const strikeOff = markReadyToSell
+      const strikeOff = catOverride
+        ? catOverride.strike_off_status
+        : markReadyToSell
         ? false
         : (formData.get("strike_off_status") as string) === "yes";
-      const authStatus = markReadyToSell
+      const authStatus = catOverride
+        ? catOverride.auth_code_status
+        : markReadyToSell
         ? "available"
         : (((formData.get("auth_code_status") as string) || "missing") as "available" | "missing");
-      const addrStatus = markReadyToSell
+      const addrStatus = catOverride
+        ? catOverride.address_status
+        : markReadyToSell
         ? ("Changed/Updated" as Company["address_status"])
         : ((formData.get("address_status") as Company["address_status"]) || "Default Address");
-      const ad01Status = markReadyToSell
+      const ad01Status = catOverride
+        ? catOverride.ad01_status
+        : markReadyToSell
         ? "completed"
         : (((formData.get("ad01_status") as string) || "pending") as "pending" | "processing" | "completed");
 
@@ -353,6 +371,27 @@ function DashboardPage() {
                 <DialogTitle>Add New Company</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddCompany} className="space-y-4">
+
+                <div className="space-y-1.5 rounded-lg border-2 border-primary/40 bg-primary/5 p-3">
+                  <Label htmlFor="primary_category" className="text-xs font-semibold uppercase tracking-wide text-primary">
+                    🏷️ Primary Category
+                  </Label>
+                  <Select name="primary_category" defaultValue="custom">
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="custom">— Custom (use fields below) —</SelectItem>
+                      {PRIMARY_CATEGORY_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          {o.emoji} {o.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-[10px] text-muted-foreground">
+                    Selecting a category auto-sets all status fields below.
+                  </p>
+                </div>
+
 
                 <label className="flex items-start gap-3 rounded-lg border-2 border-emerald-500/40 bg-emerald-500/5 p-3 cursor-pointer hover:bg-emerald-500/10 transition">
                   <input
