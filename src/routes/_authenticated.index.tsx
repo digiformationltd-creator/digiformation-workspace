@@ -231,7 +231,14 @@ function DashboardPage() {
         auth_code: (formData.get("auth_code") as string) || null,
         utr_number: (formData.get("utr_number") as string) || null,
         director_id: (formData.get("director_id") as string) || null,
-        status: (formData.get("status") as Company["status"]) || "Active",
+        status: ((): Company["status"] => {
+          const lifecycle = (formData.get("lifecycle_status") as string) || "Active";
+          const availability = (formData.get("availability_status") as string) || "Available";
+          if (lifecycle === "Dissolved") return "Dissolved";
+          if (availability === "Sold Out") return "Sold/Transferred";
+          if (availability === "Available") return "Available Company";
+          return "Active";
+        })(),
         address_status: (formData.get("address_status") as Company["address_status"]) || "Default Address",
         ch_accounts_next_due: (formData.get("ch_accounts_next_due") as string) || null,
         ch_confirmation_statement_next_due: (formData.get("ch_confirmation_statement_next_due") as string) || null,
@@ -317,23 +324,33 @@ function DashboardPage() {
                   <Input id="company_number" name="company_number" />
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="incorporation_date">Incorporation Date</Label>
+                  <Input id="incorporation_date" name="incorporation_date" type="date" />
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="incorporation_date">Incorporation Date</Label>
-                    <Input id="incorporation_date" name="incorporation_date" type="date" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="status">Status</Label>
-                    <Select name="status" defaultValue="Active">
+                    <Label htmlFor="lifecycle_status">Company Status</Label>
+                    <Select name="lifecycle_status" defaultValue="Active">
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Available Company">Available Company</SelectItem>
-                        <SelectItem value="Sold/Transferred">Sold/Transferred</SelectItem>
-                        <SelectItem value="Strike Off Notice">Strike Off Notice</SelectItem>
                         <SelectItem value="Dissolved">Dissolved</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="availability_status">Availability</Label>
+                    <Select name="availability_status" defaultValue="Available">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Available">Available</SelectItem>
+                        <SelectItem value="Sold Out">Sold Out</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
