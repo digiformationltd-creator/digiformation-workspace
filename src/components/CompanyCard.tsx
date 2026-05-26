@@ -113,6 +113,7 @@ export function CompanyCard({
   company,
   onMarkSold,
   onMarkAd01,
+  onDelete,
   isAdmin = true,
 }: Props) {
   const ad01Done = !!company.ad01_filing_date;
