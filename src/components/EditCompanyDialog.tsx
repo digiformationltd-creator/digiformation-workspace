@@ -196,6 +196,29 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
           <DialogTitle>Edit Company</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="space-y-1.5 rounded-lg border-2 border-primary/40 bg-primary/5 p-3">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-primary">
+              🏷️ Primary Category
+            </Label>
+            <Select
+              value={primaryCategory}
+              onValueChange={(v) => setPrimaryCategory(v as PrimaryCategory | "custom")}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="custom">— Custom (use fields below) —</SelectItem>
+                {PRIMARY_CATEGORY_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>
+                    {o.emoji} {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-muted-foreground">
+              Selecting a category auto-sets all status fields below.
+            </p>
+          </div>
+
           <label className="flex items-start gap-3 rounded-lg border-2 border-emerald-500/40 bg-emerald-500/5 p-3 cursor-pointer hover:bg-emerald-500/10 transition">
             <input
               type="checkbox"
