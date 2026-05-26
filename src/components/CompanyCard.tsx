@@ -104,10 +104,12 @@ export function CompanyCard({
 
   const allDone = ad01Done && addressChanged && sold;
 
-  const originalDirector = company.previous_director_name || company.director?.name;
-  const currentDirector = company.director?.name;
+  // For sold/transferred companies, `previous_director_name` holds the NEW current director
+  // (the buyer's director). `director.name` is our original (now-resigned) director.
+  const displayedDirector = company.previous_director_name || company.director?.name;
+  const ourDirector = company.director?.name;
   const directorChanged =
-    !!company.previous_director_name && currentDirector && currentDirector !== company.previous_director_name;
+    !!company.previous_director_name && ourDirector && ourDirector !== company.previous_director_name;
 
   return (
     <TooltipProvider delayDuration={200}>
