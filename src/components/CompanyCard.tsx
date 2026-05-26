@@ -52,6 +52,7 @@ function StatusRow({
   disabled,
   meta,
   hideAction,
+  actionVariant,
 }: {
   icon: typeof FileText;
   label: string;
@@ -63,6 +64,7 @@ function StatusRow({
   disabled?: boolean;
   meta?: string;
   hideAction?: boolean;
+  actionVariant?: "default" | "success";
 }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border bg-card/50 px-3 py-2.5">
@@ -98,7 +100,11 @@ function StatusRow({
         <Button
           size="sm"
           variant="outline"
-          className="h-7 text-xs shrink-0"
+          className={
+            actionVariant === "success"
+              ? "h-7 text-xs shrink-0 bg-success text-success-foreground border-success hover:bg-success/90 hover:text-success-foreground"
+              : "h-7 text-xs shrink-0"
+          }
           onClick={onAction}
           disabled={disabled}
         >
