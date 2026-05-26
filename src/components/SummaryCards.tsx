@@ -36,11 +36,14 @@ export function SummaryCards({ companies }: Props) {
   // AD01 Pending = active owned companies that need AD01 filing (auth missing OR default address) and have NOT been filed yet
   const needsAd01 = (c: typeof owned[number]) =>
     c.status === "Active" && (isAuthMissing(c) || c.address_status === "Default Address");
+  const isAd01Complete = (c: typeof owned[number]) => Array.isArray(c.tags) && c.tags.includes("ad01-complete");
   const ad01PendingAuth = owned.filter((c) => needsAd01(c) && isAuthMissing(c) && !c.ad01_filing_date).length;
   const ad01PendingDefault = owned.filter((c) => needsAd01(c) && c.address_status === "Default Address" && !c.ad01_filing_date).length;
   const ad01Pending = owned.filter((c) => needsAd01(c) && !c.ad01_filing_date).length;
-  // AD01 Processing = filed but still pending new auth code / address update
-  const ad01Processing = owned.filter((c) => needsAd01(c) && !!c.ad01_filing_date).length;
+  // AD01 Processing = filed but still pending new auth code / address update (and not yet completed)
+  const ad01Processing = owned.filter((c) => needsAd01(c) && !!c.ad01_filing_date && !isAd01Complete(c)).length;
+  // AD01 Filed = completed (tagged ad01-complete)
+  const ad01Filed = owned.filter((c) => isAd01Complete(c)).length;
 
   const cards = [
     {
