@@ -187,6 +187,9 @@ function DashboardPage() {
         company_number: (formData.get("company_number") as string).toUpperCase(),
         incorporation_date: (formData.get("incorporation_date") as string) || null,
         company_address: (formData.get("company_address") as string) || null,
+        previous_name: (formData.get("previous_name") as string) || null,
+        previous_address: (formData.get("previous_address") as string) || null,
+        previous_director_name: (formData.get("previous_director_name") as string) || null,
         sic_codes: (formData.get("sic_codes") as string)
           ? (formData.get("sic_codes") as string).split(",").map((s) => s.trim())
           : null,
@@ -194,6 +197,13 @@ function DashboardPage() {
         utr_number: (formData.get("utr_number") as string) || null,
         director_id: (formData.get("director_id") as string) || null,
         status: (formData.get("status") as Company["status"]) || "Active",
+        address_status: (formData.get("address_status") as Company["address_status"]) || "Default Address",
+        ad01_filing_date: (formData.get("ad01_filing_date") as string) || null,
+        ch_expiry_date: (formData.get("ch_expiry_date") as string) || null,
+        ch_operation_date: (formData.get("ch_operation_date") as string) || null,
+        ch_filing_rate: (formData.get("ch_filing_rate") as string) || null,
+        ch_accounts_next_due: (formData.get("ch_accounts_next_due") as string) || null,
+        ch_confirmation_statement_next_due: (formData.get("ch_confirmation_statement_next_due") as string) || null,
       });
       form.reset();
       setShowAddForm(false);
@@ -291,6 +301,37 @@ function DashboardPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
+                    <Label htmlFor="address_status">Address Status</Label>
+                    <Select name="address_status" defaultValue="Default Address">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Default Address">Default Address</SelectItem>
+                        <SelectItem value="Changed/Updated">Changed/Updated</SelectItem>
+                        <SelectItem value="Active">Active</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ad01_filing_date">AD01 Filing Date</Label>
+                    <Input id="ad01_filing_date" name="ad01_filing_date" type="date" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="previous_name">Previous Company Name</Label>
+                  <Input id="previous_name" name="previous_name" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="previous_address">Previous Address</Label>
+                  <Input id="previous_address" name="previous_address" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="previous_director_name">Previous / New Director Name</Label>
+                  <Input id="previous_director_name" name="previous_director_name" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
                     <Label htmlFor="auth_code">Auth Code</Label>
                     <Input id="auth_code" name="auth_code" />
                   </div>
@@ -298,6 +339,30 @@ function DashboardPage() {
                     <Label htmlFor="utr_number">UTR Number</Label>
                     <Input id="utr_number" name="utr_number" />
                   </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="ch_confirmation_statement_next_due">Confirmation Statement Due</Label>
+                    <Input id="ch_confirmation_statement_next_due" name="ch_confirmation_statement_next_due" type="date" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ch_accounts_next_due">Annual Accounts Due</Label>
+                    <Input id="ch_accounts_next_due" name="ch_accounts_next_due" type="date" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="ch_expiry_date">CH Expiry Date</Label>
+                    <Input id="ch_expiry_date" name="ch_expiry_date" type="date" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ch_operation_date">CH Operation Date</Label>
+                    <Input id="ch_operation_date" name="ch_operation_date" type="date" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ch_filing_rate">CH Filing Rate</Label>
+                  <Input id="ch_filing_rate" name="ch_filing_rate" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="sic_codes">SIC Codes (comma separated)</Label>
