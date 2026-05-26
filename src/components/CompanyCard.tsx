@@ -2,7 +2,6 @@ import {
   FileText,
   Truck,
   MapPin,
-  ExternalLink,
   CheckCircle2,
   Clock,
   Building2,
@@ -16,12 +15,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
+import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
 import type { Company } from "@/types";
 
 interface Props {
   company: Company;
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
+  isAdmin?: boolean;
 }
 
 const fmt = (d: string | null | undefined) =>
@@ -37,6 +38,7 @@ function StatusRow({
   onAction,
   disabled,
   meta,
+  hideAction,
 }: {
   icon: typeof FileText;
   label: string;
@@ -47,6 +49,7 @@ function StatusRow({
   onAction: () => void;
   disabled?: boolean;
   meta?: string;
+  hideAction?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border bg-card/50 px-3 py-2.5">
@@ -78,7 +81,7 @@ function StatusRow({
           </div>
         </div>
       </div>
-      {!done && (
+      {!done && !hideAction && (
         <Button
           size="sm"
           variant="outline"
@@ -97,6 +100,7 @@ export function CompanyCard({
   company,
   onMarkSold,
   onMarkAd01,
+  isAdmin = true,
 }: Props) {
   const ad01Done = !!company.ad01_filing_date;
   const addressChanged = company.address_status === "Changed/Updated";
@@ -182,6 +186,7 @@ export function CompanyCard({
             actionLabel="Mark Filed"
             onAction={() => onMarkAd01(company.id)}
             meta={ad01Done ? fmt(company.ad01_filing_date) : undefined}
+            hideAction={!isAdmin}
           />
           <StatusRow
             icon={MapPin}
@@ -191,6 +196,7 @@ export function CompanyCard({
             pendingLabel="Default"
             actionLabel="Mark Changed"
             onAction={() => onMarkAd01(company.id)}
+            hideAction={!isAdmin}
           />
           <StatusRow
             icon={Truck}
@@ -200,6 +206,7 @@ export function CompanyCard({
             pendingLabel={company.status}
             actionLabel="Mark Sold"
             onAction={() => onMarkSold(company.id)}
+            hideAction={!isAdmin}
           />
         </div>
 
@@ -209,9 +216,9 @@ export function CompanyCard({
         {/* Footer actions */}
         <div className="flex items-center justify-center pt-2 border-t">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            className="h-7 text-xs gap-1"
+            className="h-9 text-sm gap-2 px-4"
             onClick={() =>
               window.open(
                 `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -219,8 +226,8 @@ export function CompanyCard({
               )
             }
           >
-            <ExternalLink className="h-3 w-3" />
-            Companies House
+            <CompaniesHouseLogo className="h-5 w-5" />
+            View on Companies House
           </Button>
         </div>
       </div>

@@ -10,6 +10,7 @@ import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
 import logo from "@/assets/digiformation-logo.png";
 import { isOwnedCompany } from "@/lib/ownership";
+import { useUserRole } from "@/hooks/useUserRole";
 
 
 import {
@@ -56,6 +57,7 @@ function DashboardPage() {
     createDirector,
     refresh,
   } = useCompanies();
+  const { isAdmin } = useUserRole();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDirector, setSelectedDirector] = useState("all");
@@ -520,6 +522,7 @@ function DashboardPage() {
                 company={c}
                 onMarkSold={markAsSold}
                 onMarkAd01={markAd01Filed}
+                isAdmin={isAdmin}
               />
             ))
           )}
@@ -535,6 +538,7 @@ function DashboardPage() {
               onMarkAd01={markAd01Filed}
               onMarkAd01Complete={markAd01Complete}
               onUpdate={updateCompany}
+              isAdmin={isAdmin}
             />
           </div>
         </div>

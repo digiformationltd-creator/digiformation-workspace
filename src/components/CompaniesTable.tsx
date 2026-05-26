@@ -32,6 +32,7 @@ interface Props {
   onMarkAd01: (id: string) => void;
   onMarkAd01Complete: (id: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
+  isAdmin?: boolean;
 }
 
 
@@ -42,6 +43,7 @@ export function CompaniesTable({
   onMarkAd01,
   onMarkAd01Complete,
   onUpdate,
+  isAdmin = true,
 }: Props) {
   const [sortField, setSortField] = useState<keyof Company | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -186,7 +188,7 @@ export function CompaniesTable({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 text-[10px] px-2 gap-1 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
+                className="h-8 text-[11px] px-2.5 gap-1.5 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
                 onClick={() =>
                   window.open(
                     `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -194,57 +196,61 @@ export function CompaniesTable({
                   )
                 }
               >
-                <CompaniesHouseLogo className="h-3.5 w-3.5" />
-                Companies House
+                <CompaniesHouseLogo className="h-4 w-4" />
+                View on Companies House
               </Button>
-              <EditCompanyDialog
-                company={company}
-                directors={directors}
-                onUpdate={onUpdate}
-                triggerStyle="compact"
-              />
-              {needsAd01Filing(company) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-[10px] px-2 gap-1 border-orange-500/40 text-orange-600 hover:bg-orange-500/10"
-                  onClick={() => onMarkAd01(company.id)}
-                >
-                  <FileCheck className="h-3 w-3" />
-                  AD01
-                </Button>
-              )}
-              {isAd01Processing(company) && (
+              {isAdmin && (
                 <>
-                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
-                    AD01 Filed
-                  </Badge>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
-                    onClick={() => onMarkAd01Complete(company.id)}
-                  >
-                    <CheckCircle2 className="h-3 w-3" />
-                    Complete
-                  </Button>
+                  <EditCompanyDialog
+                    company={company}
+                    directors={directors}
+                    onUpdate={onUpdate}
+                    triggerStyle="compact"
+                  />
+                  {needsAd01Filing(company) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[10px] px-2 gap-1 border-orange-500/40 text-orange-600 hover:bg-orange-500/10"
+                      onClick={() => onMarkAd01(company.id)}
+                    >
+                      <FileCheck className="h-3 w-3" />
+                      AD01
+                    </Button>
+                  )}
+                  {isAd01Processing(company) && (
+                    <>
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
+                        AD01 Filed
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
+                        onClick={() => onMarkAd01Complete(company.id)}
+                      >
+                        <CheckCircle2 className="h-3 w-3" />
+                        Complete
+                      </Button>
+                    </>
+                  )}
+                  {isAd01Complete(company) && (
+                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
+                      AD01 Complete
+                    </Badge>
+                  )}
+                  {company.status === "Active" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
+                      onClick={() => onMarkSold(company.id)}
+                    >
+                      <Truck className="h-3 w-3" />
+                      Sold
+                    </Button>
+                  )}
                 </>
-              )}
-              {isAd01Complete(company) && (
-                <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
-                  AD01 Complete
-                </Badge>
-              )}
-              {company.status === "Active" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
-                  onClick={() => onMarkSold(company.id)}
-                >
-                  <Truck className="h-3 w-3" />
-                  Sold
-                </Button>
               )}
             </div>
           </div>
@@ -452,26 +458,43 @@ export function CompaniesTable({
                   <td className="px-1 py-1.5">
                     <div className="flex items-center gap-1 justify-end flex-wrap">
                       <CompanyDetailsSheet company={company} triggerStyle="compact" />
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-6 text-[10px] px-2 gap-1 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
-                            onClick={() =>
-                              window.open(
-                                `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
-                                "_blank"
-                              )
-                            }
-                          >
-                            <CompaniesHouseLogo className="h-3.5 w-3.5" />
-                            CH
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>View on Companies House</TooltipContent>
-                      </Tooltip>
-                      {needsAd01Filing(company) && (
+                      {isAdmin ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 text-[10px] px-2 gap-1 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
+                              onClick={() =>
+                                window.open(
+                                  `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
+                                  "_blank"
+                                )
+                              }
+                            >
+                              <CompaniesHouseLogo className="h-3.5 w-3.5" />
+                              CH
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>View on Companies House</TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-[11px] px-2.5 gap-1.5 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
+                          onClick={() =>
+                            window.open(
+                              `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          <CompaniesHouseLogo className="h-4 w-4" />
+                          View on Companies House
+                        </Button>
+                      )}
+                      {isAdmin && needsAd01Filing(company) && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -487,7 +510,7 @@ export function CompaniesTable({
                           <TooltipContent>Mark AD01 as filed</TooltipContent>
                         </Tooltip>
                       )}
-                      {isAd01Processing(company) && (
+                      {isAdmin && isAd01Processing(company) && (
                         <>
                           <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
                             AD01 Filed {formatDate(company.ad01_filing_date)}
@@ -508,12 +531,12 @@ export function CompaniesTable({
                           </Tooltip>
                         </>
                       )}
-                      {isAd01Complete(company) && (
+                      {isAdmin && isAd01Complete(company) && (
                         <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
                           AD01 Complete
                         </Badge>
                       )}
-                      {company.status === "Active" && (
+                      {isAdmin && company.status === "Active" && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -529,12 +552,14 @@ export function CompaniesTable({
                           <TooltipContent>Mark as Sold/Transferred</TooltipContent>
                         </Tooltip>
                       )}
-                      <EditCompanyDialog
-                        company={company}
-                        directors={directors}
-                        onUpdate={onUpdate}
-                        triggerStyle="compact"
-                      />
+                      {isAdmin && (
+                        <EditCompanyDialog
+                          company={company}
+                          directors={directors}
+                          onUpdate={onUpdate}
+                          triggerStyle="compact"
+                        />
+                      )}
                     </div>
                   </td>
                 </tr>
