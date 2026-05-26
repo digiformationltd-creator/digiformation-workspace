@@ -416,11 +416,11 @@ function DashboardPage() {
                 <div className="rounded-lg border p-3 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
                   <div className="space-y-2">
-                    <Label htmlFor="previous_name">Original / Old Company Name</Label>
-                    <Input id="previous_name" name="previous_name" placeholder="As originally incorporated" />
+                    <Label htmlFor="previous_name">Old Company Name</Label>
+                    <Input id="previous_name" name="previous_name" placeholder="Leave empty if never renamed" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="company_name">Current / New Company Name</Label>
+                    <Label htmlFor="company_name">Current Company Name</Label>
                     <Input id="company_name" name="company_name" placeholder="Current trading name" />
                   </div>
                 </div>
@@ -494,11 +494,11 @@ function DashboardPage() {
                 <div className="rounded-lg border p-3 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Registered Address</p>
                   <div className="space-y-2">
-                    <Label htmlFor="previous_address">Original Address</Label>
-                    <Input id="previous_address" name="previous_address" placeholder="As originally registered" />
+                    <Label htmlFor="previous_address">Old Address</Label>
+                    <Input id="previous_address" name="previous_address" placeholder="Leave empty if never changed" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="company_address">New / Current Address</Label>
+                    <Label htmlFor="company_address">Current Address</Label>
                     <Input id="company_address" name="company_address" placeholder="Current registered address" />
                   </div>
                   <div className="space-y-2">
@@ -519,11 +519,11 @@ function DashboardPage() {
                 <div className="rounded-lg border p-3 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Director</p>
                   <div className="space-y-2">
-                    <Label htmlFor="previous_director_name">Original / Old Director Name</Label>
-                    <Input id="previous_director_name" name="previous_director_name" placeholder="As originally appointed" />
+                    <Label htmlFor="previous_director_name">Old Director</Label>
+                    <Input id="previous_director_name" name="previous_director_name" placeholder="Leave empty if never changed" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="director_id">Current / New Director</Label>
+                    <Label htmlFor="director_id">Current Director</Label>
                     <Select name="director_id">
                       <SelectTrigger>
                         <SelectValue placeholder="Select current director" />

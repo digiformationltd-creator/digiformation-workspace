@@ -48,6 +48,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     company_number: company.company_number ?? "",
     previous_name: company.previous_name ?? "",
     previous_address: company.previous_address ?? "",
+    previous_director_name: company.previous_director_name ?? "",
     incorporation_date: company.incorporation_date ?? "",
     company_address: company.company_address ?? "",
     auth_code: company.auth_code ?? "",
@@ -74,6 +75,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
         company_number: company.company_number ?? "",
         previous_name: company.previous_name ?? "",
         previous_address: company.previous_address ?? "",
+        previous_director_name: company.previous_director_name ?? "",
         incorporation_date: company.incorporation_date ?? "",
         company_address: company.company_address ?? "",
         auth_code: company.auth_code ?? "",
@@ -147,6 +149,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
         company_number: form.company_number.toUpperCase(),
         previous_name: form.previous_name || null,
         previous_address: form.previous_address || null,
+        previous_director_name: form.previous_director_name || null,
         incorporation_date: form.incorporation_date || null,
         company_address: form.company_address || null,
         auth_code: form.auth_code || null,
@@ -236,21 +239,24 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
             </div>
           </label>
 
-          <div className="space-y-1.5">
-            <Label>Company Name (our records / old name)</Label>
-            <Input
-              value={form.company_name}
-              onChange={(e) => set("company_name", e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>New Name (if renamed on Companies House)</Label>
-            <Input
-              value={form.previous_name}
-              onChange={(e) => set("previous_name", e.target.value)}
-              placeholder="Leave empty if not renamed"
-            />
+          <div className="rounded-lg border p-3 space-y-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
+            <div className="space-y-1.5">
+              <Label>Old Company Name</Label>
+              <Input
+                value={form.previous_name}
+                onChange={(e) => set("previous_name", e.target.value)}
+                placeholder="Leave empty if never renamed"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Current Company Name</Label>
+              <Input
+                value={form.company_name}
+                onChange={(e) => set("company_name", e.target.value)}
+                required
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
@@ -270,12 +276,23 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
               />
             </div>
           </div>
-          <div className="space-y-1.5">
-            <Label>Registered Address</Label>
-            <Input
-              value={form.company_address}
-              onChange={(e) => set("company_address", e.target.value)}
-            />
+          <div className="rounded-lg border p-3 space-y-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Registered Address</p>
+            <div className="space-y-1.5">
+              <Label>Old Address</Label>
+              <Input
+                value={form.previous_address}
+                onChange={(e) => set("previous_address", e.target.value)}
+                placeholder="Leave empty if never changed"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Current Address</Label>
+              <Input
+                value={form.company_address}
+                onChange={(e) => set("company_address", e.target.value)}
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
@@ -373,26 +390,37 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
               />
             </div>
           </div>
-          <div className="space-y-1.5">
-            <Label>Director</Label>
-            <Select
-              value={form.director_id}
-              onValueChange={(v) => set("director_id", v)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select director" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">— None —</SelectItem>
-                {directors
-                  .filter((d) => d.is_owner)
-                  .map((d) => (
-                    <SelectItem key={d.id} value={d.id}>
-                      {d.name}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+          <div className="rounded-lg border p-3 space-y-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Director</p>
+            <div className="space-y-1.5">
+              <Label>Old Director</Label>
+              <Input
+                value={form.previous_director_name}
+                onChange={(e) => set("previous_director_name", e.target.value)}
+                placeholder="Leave empty if never changed"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Current Director</Label>
+              <Select
+                value={form.director_id}
+                onValueChange={(v) => set("director_id", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select current director" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">— None —</SelectItem>
+                  {directors
+                    .filter((d) => d.is_owner)
+                    .map((d) => (
+                      <SelectItem key={d.id} value={d.id}>
+                        {d.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
