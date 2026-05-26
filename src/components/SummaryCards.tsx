@@ -49,16 +49,18 @@ export function SummaryCards({ companies }: Props) {
   const ad01Processing = internal.filter((c) => c.ad01_status === "processing").length;
   const ad01Filed = internal.filter((c) => c.ad01_status === "completed").length;
 
-  // Ready to Sell = clean, available, active companies with NO open issues.
-  // (Auth available + Address not default already implies no real AD01 obligation.)
+  // Ready to Sell = clean, available, active companies with NO open issues
+  // AND the authentication code has actually been received/entered.
   const readyToSell = companies.filter(
     (c) =>
       c.lifecycle_status === "active" &&
       c.availability_status === "available" &&
       c.strike_off_status === false &&
       c.auth_code_status !== "missing" &&
+      !!c.auth_code && c.auth_code.trim() !== "" &&
       c.address_status !== "Default Address",
   ).length;
+
   void owned;
 
   const cards = [
