@@ -104,6 +104,31 @@ export function useCompanies() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const markAd01CompleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      // Read current tags
+      const { data: current, error: readErr } = await supabase
+        .from("companies")
+        .select("tags")
+        .eq("id", id)
+        .single();
+      if (readErr) throw safeDbError(readErr, "Failed to mark AD01 complete.");
+      const existing: string[] = Array.isArray(current?.tags) ? (current.tags as string[]) : [];
+      const nextTags = existing.includes("ad01-complete") ? existing : [...existing, "ad01-complete"];
+      const { error } = await supabase
+        .from("companies")
+        .update({ tags: nextTags, updated_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) throw safeDbError(error, "Failed to mark AD01 complete.");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["companies"] });
+      toast.success("AD01 marked as complete");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   const createDirectorMutation = useMutation({
     mutationFn: async (name: string) => {
       const { data, error } = await supabase
