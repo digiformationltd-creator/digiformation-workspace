@@ -2,9 +2,6 @@ import { useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  FileCheck,
-  CheckCircle2,
-  Truck,
   Trash2,
 } from "lucide-react";
 import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
@@ -40,9 +37,6 @@ import type { Company, Director } from "@/types";
 interface Props {
   companies: Company[];
   directors: Director[];
-  onMarkSold: (id: string) => void;
-  onMarkAd01: (id: string) => void;
-  onMarkAd01Complete: (id: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
   onDelete?: (id: string) => void;
   isAdmin?: boolean;
@@ -52,9 +46,6 @@ interface Props {
 export function CompaniesTable({
   companies,
   directors,
-  onMarkSold,
-  onMarkAd01,
-  onMarkAd01Complete,
   onUpdate,
   onDelete,
   isAdmin = true,
@@ -90,15 +81,7 @@ export function CompaniesTable({
       "Available Company": "bg-warning/10 text-warning border-warning/20",
       "Sold/Transferred": "bg-info/10 text-info border-info/20",
       "Strike Off Notice": "bg-destructive/10 text-destructive border-destructive/20",
-    };
-    return variants[status] || "bg-muted text-muted-foreground";
-  };
-
-  const getAddressBadge = (status: string) => {
-    const variants: Record<string, string> = {
-      "Default Address": "bg-warning/10 text-warning border-warning/20",
-      "Changed/Updated": "bg-primary/10 text-primary border-primary/20",
-      "Active": "bg-success/10 text-success border-success/20",
+      "Dissolved": "bg-destructive/10 text-destructive border-destructive/20",
     };
     return variants[status] || "bg-muted text-muted-foreground";
   };
@@ -109,18 +92,7 @@ export function CompaniesTable({
     return "bg-muted text-muted-foreground";
   };
 
-  const formatDate = (date: string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("en-GB");
-  };
 
-  const isAuthMissing = (c: Company) =>
-    !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
-  const isAd01Complete = (c: Company) => Array.isArray(c.tags) && c.tags.includes("ad01-complete");
-  const needsAd01Filing = (c: Company) =>
-    c.status === "Active" && !c.ad01_filing_date && (isAuthMissing(c) || c.address_status === "Default Address");
-  const isAd01Processing = (c: Company) =>
-    c.status === "Active" && !!c.ad01_filing_date && !isAd01Complete(c) && (isAuthMissing(c) || c.address_status === "Default Address");
 
 
 
@@ -221,49 +193,6 @@ export function CompaniesTable({
                     onUpdate={onUpdate}
                     triggerStyle="compact"
                   />
-                  {needsAd01Filing(company) && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-[10px] px-2 gap-1 border-orange-500/40 text-orange-600 hover:bg-orange-500/10"
-                      onClick={() => onMarkAd01(company.id)}
-                    >
-                      <FileCheck className="h-3 w-3" />
-                      AD01
-                    </Button>
-                  )}
-                  {isAd01Processing(company) && (
-                    <>
-                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
-                        AD01 Filed
-                      </Badge>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-7 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
-                        onClick={() => onMarkAd01Complete(company.id)}
-                      >
-                        <CheckCircle2 className="h-3 w-3" />
-                        Complete
-                      </Button>
-                    </>
-                  )}
-                  {isAd01Complete(company) && (
-                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
-                      AD01 Complete
-                    </Badge>
-                  )}
-                  {company.status === "Active" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
-                      onClick={() => onMarkSold(company.id)}
-                    >
-                      <Truck className="h-3 w-3" />
-                      Sold
-                    </Button>
-                  )}
                   {onDelete && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -539,64 +468,6 @@ export function CompaniesTable({
                           View on Companies House
                         </Button>
                       )}
-                      {isAdmin && needsAd01Filing(company) && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-6 text-[10px] px-2 gap-1 border-orange-500/40 text-orange-600 hover:bg-orange-500/10"
-                              onClick={() => onMarkAd01(company.id)}
-                            >
-                              <FileCheck className="h-3 w-3" />
-                              AD01
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Mark AD01 as filed</TooltipContent>
-                        </Tooltip>
-                      )}
-                      {isAdmin && isAd01Processing(company) && (
-                        <>
-                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
-                            AD01 Filed {formatDate(company.ad01_filing_date)}
-                          </Badge>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-6 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
-                                onClick={() => onMarkAd01Complete(company.id)}
-                              >
-                                <CheckCircle2 className="h-3 w-3" />
-                                Complete
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Mark AD01 as complete</TooltipContent>
-                          </Tooltip>
-                        </>
-                      )}
-                      {isAdmin && isAd01Complete(company) && (
-                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
-                          AD01 Complete
-                        </Badge>
-                      )}
-                      {isAdmin && company.status === "Active" && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-6 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
-                              onClick={() => onMarkSold(company.id)}
-                            >
-                              <Truck className="h-3 w-3" />
-                              Sold
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Mark as Sold/Transferred</TooltipContent>
-                        </Tooltip>
-                      )}
                       {isAdmin && (
                         <EditCompanyDialog
                           company={company}
@@ -608,22 +479,18 @@ export function CompaniesTable({
                       {isAdmin && onDelete && (
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-6 text-[10px] px-2 gap-1 border-destructive/40 text-destructive hover:bg-destructive/10"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Delete company</TooltipContent>
-                            </Tooltip>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 text-[10px] px-2 gap-1 border-destructive/40 text-destructive hover:bg-destructive/10"
+                              title="Delete company"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete this company?</AlertDialogTitle>
+                              <AlertDialogTitle>Are you sure you want to delete this company?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 This will permanently remove <strong>{company.company_name}</strong> ({company.company_number}) and all related records. This action cannot be undone.
                               </AlertDialogDescription>
@@ -634,7 +501,7 @@ export function CompaniesTable({
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 onClick={() => onDelete(company.id)}
                               >
-                                Delete
+                                Yes, Delete
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
