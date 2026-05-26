@@ -453,6 +453,7 @@ function DashboardPage() {
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
       </div>
 
