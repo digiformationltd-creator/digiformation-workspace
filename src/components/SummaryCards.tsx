@@ -8,7 +8,7 @@ import {
   Clock,
   KeyRound,
   FileCheck,
-  FileText,
+  Sparkles,
   
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
