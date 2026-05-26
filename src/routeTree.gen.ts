@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated.import'
+import { Route as ApiPublicSeedClientRouteImport } from './routes/api/public/seed-client'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -33,16 +34,23 @@ const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
   path: '/import',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ApiPublicSeedClientRoute = ApiPublicSeedClientRouteImport.update({
+  id: '/api/public/seed-client',
+  path: '/api/public/seed-client',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/import': typeof AuthenticatedImportRoute
+  '/api/public/seed-client': typeof ApiPublicSeedClientRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/import': typeof AuthenticatedImportRoute
   '/': typeof AuthenticatedIndexRoute
+  '/api/public/seed-client': typeof ApiPublicSeedClientRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,23 +58,26 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/api/public/seed-client': typeof ApiPublicSeedClientRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/import'
+  fullPaths: '/' | '/login' | '/import' | '/api/public/seed-client'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/import' | '/'
+  to: '/login' | '/import' | '/' | '/api/public/seed-client'
   id:
     | '__root__'
     | '/_authenticated'
     | '/login'
     | '/_authenticated/import'
     | '/_authenticated/'
+    | '/api/public/seed-client'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiPublicSeedClientRoute: typeof ApiPublicSeedClientRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +110,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImportRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/public/seed-client': {
+      id: '/api/public/seed-client'
+      path: '/api/public/seed-client'
+      fullPath: '/api/public/seed-client'
+      preLoaderRoute: typeof ApiPublicSeedClientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -119,7 +137,18 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiPublicSeedClientRoute: ApiPublicSeedClientRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
