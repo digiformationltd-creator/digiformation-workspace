@@ -121,7 +121,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
 
       // Auto-clear strike-off when AD01 is completed and address is no longer default
       const autoClearStrikeOff =
-        effAd01Status === "completed" && effAddressStatus !== "Default Address";
+        (effAd01Status === "completed" || effAd01Status === "not_required") && effAddressStatus !== "Default Address";
       const effectiveStrikeOff = catOverride
         ? catOverride.strike_off_status
         : markReadyToSell
