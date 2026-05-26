@@ -178,7 +178,7 @@ function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3 rounded-xl px-2 sm:px-4 py-2 sm:py-3 -ml-2 min-w-0">
-          <div className="h-14 w-14 sm:h-24 sm:w-24 shrink-0 flex items-center justify-center">
+          <div className="h-16 w-16 sm:h-28 sm:w-28 shrink-0 flex items-center justify-center -mt-2">
             <img
               src={logo}
               alt="Digiformation"
