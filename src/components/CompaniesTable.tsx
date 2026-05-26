@@ -130,19 +130,19 @@ export function CompaniesTable({
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Director</div>
                 {(() => {
-                  const original = company.previous_director_name || company.director?.name;
                   const current = company.director?.name;
-                  const changed = !!company.previous_director_name && current && current !== company.previous_director_name;
+                  const original = company.previous_director_name;
+                  const changed = !!original && !!current && current !== original;
                   return (
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className={`break-words ${changed ? "underline decoration-dotted underline-offset-2 cursor-help" : ""}`}>
-                          {original || "—"}
+                          {current || "—"}
                         </div>
                       </TooltipTrigger>
                       {changed && (
                         <TooltipContent className="text-xs max-w-[280px]">
-                          <div><strong>Current director:</strong> {current}</div>
+                          <div><strong>Original director:</strong> {original}</div>
                         </TooltipContent>
                       )}
                     </Tooltip>
@@ -292,22 +292,22 @@ export function CompaniesTable({
                   </td>
                   <td className="px-2 py-1.5">
                     {(() => {
-                      const original = company.previous_director_name || company.director?.name;
                       const current = company.director?.name;
-                      const changed = !!company.previous_director_name && current && current !== company.previous_director_name;
+                      const original = company.previous_director_name;
+                      const changed = !!original && !!current && current !== original;
                       return (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className={`truncate flex items-center gap-1 text-[11px] ${changed ? "cursor-help underline decoration-dotted underline-offset-2" : ""}`}>
-                              {original || <span className="text-muted-foreground">—</span>}
+                              {current || <span className="text-muted-foreground">—</span>}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent className="text-xs max-w-[320px]">
-                            <div><strong>Original director:</strong> {original || "—"}</div>
+                            <div><strong>Current director:</strong> {current || "—"}</div>
                             {changed && (
-                              <div className="mt-1"><strong>Current director:</strong> {current}</div>
+                              <div className="mt-1"><strong>Original director:</strong> {original}</div>
                             )}
-                            {!company.previous_director_name && company.director && !company.director.is_owner && (
+                            {!original && company.director && !company.director.is_owner && (
                               <div className="mt-1 text-muted-foreground italic">Transferred — original not recorded</div>
                             )}
                           </TooltipContent>
