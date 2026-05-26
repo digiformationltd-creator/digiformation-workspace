@@ -29,7 +29,9 @@ export function SummaryCards({ companies }: Props) {
   const strikeOff = owned.filter((c) => c.status === "Strike Off Notice").length;
   const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
   const isAuthMissing = (c: typeof owned[number]) => !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
-  const ad01Pending = owned.filter((c) => !c.ad01_filing_date && isAuthMissing(c)).length;
+  const ad01PendingAuth = owned.filter((c) => !c.ad01_filing_date && isAuthMissing(c)).length;
+  const ad01PendingDefault = owned.filter((c) => !c.ad01_filing_date && !isAuthMissing(c) && c.address_status === "Default Address").length;
+  const ad01Pending = ad01PendingAuth + ad01PendingDefault;
   const ad01Filed = owned.filter((c) => !!c.ad01_filing_date).length;
 
   const cards = [
@@ -91,7 +93,7 @@ export function SummaryCards({ companies }: Props) {
       accent: "from-orange-500/20 to-red-500/10",
       ring: "group-hover:ring-orange-500/40",
       iconBg: "bg-orange-500/10 text-orange-600 group-hover:bg-orange-500 group-hover:text-white",
-      hint: "AD01 not yet filed",
+      hint: `${ad01PendingAuth} no auth + ${ad01PendingDefault} default addr = ${ad01Pending}`,
     },
     {
       title: "AD01 Filed",
