@@ -133,6 +133,36 @@ export function SummaryCards({ companies }: Props) {
       iconBg: "bg-yellow-500/10 text-yellow-600 group-hover:bg-yellow-500 group-hover:text-white",
       hint: "PO Box / Cardiff registered",
     },
+    {
+      title: "AD01 Filed",
+      value: 0,
+      icon: FileCheck,
+      filter: undefined,
+      accent: "from-green-500/20 to-emerald-500/10",
+      ring: "group-hover:ring-green-500/40",
+      iconBg: "bg-green-500/10 text-green-600 group-hover:bg-green-500 group-hover:text-white",
+      hint: "Completed AD01 filings",
+    },
+    {
+      title: "Confirmation Statement",
+      value: 0,
+      icon: FileText,
+      filter: undefined,
+      accent: "from-purple-500/20 to-violet-500/10",
+      ring: "group-hover:ring-purple-500/40",
+      iconBg: "bg-purple-500/10 text-purple-600 group-hover:bg-purple-500 group-hover:text-white",
+      hint: "Pending confirmation statements",
+    },
+    {
+      title: "Annual Accounts",
+      value: 0,
+      icon: BookOpen,
+      filter: undefined,
+      accent: "from-teal-500/20 to-cyan-500/10",
+      ring: "group-hover:ring-teal-500/40",
+      iconBg: "bg-teal-500/10 text-teal-600 group-hover:bg-teal-500 group-hover:text-white",
+      hint: "Pending annual accounts",
+    },
   ];
 
   return (
