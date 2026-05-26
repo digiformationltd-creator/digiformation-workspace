@@ -390,26 +390,37 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
               />
             </div>
           </div>
-          <div className="space-y-1.5">
-            <Label>Director</Label>
-            <Select
-              value={form.director_id}
-              onValueChange={(v) => set("director_id", v)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select director" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">— None —</SelectItem>
-                {directors
-                  .filter((d) => d.is_owner)
-                  .map((d) => (
-                    <SelectItem key={d.id} value={d.id}>
-                      {d.name}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+          <div className="rounded-lg border p-3 space-y-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Director</p>
+            <div className="space-y-1.5">
+              <Label>Old Director</Label>
+              <Input
+                value={form.previous_director_name}
+                onChange={(e) => set("previous_director_name", e.target.value)}
+                placeholder="Leave empty if never changed"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Current Director</Label>
+              <Select
+                value={form.director_id}
+                onValueChange={(v) => set("director_id", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select current director" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">— None —</SelectItem>
+                  {directors
+                    .filter((d) => d.is_owner)
+                    .map((d) => (
+                      <SelectItem key={d.id} value={d.id}>
+                        {d.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
