@@ -101,30 +101,25 @@ function DashboardPage() {
     let filtered = [...companies];
 
     if (quickFilter === "active") {
-      filtered = filtered.filter((c) => c.status === "Active");
+      filtered = filtered.filter((c) => c.lifecycle_status === "active");
+    } else if (quickFilter === "dissolved") {
+      filtered = filtered.filter((c) => c.lifecycle_status === "dissolved");
     } else if (quickFilter === "ad01") {
-      filtered = filtered.filter((c) => {
-        if (!isOwnedCompany(c)) return false;
-        const t = Array.isArray(c.tags) ? c.tags : [];
-        if (t.includes("ad01-complete") || t.includes("ad01-processing")) return false;
-        const authMissing = !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
-        const defaultAddr = c.address_status === "Default Address";
-        return defaultAddr || (c.status === "Active" && authMissing);
-      });
+      filtered = filtered.filter((c) => c.ad01_status === "pending" && (c.auth_code_status === "missing" || c.address_status === "Default Address"));
     } else if (quickFilter === "ad01-processing") {
-      filtered = filtered.filter((c) => isOwnedCompany(c) && Array.isArray(c.tags) && c.tags.includes("ad01-processing") && !c.tags.includes("ad01-complete"));
+      filtered = filtered.filter((c) => c.ad01_status === "processing");
     } else if (quickFilter === "ad01-filed") {
-      filtered = filtered.filter((c) => isOwnedCompany(c) && Array.isArray(c.tags) && c.tags.includes("ad01-complete"));
+      filtered = filtered.filter((c) => c.ad01_status === "completed");
     } else if (quickFilter === "pending-sale") {
-      filtered = filtered.filter((c) => c.status === "Available Company");
+      filtered = filtered.filter((c) => c.availability_status === "available");
     } else if (quickFilter === "sold") {
-      filtered = filtered.filter((c) => c.status === "Sold/Transferred" || (c.director ? !c.director.is_owner : true));
+      filtered = filtered.filter((c) => c.availability_status === "sold");
     } else if (quickFilter === "default-address") {
-      filtered = filtered.filter((c) => c.address_status === "Default Address" && c.status !== "Sold/Transferred");
+      filtered = filtered.filter((c) => c.address_status === "Default Address");
     } else if (quickFilter === "strike-off") {
-      filtered = filtered.filter((c) => c.status === "Strike Off Notice" && isOwnedCompany(c));
+      filtered = filtered.filter((c) => c.strike_off_status === true);
     } else if (quickFilter === "auth-missing") {
-      filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && (!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending"));
+      filtered = filtered.filter((c) => c.auth_code_status === "missing");
     }
 
     if (searchTerm) {
