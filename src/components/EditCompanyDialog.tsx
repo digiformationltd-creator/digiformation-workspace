@@ -88,6 +88,18 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Keep legacy `status` in sync with explicit fields
+      const legacyStatus: CompanyStatus =
+        form.lifecycle_status === "dissolved"
+          ? "Dissolved"
+          : form.strike_off_status
+          ? "Strike Off Notice"
+          : form.availability_status === "sold"
+          ? "Sold/Transferred"
+          : form.availability_status === "available"
+          ? "Available Company"
+          : "Active";
+
       await onUpdate(company.id, {
         company_name: form.company_name,
         company_number: form.company_number.toUpperCase(),
@@ -101,7 +113,13 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
           ? form.sic_codes.split(",").map((s) => s.trim()).filter(Boolean)
           : null,
         director_id: form.director_id === "none" ? null : form.director_id,
-        status: form.status,
+        status: legacyStatus,
+        address_status: form.address_status,
+        lifecycle_status: form.lifecycle_status,
+        availability_status: form.availability_status,
+        strike_off_status: form.strike_off_status,
+        auth_code_status: form.auth_code_status,
+        ad01_status: form.ad01_status,
         ad01_filing_date: form.ad01_filing_date || null,
       });
       setOpen(false);
