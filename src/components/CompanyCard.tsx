@@ -34,6 +34,7 @@ interface Props {
   company: Company;
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
+  onMarkAd01Complete?: (id: string) => void;
   onDelete?: (id: string) => void;
   isAdmin?: boolean;
 }
