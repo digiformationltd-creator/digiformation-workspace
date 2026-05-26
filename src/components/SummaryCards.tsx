@@ -98,7 +98,7 @@ export function SummaryCards({ companies }: Props) {
       accent: "from-orange-500/20 to-red-500/10",
       ring: "group-hover:ring-orange-500/40",
       iconBg: "bg-orange-500/10 text-orange-600 group-hover:bg-orange-500 group-hover:text-white",
-      hint: `${ad01PendingAuth} auth + ${ad01PendingDefault} addr = ${ad01Pending}`,
+      hint: `${ad01PendingAuth} + ${ad01PendingDefault} = ${ad01Pending}`,
     },
     {
       title: "AD01 Processing",
