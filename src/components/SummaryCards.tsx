@@ -174,14 +174,14 @@ export function SummaryCards({ companies }: Props) {
       hint: "Completed AD01 filings",
     },
     {
-      title: "Confirmation Statement",
-      value: 0,
-      icon: FileText,
-      filter: undefined,
-      accent: "from-purple-500/20 to-violet-500/10",
+      title: "Ready to Sell",
+      value: readyToSell,
+      icon: Sparkles,
+      filter: "ready-to-sell",
+      accent: "from-purple-500/20 to-pink-500/10",
       ring: "group-hover:ring-purple-500/40",
       iconBg: "bg-purple-500/10 text-purple-600 group-hover:bg-purple-500 group-hover:text-white",
-      hint: "Pending confirmation statements",
+      hint: "Clean companies — no open issues",
     },
   ];
 
