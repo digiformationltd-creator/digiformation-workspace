@@ -30,6 +30,7 @@ interface Props {
   directors: Director[];
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
+  onMarkAd01Complete: (id: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
 }
 
@@ -39,6 +40,7 @@ export function CompaniesTable({
   directors,
   onMarkSold,
   onMarkAd01,
+  onMarkAd01Complete,
   onUpdate,
 }: Props) {
   const [sortField, setSortField] = useState<keyof Company | null>(null);
