@@ -30,9 +30,14 @@ export function SummaryCards({ companies }: Props) {
   const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
   const isAuthMissing = (c: typeof owned[number]) => !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
   const authMissing = owned.filter((c) => c.status === "Active" && isAuthMissing(c)).length;
-  const ad01PendingAuth = 0; // manually set to 0 as no AD01 filed yet
-  const ad01PendingDefault = 0; // manually set to 0 as no AD01 filed yet
-  const ad01Pending = 0;
+  // AD01 Pending = active owned companies that need AD01 filing (auth missing OR default address) and have NOT been filed yet
+  const needsAd01 = (c: typeof owned[number]) =>
+    c.status === "Active" && (isAuthMissing(c) || c.address_status === "Default Address");
+  const ad01PendingAuth = owned.filter((c) => needsAd01(c) && isAuthMissing(c) && !c.ad01_filing_date).length;
+  const ad01PendingDefault = owned.filter((c) => needsAd01(c) && c.address_status === "Default Address" && !c.ad01_filing_date).length;
+  const ad01Pending = owned.filter((c) => needsAd01(c) && !c.ad01_filing_date).length;
+  // AD01 Processing = filed but still pending new auth code / address update
+  const ad01Processing = owned.filter((c) => needsAd01(c) && !!c.ad01_filing_date).length;
 
   const cards = [
     {
@@ -93,7 +98,17 @@ export function SummaryCards({ companies }: Props) {
       accent: "from-orange-500/20 to-red-500/10",
       ring: "group-hover:ring-orange-500/40",
       iconBg: "bg-orange-500/10 text-orange-600 group-hover:bg-orange-500 group-hover:text-white",
-      hint: `${ad01PendingAuth} no auth + ${ad01PendingDefault} default addr = ${ad01Pending}`,
+      hint: `${ad01PendingAuth} auth + ${ad01PendingDefault} addr = ${ad01Pending}`,
+    },
+    {
+      title: "AD01 Processing",
+      value: ad01Processing,
+      icon: Clock,
+      filter: "ad01-processing",
+      accent: "from-blue-500/20 to-cyan-500/10",
+      ring: "group-hover:ring-blue-500/40",
+      iconBg: "bg-blue-500/10 text-blue-600 group-hover:bg-blue-500 group-hover:text-white",
+      hint: "Filed — awaiting new auth/address",
     },
     {
       title: "Auth Missing",
