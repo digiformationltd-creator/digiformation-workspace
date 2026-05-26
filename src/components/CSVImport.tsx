@@ -98,14 +98,17 @@ export function CSVImport({ onSuccess }: Props) {
 
         const payload = rows
           .map((r) => {
-            const name = pick(r, "company name", "company_name", "name");
+            const name = pick(r, "current company name", "company name", "company_name", "name");
             const number = pick(r, "company number", "company_number", "number");
             if (!name || !number) return null;
             return {
               company_name: name,
               company_number: number.toUpperCase(),
+              previous_name: pick(r, "old company name", "previous name", "previous_name") || null,
+              previous_address: pick(r, "old address", "previous address", "previous_address") || null,
+              previous_director_name: pick(r, "old director", "old director name", "previous director", "previous_director_name") || null,
               incorporation_date: pick(r, "incorporation date", "incorporation_date") || null,
-              company_address: pick(r, "registered address", "company address", "address") || null,
+              company_address: pick(r, "current address", "registered address", "company address", "address") || null,
               sic_codes: pick(r, "sic codes", "sic")
                 ? pick(r, "sic codes", "sic").split(/[,;]/).map((s) => s.trim()).filter(Boolean)
                 : null,
