@@ -3,8 +3,6 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
-  Truck,
-  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -161,25 +159,6 @@ export function CompaniesTable({
             </div>
             <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t">
               <CompanyDetailsSheet company={company} triggerStyle="compact" />
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 text-[10px] px-2 gap-1"
-                onClick={() => onMarkSold(company.id)}
-                disabled={company.status === "Sold/Transferred"}
-              >
-                <Truck className="h-3 w-3 text-info" />
-                Sold
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 text-[10px] px-2 gap-1"
-                onClick={() => onMarkAd01(company.id)}
-              >
-                <FileText className="h-3 w-3 text-primary" />
-                AD01
-              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -396,35 +375,6 @@ export function CompaniesTable({
                   <td className="px-1 py-1.5">
                     <div className="flex items-center gap-1 justify-end flex-wrap">
                       <CompanyDetailsSheet company={company} triggerStyle="compact" />
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-6 text-[10px] px-2 gap-1"
-                            onClick={() => onMarkSold(company.id)}
-                            disabled={company.status === "Sold/Transferred"}
-                          >
-                            <Truck className="h-3 w-3 text-info" />
-                            Sold
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Mark Sold</TooltipContent>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-6 text-[10px] px-2 gap-1"
-                            onClick={() => onMarkAd01(company.id)}
-                          >
-                            <FileText className="h-3 w-3 text-primary" />
-                            AD01
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>AD01 Filed {company.ad01_filing_date ? `· ${formatDate(company.ad01_filing_date)}` : ""}</TooltipContent>
-                      </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
