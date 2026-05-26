@@ -226,7 +226,7 @@ export function CompanyCard({
               )
             }
           >
-            <CompaniesHouseLogo className="h-5 w-5" />
+            <CompaniesHouseLogo className="h-6 w-6" />
             View on Companies House
           </Button>
         </div>

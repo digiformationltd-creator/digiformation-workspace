@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, LogOut, LayoutDashboard } from "lucide-react";
+import { Moon, Sun, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Footer } from "@/components/Footer";
@@ -51,7 +51,6 @@ function AppLayout() {
           <header className="h-12 flex items-center justify-between border-b px-2 sm:px-3 bg-card/50 backdrop-blur-sm gap-2">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <SidebarTrigger className="-ml-1 shrink-0" />
-              <LayoutDashboard className="h-4 w-4 text-primary shrink-0" />
               <span className="text-xs sm:text-sm font-semibold text-foreground truncate">
                 <span className="sm:hidden">Digiformation Dev Studio</span>
                 <span className="hidden sm:inline">Digiformation Dev Studio</span>
