@@ -100,15 +100,18 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={
-                      currentPath === "/" && currentSearch.filter === item.search.filter
+                      currentPath === "/" &&
+                      (item.search
+                        ? currentSearch.filter === item.search.filter
+                        : !currentSearch.filter)
                     }
                   >
                     <Link
                       to="/"
-                      search={item.search}
+                      search={item.search ?? {}}
                       className="flex items-center gap-2 hover:bg-muted/50"
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
