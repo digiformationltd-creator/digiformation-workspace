@@ -417,9 +417,8 @@ function DashboardPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Default Address">Default Address</SelectItem>
-                        <SelectItem value="Changed/Updated">Changed/Updated</SelectItem>
-                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Default Address">Default</SelectItem>
+                        <SelectItem value="Changed/Updated">Normal</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
