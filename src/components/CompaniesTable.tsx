@@ -40,7 +40,7 @@ export function CompaniesTable({
   onMarkAd01,
   onUpdate,
 }: Props) {
-  const [sortField, setSortField] = useState<keyof Company>("company_name");
+  const [sortField, setSortField] = useState<keyof Company | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const handleSort = (field: string) => {
@@ -52,16 +52,18 @@ export function CompaniesTable({
     }
   };
 
-  const sortedCompanies = [...companies].sort((a, b) => {
-    const key = sortField as keyof Company;
-    let aVal = a[key] ?? "";
-    let bVal = b[key] ?? "";
-    if (typeof aVal === "string") aVal = aVal.toLowerCase();
-    if (typeof bVal === "string") bVal = bVal.toLowerCase();
-    if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-    if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-    return 0;
-  });
+  const sortedCompanies = sortField
+    ? [...companies].sort((a, b) => {
+        const key = sortField as keyof Company;
+        let aVal = a[key] ?? "";
+        let bVal = b[key] ?? "";
+        if (typeof aVal === "string") aVal = aVal.toLowerCase();
+        if (typeof bVal === "string") bVal = bVal.toLowerCase();
+        if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+        return 0;
+      })
+    : companies;
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, string> = {
