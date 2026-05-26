@@ -24,6 +24,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Company, Director, CompanyStatus, LifecycleStatus, AvailabilityStatus, AuthCodeStatus, Ad01Status, AddressStatus } from "@/types";
+import {
+  applyCategory,
+  PRIMARY_CATEGORY_OPTIONS,
+  type PrimaryCategory,
+} from "@/lib/companyCategory";
 
 interface Props {
   company: Company;
