@@ -151,9 +151,9 @@ function DashboardPage() {
     }
 
     if (authFilter === "has") {
-      filtered = filtered.filter((c) => !!c.auth_code && c.auth_code.trim() !== "");
+      filtered = filtered.filter((c) => !!c.auth_code && c.auth_code.trim() !== "" && c.auth_code.trim().toLowerCase() !== "pending");
     } else if (authFilter === "missing") {
-      filtered = filtered.filter((c) => !c.auth_code || c.auth_code.trim() === "");
+      filtered = filtered.filter((c) => !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending");
     }
 
     // Sort tiers:
