@@ -21,10 +21,10 @@ interface Props {
 
 export function SummaryCards({ companies }: Props) {
   const owned = companies.filter(isOwnedCompany);
-  // Total = all companies ever registered (including sold)
-  const totalCompanies = 80;
-  // Active = currently active companies (only decreases on dissolution)
-  const activeCompanies = 80;
+  // Total = total companies currently in the system (grows when a new one is added)
+  const totalCompanies = companies.length;
+  // Active = companies whose status is Active
+  const activeCompanies = companies.filter((c) => c.status === "Active").length;
   // Sold = explicitly sold OR not under our owner directors (auto-derived)
   const sold = companies.filter(isSoldCompany).length;
   // Available = total minus sold
