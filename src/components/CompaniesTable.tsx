@@ -188,7 +188,7 @@ export function CompaniesTable({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 text-[10px] px-2 gap-1 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
+                className="h-8 text-[11px] px-2.5 gap-1.5 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
                 onClick={() =>
                   window.open(
                     `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -196,57 +196,61 @@ export function CompaniesTable({
                   )
                 }
               >
-                <CompaniesHouseLogo className="h-3.5 w-3.5" />
-                Companies House
+                <CompaniesHouseLogo className="h-4 w-4" />
+                View on Companies House
               </Button>
-              <EditCompanyDialog
-                company={company}
-                directors={directors}
-                onUpdate={onUpdate}
-                triggerStyle="compact"
-              />
-              {needsAd01Filing(company) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-[10px] px-2 gap-1 border-orange-500/40 text-orange-600 hover:bg-orange-500/10"
-                  onClick={() => onMarkAd01(company.id)}
-                >
-                  <FileCheck className="h-3 w-3" />
-                  AD01
-                </Button>
-              )}
-              {isAd01Processing(company) && (
+              {isAdmin && (
                 <>
-                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
-                    AD01 Filed
-                  </Badge>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
-                    onClick={() => onMarkAd01Complete(company.id)}
-                  >
-                    <CheckCircle2 className="h-3 w-3" />
-                    Complete
-                  </Button>
+                  <EditCompanyDialog
+                    company={company}
+                    directors={directors}
+                    onUpdate={onUpdate}
+                    triggerStyle="compact"
+                  />
+                  {needsAd01Filing(company) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[10px] px-2 gap-1 border-orange-500/40 text-orange-600 hover:bg-orange-500/10"
+                      onClick={() => onMarkAd01(company.id)}
+                    >
+                      <FileCheck className="h-3 w-3" />
+                      AD01
+                    </Button>
+                  )}
+                  {isAd01Processing(company) && (
+                    <>
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
+                        AD01 Filed
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
+                        onClick={() => onMarkAd01Complete(company.id)}
+                      >
+                        <CheckCircle2 className="h-3 w-3" />
+                        Complete
+                      </Button>
+                    </>
+                  )}
+                  {isAd01Complete(company) && (
+                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
+                      AD01 Complete
+                    </Badge>
+                  )}
+                  {company.status === "Active" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
+                      onClick={() => onMarkSold(company.id)}
+                    >
+                      <Truck className="h-3 w-3" />
+                      Sold
+                    </Button>
+                  )}
                 </>
-              )}
-              {isAd01Complete(company) && (
-                <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
-                  AD01 Complete
-                </Badge>
-              )}
-              {company.status === "Active" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-[10px] px-2 gap-1 border-sky-500/40 text-sky-600 hover:bg-sky-500/10"
-                  onClick={() => onMarkSold(company.id)}
-                >
-                  <Truck className="h-3 w-3" />
-                  Sold
-                </Button>
               )}
             </div>
           </div>
