@@ -416,11 +416,11 @@ function DashboardPage() {
                 <div className="rounded-lg border p-3 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
                   <div className="space-y-2">
-                    <Label htmlFor="previous_name">Original / Old Company Name</Label>
-                    <Input id="previous_name" name="previous_name" placeholder="As originally incorporated" />
+                    <Label htmlFor="previous_name">Old Company Name</Label>
+                    <Input id="previous_name" name="previous_name" placeholder="Leave empty if never renamed" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="company_name">Current / New Company Name</Label>
+                    <Label htmlFor="company_name">Current Company Name</Label>
                     <Input id="company_name" name="company_name" placeholder="Current trading name" />
                   </div>
                 </div>
