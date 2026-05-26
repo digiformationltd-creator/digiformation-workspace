@@ -33,6 +33,7 @@ import { EditableCell } from "@/components/EditableCell";
 import { EditCompanyDialog } from "@/components/EditCompanyDialog";
 import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import type { Company, Director } from "@/types";
+import { deriveCategory, categoryBadgeClass, categoryLabel } from "@/lib/companyCategory";
 
 interface Props {
   companies: Company[];
