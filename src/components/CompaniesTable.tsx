@@ -295,23 +295,24 @@ export function CompaniesTable({
                   </td>
                   <td className="px-2 py-1.5">
                     {(() => {
-                      const current = company.director?.name;
-                      const original = company.previous_director_name;
-                      const changed = !!original && !!current && current !== original;
+                      const newCurrent = company.previous_director_name;
+                      const ours = company.director?.name;
+                      const display = newCurrent || ours;
+                      const changed = !!newCurrent && !!ours && newCurrent !== ours;
                       return (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className={`truncate flex items-center gap-1 text-[11px] ${changed ? "cursor-help underline decoration-dotted underline-offset-2" : ""}`}>
-                              {current || <span className="text-muted-foreground">—</span>}
+                              {display || <span className="text-muted-foreground">—</span>}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent className="text-xs max-w-[320px]">
-                            <div><strong>Current director:</strong> {current || "—"}</div>
+                            <div><strong>Current director:</strong> {display || "—"}</div>
                             {changed && (
-                              <div className="mt-1"><strong>Original director:</strong> {original}</div>
+                              <div className="mt-1"><strong>Previously (ours):</strong> {ours}</div>
                             )}
-                            {!original && company.director && !company.director.is_owner && (
-                              <div className="mt-1 text-muted-foreground italic">Transferred — original not recorded</div>
+                            {!newCurrent && company.director && !company.director.is_owner && (
+                              <div className="mt-1 text-muted-foreground italic">Transferred — new director not recorded</div>
                             )}
                           </TooltipContent>
                         </Tooltip>
