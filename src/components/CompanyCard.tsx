@@ -125,13 +125,15 @@ export function CompanyCard({
   isAdmin = true,
 }: Props) {
   const ad01Filed = !!company.ad01_filing_date;
-  const ad01Complete = Array.isArray(company.tags) && company.tags.includes("ad01-complete");
+  const tags = Array.isArray(company.tags) ? company.tags : [];
+  const ad01Complete = tags.includes("ad01-complete");
+  const ad01Processing = tags.includes("ad01-processing");
   const addressChanged = company.address_status === "Changed/Updated";
   const sold = company.status === "Sold/Transferred";
 
   // AD01 pipeline state: pending → processing → complete
   const ad01State: "pending" | "processing" | "complete" =
-    ad01Complete ? "complete" : ad01Filed ? "processing" : "pending";
+    ad01Complete ? "complete" : ad01Processing ? "processing" : "pending";
 
   const allDone = ad01Complete && addressChanged && sold;
 

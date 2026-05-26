@@ -88,38 +88,53 @@ export function useCompanies() {
 
   const markAd01Mutation = useMutation({
     mutationFn: async (id: string) => {
-      const today = new Date().toISOString().slice(0, 10);
-      const { error: e1 } = await supabase
+      // Move to "processing" — do NOT set filing date yet.
+      const { data: current, error: readErr } = await supabase
         .from("companies")
-        .update({ ad01_filing_date: today, updated_at: new Date().toISOString() })
+        .select("tags")
+        .eq("id", id)
+        .single();
+      if (readErr) throw safeDbError(readErr, "Failed to mark AD01 processing.");
+      const existing: string[] = Array.isArray(current?.tags) ? (current.tags as string[]) : [];
+      const nextTags = existing.includes("ad01-processing")
+        ? existing
+        : [...existing.filter((t) => t !== "ad01-complete"), "ad01-processing"];
+      const { error } = await supabase
+        .from("companies")
+        .update({ tags: nextTags, updated_at: new Date().toISOString() })
         .eq("id", id);
-      if (e1) throw safeDbError(e1, "Failed to record AD01 filing.");
-      const { error: e2 } = await supabase.from("ad01_filings").insert({ company_id: id, filed_date: today });
-      if (e2) throw safeDbError(e2, "Failed to record AD01 filing.");
+      if (error) throw safeDbError(error, "Failed to mark AD01 processing.");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
-      toast.success("AD01 filing recorded");
+      toast.success("Moved to AD01 Processing");
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
   const markAd01CompleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // Read current tags
+      const today = new Date().toISOString().slice(0, 10);
       const { data: current, error: readErr } = await supabase
         .from("companies")
-        .select("tags")
+        .select("tags, ad01_filing_date")
         .eq("id", id)
         .single();
       if (readErr) throw safeDbError(readErr, "Failed to mark AD01 complete.");
       const existing: string[] = Array.isArray(current?.tags) ? (current.tags as string[]) : [];
-      const nextTags = existing.includes("ad01-complete") ? existing : [...existing, "ad01-complete"];
+      const nextTags = [
+        ...existing.filter((t) => t !== "ad01-processing" && t !== "ad01-complete"),
+        "ad01-complete",
+      ];
       const { error } = await supabase
         .from("companies")
-        .update({ tags: nextTags, updated_at: new Date().toISOString() })
+        .update({ tags: nextTags, ad01_filing_date: today, updated_at: new Date().toISOString() })
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to mark AD01 complete.");
+      if (!current?.ad01_filing_date) {
+        const { error: e2 } = await supabase.from("ad01_filings").insert({ company_id: id, filed_date: today });
+        if (e2) throw safeDbError(e2, "Failed to record AD01 filing.");
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
