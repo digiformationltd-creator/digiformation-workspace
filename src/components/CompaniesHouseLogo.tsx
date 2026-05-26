@@ -9,7 +9,7 @@ export function CompaniesHouseLogo({ className }: { className?: string }) {
     <img
       src={logoUrl}
       alt="Companies House"
-      className={cn("h-5 w-5 object-contain", className)}
+      className={cn("h-6 w-6 object-contain", className)}
     />
   );
 }

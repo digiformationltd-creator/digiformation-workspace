@@ -196,7 +196,7 @@ export function CompaniesTable({
                   )
                 }
               >
-                <CompaniesHouseLogo className="h-4 w-4" />
+                <CompaniesHouseLogo className="h-5 w-5" />
                 View on Companies House
               </Button>
               {isAdmin && (
