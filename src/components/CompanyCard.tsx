@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   Clock,
   Building2,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
 import type { Company } from "@/types";
@@ -22,6 +34,7 @@ interface Props {
   company: Company;
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
+  onDelete?: (id: string) => void;
   isAdmin?: boolean;
 }
 
