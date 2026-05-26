@@ -129,6 +129,22 @@ function DashboardPage() {
       filtered = filtered.filter((c) => !c.auth_code || c.auth_code.trim() === "");
     }
 
+    // Sort: group by address, sold/non-owned at the very end
+    const normalizeAddr = (a: string | null | undefined) =>
+      (a ?? "").toLowerCase().replace(/[,.\s]+/g, " ").trim();
+
+    filtered.sort((a, b) => {
+      const aSold = !isOwnedCompany(a);
+      const bSold = !isOwnedCompany(b);
+      if (aSold !== bSold) return aSold ? 1 : -1;
+      const addrA = normalizeAddr(a.company_address);
+      const addrB = normalizeAddr(b.company_address);
+      if (!addrA && addrB) return 1;
+      if (addrA && !addrB) return -1;
+      if (addrA !== addrB) return addrA.localeCompare(addrB);
+      return a.company_name.localeCompare(b.company_name);
+    });
+
     return filtered;
   }, [companies, searchTerm, selectedDirector, activeStatus, addressFilter, authFilter, quickFilter, directorMap]);
 
