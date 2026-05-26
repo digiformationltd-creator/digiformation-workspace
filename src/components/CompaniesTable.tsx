@@ -458,26 +458,43 @@ export function CompaniesTable({
                   <td className="px-1 py-1.5">
                     <div className="flex items-center gap-1 justify-end flex-wrap">
                       <CompanyDetailsSheet company={company} triggerStyle="compact" />
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-6 text-[10px] px-2 gap-1 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
-                            onClick={() =>
-                              window.open(
-                                `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
-                                "_blank"
-                              )
-                            }
-                          >
-                            <CompaniesHouseLogo className="h-3.5 w-3.5" />
-                            CH
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>View on Companies House</TooltipContent>
-                      </Tooltip>
-                      {needsAd01Filing(company) && (
+                      {isAdmin ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 text-[10px] px-2 gap-1 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
+                              onClick={() =>
+                                window.open(
+                                  `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
+                                  "_blank"
+                                )
+                              }
+                            >
+                              <CompaniesHouseLogo className="h-3.5 w-3.5" />
+                              CH
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>View on Companies House</TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-[11px] px-2.5 gap-1.5 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
+                          onClick={() =>
+                            window.open(
+                              `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          <CompaniesHouseLogo className="h-4 w-4" />
+                          View on Companies House
+                        </Button>
+                      )}
+                      {isAdmin && needsAd01Filing(company) && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -493,7 +510,7 @@ export function CompaniesTable({
                           <TooltipContent>Mark AD01 as filed</TooltipContent>
                         </Tooltip>
                       )}
-                      {isAd01Processing(company) && (
+                      {isAdmin && isAd01Processing(company) && (
                         <>
                           <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
                             AD01 Filed {formatDate(company.ad01_filing_date)}
@@ -514,12 +531,12 @@ export function CompaniesTable({
                           </Tooltip>
                         </>
                       )}
-                      {isAd01Complete(company) && (
+                      {isAdmin && isAd01Complete(company) && (
                         <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
                           AD01 Complete
                         </Badge>
                       )}
-                      {company.status === "Active" && (
+                      {isAdmin && company.status === "Active" && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -535,12 +552,14 @@ export function CompaniesTable({
                           <TooltipContent>Mark as Sold/Transferred</TooltipContent>
                         </Tooltip>
                       )}
-                      <EditCompanyDialog
-                        company={company}
-                        directors={directors}
-                        onUpdate={onUpdate}
-                        triggerStyle="compact"
-                      />
+                      {isAdmin && (
+                        <EditCompanyDialog
+                          company={company}
+                          directors={directors}
+                          onUpdate={onUpdate}
+                          triggerStyle="compact"
+                        />
+                      )}
                     </div>
                   </td>
                 </tr>
