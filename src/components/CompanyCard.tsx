@@ -210,13 +210,14 @@ export function CompanyCard({
           />
           <StatusRow
             icon={MapPin}
-            label="Address Change"
+            label="AD01 Complete"
             done={addressChanged}
-            doneLabel="Changed"
-            pendingLabel="Default"
-            actionLabel="Mark Changed"
+            doneLabel="Complete"
+            pendingLabel="Processing"
+            actionLabel="AD01 Complete"
             onAction={() => onMarkAd01(company.id)}
             hideAction={!isAdmin}
+            actionVariant="success"
           />
           <StatusRow
             icon={Truck}
