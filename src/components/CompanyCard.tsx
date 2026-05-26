@@ -22,6 +22,7 @@ interface Props {
   company: Company;
   onMarkSold: (id: string) => void;
   onMarkAd01: (id: string) => void;
+  isAdmin?: boolean;
 }
 
 const fmt = (d: string | null | undefined) =>
