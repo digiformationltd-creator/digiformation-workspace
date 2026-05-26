@@ -110,7 +110,18 @@ export function CompaniesTable({
             <div className="space-y-1.5 text-[12px]">
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Company</div>
-                <div className="font-medium break-words">{company.company_name}</div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={`font-medium break-words ${company.previous_name ? "underline decoration-dotted underline-offset-2 cursor-help" : ""}`}>
+                      {company.company_name}
+                    </div>
+                  </TooltipTrigger>
+                  {company.previous_name && (
+                    <TooltipContent className="text-xs max-w-[280px]">
+                      <div><strong>Now registered as:</strong> {company.previous_name}</div>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
               </div>
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Number</div>
@@ -118,7 +129,25 @@ export function CompaniesTable({
               </div>
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Director</div>
-                <div className="break-words">{company.director?.name || "—"}</div>
+                {(() => {
+                  const original = company.previous_director_name || company.director?.name;
+                  const current = company.director?.name;
+                  const changed = !!company.previous_director_name && current && current !== company.previous_director_name;
+                  return (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className={`break-words ${changed ? "underline decoration-dotted underline-offset-2 cursor-help" : ""}`}>
+                          {original || "—"}
+                        </div>
+                      </TooltipTrigger>
+                      {changed && (
+                        <TooltipContent className="text-xs max-w-[280px]">
+                          <div><strong>Current director:</strong> {current}</div>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  );
+                })()}
               </div>
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Address</div>
@@ -233,23 +262,18 @@ export function CompaniesTable({
                   <td className="px-2 py-1.5">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div>
+                        <div className={company.previous_name ? "cursor-help" : undefined}>
                           <EditableCell
                             value={company.company_name}
                             onSave={(v) => v && onUpdate(company.id, { company_name: v })}
-                            className="font-medium"
+                            className={`font-medium ${company.previous_name ? "underline decoration-dotted underline-offset-2" : ""}`}
                           />
-                          {company.previous_name && (
-                            <div className="text-[9px] text-muted-foreground italic truncate">
-                              new: {company.previous_name}
-                            </div>
-                          )}
                         </div>
                       </TooltipTrigger>
                       {company.previous_name && (
                         <TooltipContent className="text-xs max-w-[320px]">
-                          <div><strong>Old (our records):</strong> {company.company_name}</div>
-                          <div className="mt-1"><strong>New name:</strong> {company.previous_name}</div>
+                          <div><strong>Original name:</strong> {company.company_name}</div>
+                          <div className="mt-1"><strong>Now registered as:</strong> {company.previous_name}</div>
                         </TooltipContent>
                       )}
                     </Tooltip>
@@ -267,22 +291,29 @@ export function CompaniesTable({
                     </Badge>
                   </td>
                   <td className="px-2 py-1.5">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="truncate flex items-center gap-1 text-[11px] cursor-help">
-                          {company.director?.name || <span className="text-muted-foreground">—</span>}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent className="text-xs max-w-[320px]">
-                        <div><strong>Current:</strong> {company.director?.name || "—"}</div>
-                        {company.previous_director_name && (
-                          <div className="mt-1"><strong>Old director:</strong> {company.previous_director_name}</div>
-                        )}
-                        {!company.previous_director_name && company.director && !company.director.is_owner && (
-                          <div className="mt-1 text-muted-foreground italic">Transferred — old director not recorded</div>
-                        )}
-                      </TooltipContent>
-                    </Tooltip>
+                    {(() => {
+                      const original = company.previous_director_name || company.director?.name;
+                      const current = company.director?.name;
+                      const changed = !!company.previous_director_name && current && current !== company.previous_director_name;
+                      return (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className={`truncate flex items-center gap-1 text-[11px] ${changed ? "cursor-help underline decoration-dotted underline-offset-2" : ""}`}>
+                              {original || <span className="text-muted-foreground">—</span>}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="text-xs max-w-[320px]">
+                            <div><strong>Original director:</strong> {original || "—"}</div>
+                            {changed && (
+                              <div className="mt-1"><strong>Current director:</strong> {current}</div>
+                            )}
+                            {!company.previous_director_name && company.director && !company.director.is_owner && (
+                              <div className="mt-1 text-muted-foreground italic">Transferred — original not recorded</div>
+                            )}
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })()}
                   </td>
                   <td className="px-2 py-1.5">
                     <Tooltip>

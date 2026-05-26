@@ -9,6 +9,12 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import type { Company } from "@/types";
 
@@ -98,88 +104,124 @@ export function CompanyCard({
 
   const allDone = ad01Done && addressChanged && sold;
 
+  const originalDirector = company.previous_director_name || company.director?.name;
+  const currentDirector = company.director?.name;
+  const directorChanged =
+    !!company.previous_director_name && currentDirector && currentDirector !== company.previous_director_name;
+
   return (
-    <div className="rounded-xl border bg-card p-4 space-y-3">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 shrink-0 text-primary" />
-            <h3 className="font-semibold text-sm truncate">
-              {company.company_name}
-            </h3>
-          </div>
-          <div className="flex items-center gap-2 mt-1 ml-6">
-            <span className="text-xs font-mono text-muted-foreground">
-              #{company.company_number}
-            </span>
-            {company.director?.name && (
-              <span className="text-xs text-muted-foreground truncate">
-                · {company.director.name}
+    <TooltipProvider delayDuration={200}>
+      <div className="rounded-xl border bg-card p-4 space-y-3">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-4 w-4 shrink-0 text-primary" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <h3
+                    className={`font-semibold text-sm truncate ${
+                      company.previous_name ? "underline decoration-dotted underline-offset-2 cursor-help" : ""
+                    }`}
+                  >
+                    {company.company_name}
+                  </h3>
+                </TooltipTrigger>
+                {company.previous_name && (
+                  <TooltipContent className="text-xs max-w-[280px]">
+                    <div>
+                      <strong>Now registered as:</strong> {company.previous_name}
+                    </div>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </div>
+            <div className="flex items-center gap-2 mt-1 ml-6">
+              <span className="text-xs font-mono text-muted-foreground">
+                #{company.company_number}
               </span>
-            )}
+              {originalDirector && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span
+                      className={`text-xs text-muted-foreground truncate ${
+                        directorChanged ? "underline decoration-dotted underline-offset-2 cursor-help" : ""
+                      }`}
+                    >
+                      · {originalDirector}
+                    </span>
+                  </TooltipTrigger>
+                  {directorChanged && (
+                    <TooltipContent className="text-xs max-w-[280px]">
+                      <div>
+                        <strong>Current director:</strong> {currentDirector}
+                      </div>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              )}
+            </div>
           </div>
+          {allDone && (
+            <Badge className="bg-success/15 text-success border-success/30 gap-1 shrink-0">
+              <CheckCircle2 className="h-3 w-3" /> All Done
+            </Badge>
+          )}
         </div>
-        {allDone && (
-          <Badge className="bg-success/15 text-success border-success/30 gap-1 shrink-0">
-            <CheckCircle2 className="h-3 w-3" /> All Done
-          </Badge>
-        )}
+
+        {/* Status rows */}
+        <div className="grid gap-2">
+          <StatusRow
+            icon={FileText}
+            label="AD01 Filing"
+            done={ad01Done}
+            doneLabel="Filed"
+            pendingLabel="Pending"
+            actionLabel="Mark Filed"
+            onAction={() => onMarkAd01(company.id)}
+            meta={ad01Done ? fmt(company.ad01_filing_date) : undefined}
+          />
+          <StatusRow
+            icon={MapPin}
+            label="Address Change"
+            done={addressChanged}
+            doneLabel="Changed"
+            pendingLabel="Default"
+            actionLabel="Mark Changed"
+            onAction={() => onMarkAd01(company.id)}
+          />
+          <StatusRow
+            icon={Truck}
+            label="Sale / Transfer"
+            done={sold}
+            doneLabel="Sold"
+            pendingLabel={company.status}
+            actionLabel="Mark Sold"
+            onAction={() => onMarkSold(company.id)}
+          />
+        </div>
+
+        {/* View More */}
+        <CompanyDetailsSheet company={company} triggerStyle="full" />
+
+        {/* Footer actions */}
+        <div className="flex items-center justify-center pt-2 border-t">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs gap-1"
+            onClick={() =>
+              window.open(
+                `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
+                "_blank"
+              )
+            }
+          >
+            <ExternalLink className="h-3 w-3" />
+            Companies House
+          </Button>
+        </div>
       </div>
-
-      {/* Status rows */}
-      <div className="grid gap-2">
-        <StatusRow
-          icon={FileText}
-          label="AD01 Filing"
-          done={ad01Done}
-          doneLabel="Filed"
-          pendingLabel="Pending"
-          actionLabel="Mark Filed"
-          onAction={() => onMarkAd01(company.id)}
-          meta={ad01Done ? fmt(company.ad01_filing_date) : undefined}
-        />
-        <StatusRow
-          icon={MapPin}
-          label="Address Change"
-          done={addressChanged}
-          doneLabel="Changed"
-          pendingLabel="Default"
-          actionLabel="Mark Changed"
-          onAction={() => onMarkAd01(company.id)}
-        />
-        <StatusRow
-          icon={Truck}
-          label="Sale / Transfer"
-          done={sold}
-          doneLabel="Sold"
-          pendingLabel={company.status}
-          actionLabel="Mark Sold"
-          onAction={() => onMarkSold(company.id)}
-        />
-
-      </div>
-
-      {/* View More */}
-      <CompanyDetailsSheet company={company} triggerStyle="full" />
-
-      {/* Footer actions */}
-      <div className="flex items-center justify-center pt-2 border-t">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 text-xs gap-1"
-          onClick={() =>
-            window.open(
-              `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
-              "_blank"
-            )
-          }
-        >
-          <ExternalLink className="h-3 w-3" />
-          Companies House
-        </Button>
-      </div>
-    </div>
+    </TooltipProvider>
   );
 }
