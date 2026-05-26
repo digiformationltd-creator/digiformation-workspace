@@ -104,10 +104,12 @@ export function CompanyCard({
 
   const allDone = ad01Done && addressChanged && sold;
 
-  const originalDirector = company.previous_director_name || company.director?.name;
-  const currentDirector = company.director?.name;
+  // For sold/transferred companies, `previous_director_name` holds the NEW current director
+  // (the buyer's director). `director.name` is our original (now-resigned) director.
+  const displayedDirector = company.previous_director_name || company.director?.name;
+  const ourDirector = company.director?.name;
   const directorChanged =
-    !!company.previous_director_name && currentDirector && currentDirector !== company.previous_director_name;
+    !!company.previous_director_name && ourDirector && ourDirector !== company.previous_director_name;
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -140,7 +142,7 @@ export function CompanyCard({
               <span className="text-xs font-mono text-muted-foreground">
                 #{company.company_number}
               </span>
-              {originalDirector && (
+              {displayedDirector && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span
@@ -148,13 +150,13 @@ export function CompanyCard({
                         directorChanged ? "underline decoration-dotted underline-offset-2 cursor-help" : ""
                       }`}
                     >
-                      · {originalDirector}
+                      · {displayedDirector}
                     </span>
                   </TooltipTrigger>
                   {directorChanged && (
                     <TooltipContent className="text-xs max-w-[280px]">
                       <div>
-                        <strong>Current director:</strong> {currentDirector}
+                        <strong>Previously:</strong> {ourDirector}
                       </div>
                     </TooltipContent>
                   )}
