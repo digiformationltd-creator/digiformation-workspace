@@ -3,6 +3,7 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  FileCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
