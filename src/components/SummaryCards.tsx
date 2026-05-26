@@ -138,9 +138,9 @@ export function SummaryCards({ companies }: Props) {
     },
     {
       title: "AD01 Filed",
-      value: 0,
+      value: ad01Filed,
       icon: FileCheck,
-      filter: undefined,
+      filter: "ad01-filed",
       accent: "from-green-500/20 to-emerald-500/10",
       ring: "group-hover:ring-green-500/40",
       iconBg: "bg-green-500/10 text-green-600 group-hover:bg-green-500 group-hover:text-white",
