@@ -383,6 +383,14 @@ export function CompaniesTable({
                       </TooltipContent>
                     </Tooltip>
                   </td>
+                  <td className="px-2 py-1.5">
+                    <EditableCell
+                      value={company.auth_code}
+                      onSave={(v) => onUpdate(company.id, { auth_code: v })}
+                      mono
+                      className={`text-[10px] ${!company.auth_code || company.auth_code.trim() === "" || company.auth_code.trim().toLowerCase() === "pending" ? "text-warning" : "text-foreground"}`}
+                    />
+                  </td>
                   <td className="px-1 py-1.5">
                     <div className="flex items-center gap-1 justify-end flex-wrap">
                       <CompanyDetailsSheet company={company} triggerStyle="compact" />
