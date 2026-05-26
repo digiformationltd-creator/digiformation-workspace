@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, LogOut, LayoutDashboard } from "lucide-react";
+import { Moon, Sun, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Footer } from "@/components/Footer";
