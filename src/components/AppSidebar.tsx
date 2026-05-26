@@ -5,9 +5,15 @@ import {
   Settings,
   FileText,
   Truck,
-  MapPin,
+  Home,
   AlertTriangle,
-  CheckCircle2,
+  CheckCircle,
+  Clock,
+  KeyRound,
+  FileCheck,
+  BookOpen,
+  Building2,
+  TrendingUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,17 +33,28 @@ const mainItems = [
   { title: "Settings", url: "/settings", icon: Settings, search: undefined },
 ];
 
+// Colors must match the SummaryCards on the dashboard so the icon language
+// is consistent between sidebar, dashboard, and table action buttons.
 const quickFilters: Array<{
   title: string;
   icon: typeof FileText;
-  search: { filter: string };
+  color: string;
+  search?: { filter: string };
 }> = [
-  { title: "Active", icon: CheckCircle2, search: { filter: "active" } },
-  { title: "AD01 Pending", icon: FileText, search: { filter: "ad01" } },
-  { title: "Available", icon: Truck, search: { filter: "pending-sale" } },
-  { title: "Default Address", icon: MapPin, search: { filter: "default-address" } },
-  { title: "Strike Off Notice", icon: AlertTriangle, search: { filter: "strike-off" } },
+  { title: "Total Companies", icon: Building2, color: "text-indigo-500", search: undefined },
+  { title: "Active", icon: CheckCircle, color: "text-emerald-500", search: { filter: "active" } },
+  { title: "Available", icon: TrendingUp, color: "text-amber-500", search: { filter: "pending-sale" } },
+  { title: "Sold / Transferred", icon: Truck, color: "text-sky-500", search: { filter: "sold" } },
+  { title: "Strike Off Notice", icon: AlertTriangle, color: "text-rose-500", search: { filter: "strike-off" } },
+  { title: "AD01 Pending", icon: Clock, color: "text-orange-500", search: { filter: "ad01" } },
+  { title: "AD01 Processing", icon: Clock, color: "text-blue-500", search: { filter: "ad01-processing" } },
+  { title: "AD01 Filed", icon: FileCheck, color: "text-green-600", search: { filter: "ad01-filed" } },
+  { title: "Auth Missing", icon: KeyRound, color: "text-fuchsia-500", search: { filter: "auth-missing" } },
+  { title: "Default Address", icon: Home, color: "text-yellow-600", search: { filter: "default-address" } },
+  { title: "Confirmation Statement", icon: FileText, color: "text-purple-500", search: undefined },
+  { title: "Annual Accounts", icon: BookOpen, color: "text-teal-500", search: undefined },
 ];
+
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -83,15 +100,18 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={
-                      currentPath === "/" && currentSearch.filter === item.search.filter
+                      currentPath === "/" &&
+                      (item.search
+                        ? currentSearch.filter === item.search.filter
+                        : !currentSearch.filter)
                     }
                   >
                     <Link
                       to="/"
-                      search={item.search}
+                      search={item.search ?? {}}
                       className="flex items-center gap-2 hover:bg-muted/50"
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!collapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>

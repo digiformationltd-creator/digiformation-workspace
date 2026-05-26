@@ -2,11 +2,11 @@ import { useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  ExternalLink,
   FileCheck,
   CheckCircle2,
   Truck,
 } from "lucide-react";
+import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -186,7 +186,7 @@ export function CompaniesTable({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 text-[10px] px-2 gap-1"
+                className="h-7 text-[10px] px-2 gap-1 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
                 onClick={() =>
                   window.open(
                     `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -194,8 +194,8 @@ export function CompaniesTable({
                   )
                 }
               >
-                <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                CH
+                <CompaniesHouseLogo className="h-3.5 w-3.5" />
+                Companies House
               </Button>
               <EditCompanyDialog
                 company={company}
@@ -457,7 +457,7 @@ export function CompaniesTable({
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-6 text-[10px] px-2 gap-1"
+                            className="h-6 text-[10px] px-2 gap-1 border-slate-700/40 text-slate-800 dark:text-slate-200 hover:bg-slate-700/10"
                             onClick={() =>
                               window.open(
                                 `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -465,11 +465,11 @@ export function CompaniesTable({
                               )
                             }
                           >
-                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                            <CompaniesHouseLogo className="h-3.5 w-3.5" />
                             CH
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>View on CH</TooltipContent>
+                        <TooltipContent>View on Companies House</TooltipContent>
                       </Tooltip>
                       {needsAd01Filing(company) && (
                         <Tooltip>
