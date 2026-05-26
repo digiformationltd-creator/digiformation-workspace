@@ -88,8 +88,6 @@ function DashboardPage() {
       filtered = filtered.filter((c) => c.status === "Sold/Transferred" || (c.director ? !c.director.is_owner : true));
     } else if (quickFilter === "default-address") {
       filtered = filtered.filter((c) => c.address_status === "Default Address");
-    } else if (quickFilter === "ad01-filed") {
-      filtered = filtered.filter((c) => !!c.ad01_filing_date);
     } else if (quickFilter === "strike-off") {
       filtered = filtered.filter((c) => c.status === "Strike Off Notice");
     }
