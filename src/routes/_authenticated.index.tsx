@@ -129,14 +129,27 @@ function DashboardPage() {
       filtered = filtered.filter((c) => !c.auth_code || c.auth_code.trim() === "");
     }
 
-    // Sort: group by address, sold/non-owned at the very end
+    // Sort: clean active owned first, then grouped by address, sold/non-owned at the very end
     const normalizeAddr = (a: string | null | undefined) =>
       (a ?? "").toLowerCase().replace(/[,.\s]+/g, " ").trim();
+
+    const isCleanActive = (c: typeof filtered[number]) =>
+      isOwnedCompany(c) &&
+      c.status === "Active" &&
+      c.address_status !== "Default Address" &&
+      !!c.auth_code &&
+      c.auth_code.trim() !== "" &&
+      c.auth_code.trim().toLowerCase() !== "pending";
 
     filtered.sort((a, b) => {
       const aSold = !isOwnedCompany(a);
       const bSold = !isOwnedCompany(b);
       if (aSold !== bSold) return aSold ? 1 : -1;
+
+      const aClean = isCleanActive(a);
+      const bClean = isCleanActive(b);
+      if (aClean !== bClean) return aClean ? -1 : 1;
+
       const addrA = normalizeAddr(a.company_address);
       const addrB = normalizeAddr(b.company_address);
       if (!addrA && addrB) return 1;
