@@ -32,6 +32,7 @@ interface Props {
   onMarkAd01: (id: string) => void;
   onMarkAd01Complete: (id: string) => void;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
+  isAdmin?: boolean;
 }
 
 
@@ -42,6 +43,7 @@ export function CompaniesTable({
   onMarkAd01,
   onMarkAd01Complete,
   onUpdate,
+  isAdmin = true,
 }: Props) {
   const [sortField, setSortField] = useState<keyof Company | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
