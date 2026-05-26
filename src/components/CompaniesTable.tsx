@@ -421,6 +421,27 @@ export function CompaniesTable({
                         </TooltipTrigger>
                         <TooltipContent>View on CH</TooltipContent>
                       </Tooltip>
+                      {needsAd01Filing(company) && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 text-[10px] px-2 gap-1 border-orange-500/40 text-orange-600 hover:bg-orange-500/10"
+                              onClick={() => onMarkAd01(company.id)}
+                            >
+                              <FileCheck className="h-3 w-3" />
+                              AD01
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Mark AD01 as filed</TooltipContent>
+                        </Tooltip>
+                      )}
+                      {isAd01Processing(company) && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
+                          AD01 Filed {formatDate(company.ad01_filing_date)}
+                        </Badge>
+                      )}
                       <EditCompanyDialog
                         company={company}
                         directors={directors}
