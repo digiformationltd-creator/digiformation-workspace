@@ -316,6 +316,49 @@ function DashboardPage() {
 
       <SummaryCards companies={companies} />
 
+      {/* Segment tabs — match rules used by Summary cards */}
+      {(() => {
+        const owned = companies.filter(isOwnedCompany);
+        const segments = [
+          { key: undefined as string | undefined, label: "All", count: companies.length },
+          { key: "active", label: "Active", count: owned.filter((c) => c.status === "Active").length },
+          { key: "pending-sale", label: "Available", count: owned.filter((c) => c.status === "Available Company").length },
+          { key: "sold", label: "Sold", count: companies.filter((c) => c.status === "Sold/Transferred" || (c.director ? !c.director.is_owner : true)).length },
+          { key: "strike-off", label: "Strike Off", count: owned.filter((c) => c.status === "Strike Off Notice").length },
+          { key: "default-address", label: "Default Addr.", count: owned.filter((c) => c.address_status === "Default Address").length },
+          { key: "ad01", label: "AD01 Pending", count: owned.filter((c) => !c.ad01_filing_date).length },
+          { key: "ad01-filed", label: "AD01 Filed", count: owned.filter((c) => !!c.ad01_filing_date).length },
+        ];
+        return (
+          <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
+            {segments.map((s) => {
+              const isActive = (quickFilter ?? undefined) === s.key;
+              return (
+                <Link
+                  key={s.label}
+                  to="/"
+                  search={s.key ? { filter: s.key } : {}}
+                  className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    isActive
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-card hover:bg-muted text-foreground border-border"
+                  }`}
+                >
+                  {s.label}
+                  <span
+                    className={`tabular-nums text-[10px] rounded-full px-1.5 py-0.5 ${
+                      isActive ? "bg-primary-foreground/20" : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {s.count}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        );
+      })()}
+
       <div className="space-y-3 min-w-0">
         <div className="bg-card rounded-lg border p-3">
           <FilterBar
