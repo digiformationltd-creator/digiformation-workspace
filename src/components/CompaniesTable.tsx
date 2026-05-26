@@ -211,7 +211,7 @@ export function CompaniesTable({
                 <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
                   AD01 Filed
                 </Badge>
-              )}
+            </div>
           </div>
         ))}
       </div>
