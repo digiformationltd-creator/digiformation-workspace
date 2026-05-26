@@ -238,6 +238,7 @@ function DashboardPage() {
         ch_filing_rate: (formData.get("ch_filing_rate") as string) || null,
         ch_accounts_next_due: (formData.get("ch_accounts_next_due") as string) || null,
         ch_confirmation_statement_next_due: (formData.get("ch_confirmation_statement_next_due") as string) || null,
+        tags: formData.get("ad01_complete") === "on" ? ["ad01-complete"] : null,
       });
       form.reset();
       setShowAddForm(false);
