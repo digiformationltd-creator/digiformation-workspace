@@ -29,8 +29,11 @@ export function SummaryCards({ companies }: Props) {
   const sold = companies.filter(isSoldCompany).length;
   // Available = total minus sold
   const available = totalCompanies - sold;
-  const strikeOff = owned.filter((c) => c.status === "Strike Off Notice").length;
-  const defaultAddress = owned.filter((c) => c.address_status === "Default Address").length;
+  // Count Strike Off / Default Address across ALL companies (not just owned),
+  // so a company added to these buckets is always reflected even if director
+  // ownership hasn't been set yet.
+  const strikeOff = companies.filter((c) => c.status === "Strike Off Notice").length;
+  const defaultAddress = companies.filter((c) => c.address_status === "Default Address").length;
   const isAuthMissing = (c: typeof owned[number]) => !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
   const authMissing = owned.filter((c) => c.status === "Active" && isAuthMissing(c)).length;
   // AD01 Pending = active owned companies that need AD01 filing (auth missing OR default address) and have NOT been filed yet
