@@ -350,6 +350,23 @@ function DashboardPage() {
               </DialogHeader>
               <form onSubmit={handleAddCompany} className="space-y-4">
 
+                <label className="flex items-start gap-3 rounded-lg border-2 border-emerald-500/40 bg-emerald-500/5 p-3 cursor-pointer hover:bg-emerald-500/10 transition">
+                  <input
+                    type="checkbox"
+                    name="mark_ready_to_sell"
+                    className="mt-0.5 h-4 w-4 accent-emerald-500"
+                  />
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                      💎 Mark as Ready to Sell
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Auto-sets: Active · Available · No Strike Off · Auth Code Available · Address Updated · AD01 Completed
+                    </p>
+                  </div>
+                </label>
+
+
                 <div className="rounded-lg border p-3 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
                   <div className="space-y-2">
