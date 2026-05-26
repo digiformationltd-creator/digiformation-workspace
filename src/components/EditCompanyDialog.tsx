@@ -41,6 +41,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [markReadyToSell, setMarkReadyToSell] = useState(false);
+  const [primaryCategory, setPrimaryCategory] = useState<PrimaryCategory | "custom">("custom");
 
   const [form, setForm] = useState({
     company_name: company.company_name ?? "",
