@@ -1,0 +1,2 @@
+ALTER TABLE public.ad01_filings DROP CONSTRAINT ad01_filings_company_id_fkey, ADD CONSTRAINT ad01_filings_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE;
+ALTER TABLE public.company_status_logs DROP CONSTRAINT company_status_logs_company_id_fkey, ADD CONSTRAINT company_status_logs_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE;
