@@ -50,15 +50,14 @@ export function SummaryCards({ companies }: Props) {
   const ad01Filed = internal.filter((c) => c.ad01_status === "completed").length;
 
   // Ready to Sell = clean, available, active companies with NO open issues.
+  // (Auth available + Address not default already implies no real AD01 obligation.)
   const readyToSell = companies.filter(
     (c) =>
       c.lifecycle_status === "active" &&
       c.availability_status === "available" &&
       c.strike_off_status === false &&
       c.auth_code_status !== "missing" &&
-      c.address_status !== "Default Address" &&
-      c.ad01_status !== "pending" &&
-      c.ad01_status !== "processing",
+      c.address_status !== "Default Address",
   ).length;
   void owned;
 

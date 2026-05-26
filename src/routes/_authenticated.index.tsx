@@ -124,9 +124,7 @@ function DashboardPage() {
           c.availability_status === "available" &&
           c.strike_off_status === false &&
           c.auth_code_status !== "missing" &&
-          c.address_status !== "Default Address" &&
-          c.ad01_status !== "pending" &&
-          c.ad01_status !== "processing",
+          c.address_status !== "Default Address",
       );
     }
 
