@@ -152,7 +152,18 @@ function DashboardPage() {
     }
 
     if (activeStatus !== "all") {
-      filtered = filtered.filter((c) => c.status === activeStatus);
+      if (activeStatus === "Ready to Sell") {
+        filtered = filtered.filter(
+          (c) =>
+            c.lifecycle_status === "active" &&
+            c.availability_status === "available" &&
+            c.strike_off_status === false &&
+            c.auth_code_status !== "missing" &&
+            c.address_status !== "Default Address",
+        );
+      } else {
+        filtered = filtered.filter((c) => c.status === activeStatus);
+      }
     }
 
     if (addressFilter !== "all") {
