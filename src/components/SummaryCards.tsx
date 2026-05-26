@@ -9,11 +9,11 @@ import {
   KeyRound,
   FileCheck,
   FileText,
-  BookOpen,
+  
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Company } from "@/types";
-import { isOwnedCompany, isSoldCompany } from "@/lib/ownership";
+import { isOwnedCompany } from "@/lib/ownership";
 
 interface Props {
   companies: Company[];
@@ -23,8 +23,10 @@ export function SummaryCards({ companies }: Props) {
   const owned = companies.filter(isOwnedCompany);
   // Total = total companies currently in the system (grows when a new one is added)
   const totalCompanies = companies.length;
-  // Active = every company that is NOT dissolved (matches user's portfolio definition)
-  const activeCompanies = totalCompanies;
+  // Dissolved companies (paired with Active)
+  const dissolved = companies.filter((c) => c.status === "Dissolved").length;
+  // Active = total minus dissolved (auto-decrements as companies are dissolved)
+  const activeCompanies = totalCompanies - dissolved;
   // Sold = ONLY companies explicitly marked Sold/Transferred (no auto-derivation)
   const sold = companies.filter((c) => c.status === "Sold/Transferred").length;
   // Available = total minus sold
@@ -68,7 +70,17 @@ export function SummaryCards({ companies }: Props) {
       accent: "from-emerald-500/20 to-teal-500/10",
       ring: "group-hover:ring-emerald-500/40",
       iconBg: "bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white",
-      hint: "Currently trading",
+      hint: "Total - Dissolved",
+    },
+    {
+      title: "Dissolved",
+      value: dissolved,
+      icon: AlertTriangle,
+      filter: "dissolved",
+      accent: "from-zinc-500/20 to-slate-500/10",
+      ring: "group-hover:ring-zinc-500/40",
+      iconBg: "bg-zinc-500/10 text-zinc-600 group-hover:bg-zinc-500 group-hover:text-white",
+      hint: "Companies dissolved",
     },
     {
       title: "Available Company",
@@ -159,16 +171,6 @@ export function SummaryCards({ companies }: Props) {
       ring: "group-hover:ring-purple-500/40",
       iconBg: "bg-purple-500/10 text-purple-600 group-hover:bg-purple-500 group-hover:text-white",
       hint: "Pending confirmation statements",
-    },
-    {
-      title: "Annual Accounts",
-      value: 0,
-      icon: BookOpen,
-      filter: undefined,
-      accent: "from-teal-500/20 to-cyan-500/10",
-      ring: "group-hover:ring-teal-500/40",
-      iconBg: "bg-teal-500/10 text-teal-600 group-hover:bg-teal-500 group-hover:text-white",
-      hint: "Pending annual accounts",
     },
   ];
 
