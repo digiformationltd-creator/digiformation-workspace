@@ -101,30 +101,25 @@ function DashboardPage() {
     let filtered = [...companies];
 
     if (quickFilter === "active") {
-      filtered = filtered.filter((c) => c.status === "Active");
+      filtered = filtered.filter((c) => c.lifecycle_status === "active");
+    } else if (quickFilter === "dissolved") {
+      filtered = filtered.filter((c) => c.lifecycle_status === "dissolved");
     } else if (quickFilter === "ad01") {
-      filtered = filtered.filter((c) => {
-        if (!isOwnedCompany(c)) return false;
-        const t = Array.isArray(c.tags) ? c.tags : [];
-        if (t.includes("ad01-complete") || t.includes("ad01-processing")) return false;
-        const authMissing = !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending";
-        const defaultAddr = c.address_status === "Default Address";
-        return defaultAddr || (c.status === "Active" && authMissing);
-      });
+      filtered = filtered.filter((c) => c.ad01_status === "pending" && (c.auth_code_status === "missing" || c.address_status === "Default Address"));
     } else if (quickFilter === "ad01-processing") {
-      filtered = filtered.filter((c) => isOwnedCompany(c) && Array.isArray(c.tags) && c.tags.includes("ad01-processing") && !c.tags.includes("ad01-complete"));
+      filtered = filtered.filter((c) => c.ad01_status === "processing");
     } else if (quickFilter === "ad01-filed") {
-      filtered = filtered.filter((c) => isOwnedCompany(c) && Array.isArray(c.tags) && c.tags.includes("ad01-complete"));
+      filtered = filtered.filter((c) => c.ad01_status === "completed");
     } else if (quickFilter === "pending-sale") {
-      filtered = filtered.filter((c) => c.status === "Available Company");
+      filtered = filtered.filter((c) => c.availability_status === "available");
     } else if (quickFilter === "sold") {
-      filtered = filtered.filter((c) => c.status === "Sold/Transferred" || (c.director ? !c.director.is_owner : true));
+      filtered = filtered.filter((c) => c.availability_status === "sold");
     } else if (quickFilter === "default-address") {
-      filtered = filtered.filter((c) => c.address_status === "Default Address" && c.status !== "Sold/Transferred");
+      filtered = filtered.filter((c) => c.address_status === "Default Address");
     } else if (quickFilter === "strike-off") {
-      filtered = filtered.filter((c) => c.status === "Strike Off Notice" && isOwnedCompany(c));
+      filtered = filtered.filter((c) => c.strike_off_status === true);
     } else if (quickFilter === "auth-missing") {
-      filtered = filtered.filter((c) => isOwnedCompany(c) && c.status === "Active" && (!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending"));
+      filtered = filtered.filter((c) => c.auth_code_status === "missing");
     }
 
     if (searchTerm) {
@@ -216,8 +211,26 @@ function DashboardPage() {
       const originalAddress = ((formData.get("previous_address") as string) || "").trim();
       const companyNumber = ((formData.get("company_number") as string) || "").trim();
 
+      const lifecycle = ((formData.get("lifecycle_status") as string) || "active") as "active" | "dissolved";
+      const availability = ((formData.get("availability_status") as string) || "available") as "available" | "sold";
+      const strikeOff = (formData.get("strike_off_status") as string) === "yes";
+      const authStatus = ((formData.get("auth_code_status") as string) || "missing") as "available" | "missing";
+      const addrStatus = (formData.get("address_status") as Company["address_status"]) || "Default Address";
+      const ad01Status = ((formData.get("ad01_status") as string) || "pending") as "pending" | "processing" | "completed";
+
+      // Legacy single-enum "status" — kept in sync for backward compatibility
+      const legacyStatus: Company["status"] =
+        lifecycle === "dissolved"
+          ? "Dissolved"
+          : strikeOff
+          ? "Strike Off Notice"
+          : availability === "sold"
+          ? "Sold/Transferred"
+          : availability === "available"
+          ? "Available Company"
+          : "Active";
+
       await createCompany({
-        // Current/New name is primary; fall back to original if only old is filled
         company_name: currentName || originalName || "(Unnamed)",
         company_number: (companyNumber || `TEMP-${Date.now().toString(36).toUpperCase()}`),
         incorporation_date: (formData.get("incorporation_date") as string) || null,
@@ -231,15 +244,13 @@ function DashboardPage() {
         auth_code: (formData.get("auth_code") as string) || null,
         utr_number: (formData.get("utr_number") as string) || null,
         director_id: (formData.get("director_id") as string) || null,
-        status: ((): Company["status"] => {
-          const lifecycle = (formData.get("lifecycle_status") as string) || "Active";
-          const availability = (formData.get("availability_status") as string) || "Available";
-          if (lifecycle === "Dissolved") return "Dissolved";
-          if (availability === "Sold Out") return "Sold/Transferred";
-          if (availability === "Available") return "Available Company";
-          return "Active";
-        })(),
-        address_status: (formData.get("address_status") as Company["address_status"]) || "Default Address",
+        status: legacyStatus,
+        address_status: addrStatus,
+        lifecycle_status: lifecycle,
+        availability_status: availability,
+        strike_off_status: strikeOff,
+        auth_code_status: authStatus,
+        ad01_status: ad01Status,
         ch_accounts_next_due: (formData.get("ch_accounts_next_due") as string) || null,
         ch_confirmation_statement_next_due: (formData.get("ch_confirmation_statement_next_due") as string) || null,
       });
@@ -332,29 +343,57 @@ function DashboardPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor="lifecycle_status">Company Status</Label>
-                    <Select name="lifecycle_status" defaultValue="Active">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                    <Select name="lifecycle_status" defaultValue="active">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Dissolved">Dissolved</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="dissolved">Dissolved</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="availability_status">Availability</Label>
-                    <Select name="availability_status" defaultValue="Available">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                    <Select name="availability_status" defaultValue="available">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Available">Available</SelectItem>
-                        <SelectItem value="Sold Out">Sold Out</SelectItem>
+                        <SelectItem value="available">Available</SelectItem>
+                        <SelectItem value="sold">Sold Out</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="strike_off_status">Strike Off Status</Label>
+                    <Select name="strike_off_status" defaultValue="no">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="no">No Strike Off</SelectItem>
+                        <SelectItem value="yes">Strike Off Notice</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="auth_code_status">Authentication Code</Label>
+                    <Select name="auth_code_status" defaultValue="missing">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="available">Available</SelectItem>
+                        <SelectItem value="missing">Missing</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ad01_status">AD01 Status</Label>
+                    <Select name="ad01_status" defaultValue="pending">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="processing">Processing</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
+
 
                 <div className="rounded-lg border p-3 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Registered Address</p>
@@ -373,9 +412,8 @@ function DashboardPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Default Address">Default Address</SelectItem>
-                        <SelectItem value="Changed/Updated">Changed/Updated</SelectItem>
-                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Default Address">Default</SelectItem>
+                        <SelectItem value="Changed/Updated">Normal</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -469,17 +507,18 @@ function DashboardPage() {
 
       {/* Segment tabs — match rules used by Summary cards */}
       {(() => {
-        const owned = companies.filter(isOwnedCompany);
         const segments = [
           { key: undefined as string | undefined, label: "All", count: companies.length },
-          { key: "active", label: "Active", count: owned.filter((c) => c.status === "Active").length },
-          { key: "pending-sale", label: "Available", count: owned.filter((c) => c.status === "Available Company").length },
-          { key: "sold", label: "Sold", count: companies.filter((c) => c.status === "Sold/Transferred" || (c.director ? !c.director.is_owner : true)).length },
-          { key: "strike-off", label: "Strike Off", count: owned.filter((c) => c.status === "Strike Off Notice").length },
-          { key: "default-address", label: "Default Addr.", count: owned.filter((c) => c.address_status === "Default Address" && c.status !== "Sold/Transferred").length },
-          { key: "ad01", label: "AD01 Pending", count: owned.filter((c) => c.status === "Active" && !c.ad01_filing_date && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address")).length },
-          { key: "ad01-processing", label: "AD01 Processing", count: owned.filter((c) => c.status === "Active" && !!c.ad01_filing_date && !(Array.isArray(c.tags) && c.tags.includes("ad01-complete")) && ((!c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending") || c.address_status === "Default Address")).length },
-          { key: "ad01-filed", label: "AD01 Complete", count: owned.filter((c) => Array.isArray(c.tags) && c.tags.includes("ad01-complete")).length },
+          { key: "active", label: "Active", count: companies.filter((c) => c.lifecycle_status === "active").length },
+          { key: "dissolved", label: "Dissolved", count: companies.filter((c) => c.lifecycle_status === "dissolved").length },
+          { key: "pending-sale", label: "Available", count: companies.filter((c) => c.availability_status === "available").length },
+          { key: "sold", label: "Sold", count: companies.filter((c) => c.availability_status === "sold").length },
+          { key: "strike-off", label: "Strike Off", count: companies.filter((c) => c.strike_off_status === true).length },
+          { key: "default-address", label: "Default Addr.", count: companies.filter((c) => c.address_status === "Default Address").length },
+          { key: "auth-missing", label: "Auth Missing", count: companies.filter((c) => c.auth_code_status === "missing").length },
+          { key: "ad01", label: "AD01 Pending", count: companies.filter((c) => c.ad01_status === "pending" && (c.auth_code_status === "missing" || c.address_status === "Default Address")).length },
+          { key: "ad01-processing", label: "AD01 Processing", count: companies.filter((c) => c.ad01_status === "processing").length },
+          { key: "ad01-filed", label: "AD01 Complete", count: companies.filter((c) => c.ad01_status === "completed").length },
         ];
         return (
           <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">

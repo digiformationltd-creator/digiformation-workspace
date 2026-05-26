@@ -75,7 +75,7 @@ export function useCompanies() {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("companies")
-        .update({ status: "Sold/Transferred" as CompanyStatus, updated_at: new Date().toISOString() })
+        .update({ status: "Sold/Transferred" as CompanyStatus, availability_status: "sold", updated_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to update status.");
     },
@@ -88,20 +88,9 @@ export function useCompanies() {
 
   const markAd01Mutation = useMutation({
     mutationFn: async (id: string) => {
-      // Move to "processing" — do NOT set filing date yet.
-      const { data: current, error: readErr } = await supabase
-        .from("companies")
-        .select("tags")
-        .eq("id", id)
-        .single();
-      if (readErr) throw safeDbError(readErr, "Failed to mark AD01 processing.");
-      const existing: string[] = Array.isArray(current?.tags) ? (current.tags as string[]) : [];
-      const nextTags = existing.includes("ad01-processing")
-        ? existing
-        : [...existing.filter((t) => t !== "ad01-complete"), "ad01-processing"];
       const { error } = await supabase
         .from("companies")
-        .update({ tags: nextTags, updated_at: new Date().toISOString() })
+        .update({ ad01_status: "processing", updated_at: new Date().toISOString() } as never)
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to mark AD01 processing.");
     },
@@ -117,18 +106,17 @@ export function useCompanies() {
       const today = new Date().toISOString().slice(0, 10);
       const { data: current, error: readErr } = await supabase
         .from("companies")
-        .select("tags, ad01_filing_date")
+        .select("ad01_filing_date")
         .eq("id", id)
         .single();
       if (readErr) throw safeDbError(readErr, "Failed to mark AD01 complete.");
-      const existing: string[] = Array.isArray(current?.tags) ? (current.tags as string[]) : [];
-      const nextTags = [
-        ...existing.filter((t) => t !== "ad01-processing" && t !== "ad01-complete"),
-        "ad01-complete",
-      ];
       const { error } = await supabase
         .from("companies")
-        .update({ tags: nextTags, ad01_filing_date: today, updated_at: new Date().toISOString() })
+        .update({
+          ad01_status: "completed",
+          ad01_filing_date: current?.ad01_filing_date ?? today,
+          updated_at: new Date().toISOString(),
+        } as never)
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to mark AD01 complete.");
       if (!current?.ad01_filing_date) {

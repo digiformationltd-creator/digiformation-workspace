@@ -23,7 +23,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Company, Director, CompanyStatus } from "@/types";
+import type { Company, Director, CompanyStatus, LifecycleStatus, AvailabilityStatus, AuthCodeStatus, Ad01Status, AddressStatus } from "@/types";
 
 interface Props {
   company: Company;
@@ -47,6 +47,12 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     sic_codes: (company.sic_codes ?? []).join(", "),
     director_id: company.director_id ?? "none",
     status: company.status as CompanyStatus,
+    address_status: (company.address_status ?? "Default Address") as AddressStatus,
+    lifecycle_status: (company.lifecycle_status ?? "active") as LifecycleStatus,
+    availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
+    strike_off_status: company.strike_off_status ?? false,
+    auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
+    ad01_status: (company.ad01_status ?? "pending") as Ad01Status,
     ad01_filing_date: company.ad01_filing_date ?? "",
   });
 
@@ -64,6 +70,12 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
         sic_codes: (company.sic_codes ?? []).join(", "),
         director_id: company.director_id ?? "none",
         status: company.status as CompanyStatus,
+        address_status: (company.address_status ?? "Default Address") as AddressStatus,
+        lifecycle_status: (company.lifecycle_status ?? "active") as LifecycleStatus,
+        availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
+        strike_off_status: company.strike_off_status ?? false,
+        auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
+        ad01_status: (company.ad01_status ?? "pending") as Ad01Status,
         ad01_filing_date: company.ad01_filing_date ?? "",
       });
     }
@@ -76,6 +88,18 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Keep legacy `status` in sync with explicit fields
+      const legacyStatus: CompanyStatus =
+        form.lifecycle_status === "dissolved"
+          ? "Dissolved"
+          : form.strike_off_status
+          ? "Strike Off Notice"
+          : form.availability_status === "sold"
+          ? "Sold/Transferred"
+          : form.availability_status === "available"
+          ? "Available Company"
+          : "Active";
+
       await onUpdate(company.id, {
         company_name: form.company_name,
         company_number: form.company_number.toUpperCase(),
@@ -89,7 +113,13 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
           ? form.sic_codes.split(",").map((s) => s.trim()).filter(Boolean)
           : null,
         director_id: form.director_id === "none" ? null : form.director_id,
-        status: form.status,
+        status: legacyStatus,
+        address_status: form.address_status,
+        lifecycle_status: form.lifecycle_status,
+        availability_status: form.availability_status,
+        strike_off_status: form.strike_off_status,
+        auth_code_status: form.auth_code_status,
+        ad01_status: form.ad01_status,
         ad01_filing_date: form.ad01_filing_date || null,
       });
       setOpen(false);
@@ -189,23 +219,67 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label>Status</Label>
-              <Select
-                value={form.status}
-                onValueChange={(v) => set("status", v as CompanyStatus)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
+              <Label>Company Status</Label>
+              <Select value={form.lifecycle_status} onValueChange={(v) => set("lifecycle_status", v as LifecycleStatus)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Available Company">Available Company</SelectItem>
-                  <SelectItem value="Sold/Transferred">Sold/Transferred</SelectItem>
-                  <SelectItem value="Strike Off Notice">Strike Off Notice</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="dissolved">Dissolved</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
+              <Label>Availability</Label>
+              <Select value={form.availability_status} onValueChange={(v) => set("availability_status", v as AvailabilityStatus)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="sold">Sold Out</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Strike Off Status</Label>
+              <Select value={form.strike_off_status ? "yes" : "no"} onValueChange={(v) => set("strike_off_status", v === "yes")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="no">No Strike Off</SelectItem>
+                  <SelectItem value="yes">Strike Off Notice</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Auth Code Status</Label>
+              <Select value={form.auth_code_status} onValueChange={(v) => set("auth_code_status", v as AuthCodeStatus)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="missing">Missing</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Address Status</Label>
+              <Select value={form.address_status} onValueChange={(v) => set("address_status", v as AddressStatus)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Default Address">Default</SelectItem>
+                  <SelectItem value="Changed/Updated">Normal</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>AD01 Status</Label>
+              <Select value={form.ad01_status} onValueChange={(v) => set("ad01_status", v as Ad01Status)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="processing">Processing</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5 col-span-2">
               <Label>AD01 Filing Date</Label>
               <Input
                 type="date"
