@@ -186,6 +186,7 @@ export function CompanyCard({
             actionLabel="Mark Filed"
             onAction={() => onMarkAd01(company.id)}
             meta={ad01Done ? fmt(company.ad01_filing_date) : undefined}
+            hideAction={!isAdmin}
           />
           <StatusRow
             icon={MapPin}
@@ -195,6 +196,7 @@ export function CompanyCard({
             pendingLabel="Default"
             actionLabel="Mark Changed"
             onAction={() => onMarkAd01(company.id)}
+            hideAction={!isAdmin}
           />
           <StatusRow
             icon={Truck}
@@ -204,6 +206,7 @@ export function CompanyCard({
             pendingLabel={company.status}
             actionLabel="Mark Sold"
             onAction={() => onMarkSold(company.id)}
+            hideAction={!isAdmin}
           />
         </div>
 
@@ -213,9 +216,9 @@ export function CompanyCard({
         {/* Footer actions */}
         <div className="flex items-center justify-center pt-2 border-t">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            className="h-7 text-xs gap-1"
+            className="h-9 text-sm gap-2 px-4"
             onClick={() =>
               window.open(
                 `https://find-and-update.company-information.service.gov.uk/company/${company.company_number}`,
@@ -223,8 +226,8 @@ export function CompanyCard({
               )
             }
           >
-            <ExternalLink className="h-3 w-3" />
-            Companies House
+            <CompaniesHouseLogo className="h-5 w-5" />
+            View on Companies House
           </Button>
         </div>
       </div>
