@@ -23,23 +23,24 @@ export function SummaryCards({ companies }: Props) {
   const owned = companies.filter(isOwnedCompany);
   const totalCompanies = companies.length;
 
-  // Explicit status fields drive every counter — no derivation, no overlap math.
-  const dissolved = companies.filter((c) => c.lifecycle_status === "dissolved").length;
+  // Internal tracking only applies to non-sold companies.
+  // Sold companies leave our operational tracking entirely.
+  const internal = companies.filter((c) => c.availability_status !== "sold");
+
+  const dissolved = internal.filter((c) => c.lifecycle_status === "dissolved").length;
   const activeCompanies = companies.filter((c) => c.lifecycle_status === "active").length;
   const sold = companies.filter((c) => c.availability_status === "sold").length;
   const available = companies.filter((c) => c.availability_status === "available").length;
-  const strikeOff = companies.filter((c) => c.strike_off_status === true).length;
-  const authMissing = companies.filter((c) => c.auth_code_status === "missing").length;
-  const defaultAddress = companies.filter((c) => c.address_status === "Default Address").length;
+  const strikeOff = internal.filter((c) => c.strike_off_status === true).length;
+  const authMissing = internal.filter((c) => c.auth_code_status === "missing").length;
+  const defaultAddress = internal.filter((c) => c.address_status === "Default Address").length;
 
-  // AD01 Pending = (Auth Missing) + (Default Address)  [additive, per spec]
-  // Only count companies whose ad01_status is still "pending" — once a company moves
-  // to processing or completed, it leaves both pools.
-  const ad01PendingAuth = companies.filter((c) => c.ad01_status === "pending" && c.auth_code_status === "missing").length;
-  const ad01PendingDefault = companies.filter((c) => c.ad01_status === "pending" && c.address_status === "Default Address").length;
+  // AD01 Pending = (Auth Missing) + (Default Address) — available companies only.
+  const ad01PendingAuth = internal.filter((c) => c.ad01_status === "pending" && c.auth_code_status === "missing").length;
+  const ad01PendingDefault = internal.filter((c) => c.ad01_status === "pending" && c.address_status === "Default Address").length;
   const ad01Pending = ad01PendingAuth + ad01PendingDefault;
-  const ad01Processing = companies.filter((c) => c.ad01_status === "processing").length;
-  const ad01Filed = companies.filter((c) => c.ad01_status === "completed").length;
+  const ad01Processing = internal.filter((c) => c.ad01_status === "processing").length;
+  const ad01Filed = internal.filter((c) => c.ad01_status === "completed").length;
   void owned;
 
   const cards = [
