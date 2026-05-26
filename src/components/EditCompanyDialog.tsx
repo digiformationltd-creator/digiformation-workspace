@@ -60,6 +60,8 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
 
   useEffect(() => {
     if (open) {
+      setMarkReadyToSell(false);
+
       setForm({
         company_name: company.company_name ?? "",
         company_number: company.company_number ?? "",
