@@ -456,46 +456,6 @@ function DashboardPage() {
                   <Label htmlFor="sic_codes">SIC Codes (comma separated)</Label>
                   <Input id="sic_codes" name="sic_codes" placeholder="62020, 62090" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="director_id">Director</Label>
-                  <Select name="director_id">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select director" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {directors
-                        .filter((d) => d.is_owner)
-                        .map((d) => (
-                          <SelectItem key={d.id} value={d.id}>
-                            {d.name}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                  <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                    <Input
-                      placeholder="Or add a new director name..."
-                      value={newDirectorName}
-                      onChange={(e) => setNewDirectorName(e.target.value)}
-                      className="h-9 text-xs"
-                    />
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      disabled={!newDirectorName.trim()}
-                      onClick={() => {
-                        const name = newDirectorName.trim();
-                        if (!name) return;
-                        createDirector(name);
-                        setNewDirectorName("");
-                      }}
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add
-                    </Button>
-                  </div>
-                </div>
                 <Button type="submit" className="w-full" disabled={submitting}>
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Add Company
