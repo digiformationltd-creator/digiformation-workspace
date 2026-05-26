@@ -488,8 +488,29 @@ export function CompaniesTable({
                         </Tooltip>
                       )}
                       {isAd01Processing(company) && (
-                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
-                          AD01 Filed {formatDate(company.ad01_filing_date)}
+                        <>
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/40 text-blue-600">
+                            AD01 Filed {formatDate(company.ad01_filing_date)}
+                          </Badge>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-6 text-[10px] px-2 gap-1 border-green-500/40 text-green-600 hover:bg-green-500/10"
+                                onClick={() => onMarkAd01Complete(company.id)}
+                              >
+                                <CheckCircle2 className="h-3 w-3" />
+                                Complete
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Mark AD01 as complete</TooltipContent>
+                          </Tooltip>
+                        </>
+                      )}
+                      {isAd01Complete(company) && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-500/40 text-green-700 bg-green-500/10">
+                          AD01 Complete
                         </Badge>
                       )}
                       {company.status === "Active" && (
