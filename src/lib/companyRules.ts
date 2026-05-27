@@ -220,6 +220,46 @@ export function applyFilterKey(list: Company[], key: string | undefined): Compan
 }
 
 // ---------------------------------------------------------------------------
+// Dashboard section ordering & grouping.
+// Sections render in this exact priority order. `Sold Out` is always last.
+// Companies are placed using ONLY `primary_category` (DB-derived) — never
+// re-derived in the section view.
+// ---------------------------------------------------------------------------
+export const SECTION_ORDER: PrimaryCategory[] = [
+  "ready_to_sell",
+  "auth_missing",
+  "address_default",
+  "strike_off",
+  "ad01_processing",
+  "active",
+  "sold",
+];
+
+export type GroupedCompanies = Record<PrimaryCategory, Company[]>;
+
+/**
+ * Single-pass O(n) grouping by primary_category.
+ * Each company appears in exactly one bucket — the one matching its
+ * DB-derived primary_category (with client-side fallback for safety).
+ */
+export function groupByPrimaryCategory(list: Company[]): GroupedCompanies {
+  const groups: GroupedCompanies = {
+    ready_to_sell: [],
+    auth_missing: [],
+    address_default: [],
+    strike_off: [],
+    ad01_processing: [],
+    active: [],
+    sold: [],
+  };
+  for (const c of list) {
+    groups[RULES.getPrimaryCategory(c)].push(c);
+  }
+  return groups;
+}
+
+
+// ---------------------------------------------------------------------------
 // AD01 helper: derive whether AD01 is required from raw facts.
 // Used by forms to keep ad01_required toggle in sync with reality.
 // ---------------------------------------------------------------------------
