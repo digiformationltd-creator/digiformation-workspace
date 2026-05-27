@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Loader2, Pencil } from "lucide-react";
+import { Loader2, Pencil, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,12 +23,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Company, Director, CompanyStatus, LifecycleStatus, AvailabilityStatus, AuthCodeStatus, Ad01Status, AddressStatus } from "@/types";
-import {
-  applyCategory,
-  PRIMARY_CATEGORY_OPTIONS,
-  type PrimaryCategory,
-} from "@/lib/companyCategory";
+import type {
+  Company,
+  Director,
+  LifecycleStatus,
+  AvailabilityStatus,
+  AuthCodeStatus,
+  Ad01Status,
+  AddressStatus,
+} from "@/types";
+import { RULES } from "@/lib/companyRules";
 
 interface Props {
   company: Company;
@@ -37,13 +41,39 @@ interface Props {
   triggerStyle?: "icon" | "compact";
 }
 
-export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle = "icon" }: Props) {
+/** Visual wrapper for a labelled form section. */
+function Section({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border p-3 space-y-3">
+      <div>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          {title}
+        </p>
+        {hint && <p className="text-[11px] text-muted-foreground/80 mt-0.5">{hint}</p>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+export function EditCompanyDialog({
+  company,
+  directors,
+  onUpdate,
+  triggerStyle = "icon",
+}: Props) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [markReadyToSell, setMarkReadyToSell] = useState(false);
-  const [primaryCategory, setPrimaryCategory] = useState<PrimaryCategory | "custom">("custom");
 
-  const [form, setForm] = useState({
+  const initial = () => ({
     company_name: company.company_name ?? "",
     company_number: company.company_number ?? "",
     previous_name: company.previous_name ?? "",
@@ -55,94 +85,51 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
     utr_number: company.utr_number ?? "",
     sic_codes: (company.sic_codes ?? []).join(", "),
     director_id: company.director_id ?? "none",
-    status: company.status as CompanyStatus,
     address_status: (company.address_status ?? "Default Address") as AddressStatus,
     lifecycle_status: (company.lifecycle_status ?? "active") as LifecycleStatus,
     availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
     strike_off_status: company.strike_off_status ?? false,
     auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
+    ad01_required: (company.ad01_status ?? "pending") !== "not_required",
     ad01_status: (company.ad01_status ?? "pending") as Ad01Status,
     ad01_filing_date: company.ad01_filing_date ?? "",
   });
 
-  useEffect(() => {
-    if (open) {
-      setMarkReadyToSell(false);
-      setPrimaryCategory("custom");
+  const [form, setForm] = useState(initial);
 
-      setForm({
-        company_name: company.company_name ?? "",
-        company_number: company.company_number ?? "",
-        previous_name: company.previous_name ?? "",
-        previous_address: company.previous_address ?? "",
-        previous_director_name: company.previous_director_name ?? "",
-        incorporation_date: company.incorporation_date ?? "",
-        company_address: company.company_address ?? "",
-        auth_code: company.auth_code ?? "",
-        utr_number: company.utr_number ?? "",
-        sic_codes: (company.sic_codes ?? []).join(", "),
-        director_id: company.director_id ?? "none",
-        status: company.status as CompanyStatus,
-        address_status: (company.address_status ?? "Default Address") as AddressStatus,
-        lifecycle_status: (company.lifecycle_status ?? "active") as LifecycleStatus,
-        availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
-        strike_off_status: company.strike_off_status ?? false,
-        auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
-        ad01_status: (company.ad01_status ?? "pending") as Ad01Status,
-        ad01_filing_date: company.ad01_filing_date ?? "",
-      });
-    }
+  useEffect(() => {
+    if (open) setForm(initial());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, company]);
 
-  const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
-    setForm((p) => ({ ...p, [k]: v }));
+  const set = <K extends keyof ReturnType<typeof initial>>(
+    k: K,
+    v: ReturnType<typeof initial>[K],
+  ) => setForm((p) => ({ ...p, [k]: v }));
+
+  // ---------- Live derived preview (uses central RULES — never duplicates logic) ----------
+  const previewCompany: Company = {
+    ...company,
+    auth_code: form.auth_code || null,
+    address_status: form.address_status,
+    lifecycle_status: form.lifecycle_status,
+    availability_status: form.availability_status,
+    strike_off_status: form.strike_off_status,
+    auth_code_status: form.auth_code_status,
+    ad01_status: form.ad01_required ? form.ad01_status : "not_required",
+  };
+  const derivedCategory = RULES.derivePrimaryCategory(previewCompany);
+  const isReadyToSell = RULES.isReadyToSell(previewCompany);
+  const derivedLegacyStatus = RULES.deriveLegacyStatus(previewCompany);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      // Primary Category override (takes precedence when chosen)
-      const catOverride = primaryCategory !== "custom" ? applyCategory(primaryCategory) : null;
-
-      // Ready to Sell checkbox override — sets every field to clean/sale-ready values
-      const effLifecycle: LifecycleStatus = catOverride
-        ? catOverride.lifecycle_status
-        : markReadyToSell ? "active" : form.lifecycle_status;
-      const effAvailability: AvailabilityStatus = catOverride
-        ? catOverride.availability_status
-        : markReadyToSell ? "available" : form.availability_status;
-      const effAuthStatus: AuthCodeStatus = catOverride
-        ? catOverride.auth_code_status
-        : markReadyToSell ? "available" : form.auth_code_status;
-      const effAddressStatus: AddressStatus = catOverride
-        ? catOverride.address_status
-        : markReadyToSell ? "Changed/Updated" : form.address_status;
-      const effAd01Status: Ad01Status = catOverride
-        ? catOverride.ad01_status
-        : markReadyToSell ? "not_required" : form.ad01_status;
-
-      // Auto-clear strike-off when AD01 is completed and address is no longer default
-      const autoClearStrikeOff =
-        (effAd01Status === "completed" || effAd01Status === "not_required") && effAddressStatus !== "Default Address";
-      const effectiveStrikeOff = catOverride
-        ? catOverride.strike_off_status
-        : markReadyToSell
-        ? false
-        : autoClearStrikeOff
-        ? false
-        : form.strike_off_status;
-
-      // Keep legacy `status` in sync with explicit fields
-      const legacyStatus: CompanyStatus =
-        effLifecycle === "dissolved"
-          ? "Dissolved"
-          : effectiveStrikeOff
-          ? "Strike Off Notice"
-          : effAvailability === "sold"
-          ? "Sold/Transferred"
-          : effAvailability === "available"
-          ? "Available Company"
-          : "Active";
+      // Save only RAW FACTS. Categories, badges, counters and the legacy
+      // `status` enum are derived centrally via RULES — no hidden overrides,
+      // no auto-clearing of unrelated fields.
+      const effectiveAd01: Ad01Status = form.ad01_required ? form.ad01_status : "not_required";
 
       await onUpdate(company.id, {
         company_name: form.company_name,
@@ -158,17 +145,17 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
           ? form.sic_codes.split(",").map((s) => s.trim()).filter(Boolean)
           : null,
         director_id: form.director_id === "none" ? null : form.director_id,
-        status: legacyStatus,
-        address_status: effAddressStatus,
-        lifecycle_status: effLifecycle,
-        availability_status: effAvailability,
-        strike_off_status: effectiveStrikeOff,
-        auth_code_status: effAuthStatus,
-        ad01_status: effAd01Status,
+        // raw atomic facts:
+        address_status: form.address_status,
+        lifecycle_status: form.lifecycle_status,
+        availability_status: form.availability_status,
+        strike_off_status: form.strike_off_status,
+        auth_code_status: form.auth_code_status,
+        ad01_status: effectiveAd01,
         ad01_filing_date: form.ad01_filing_date || null,
+        // legacy status mirror, derived centrally (no inline logic here):
+        status: derivedLegacyStatus,
       });
-
-
       setOpen(false);
     } finally {
       setSubmitting(false);
@@ -186,7 +173,11 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
                 Edit
               </Button>
             ) : (
-              <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-accent-foreground hover:bg-accent">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 hover:text-accent-foreground hover:bg-accent"
+              >
                 <Pencil className="h-3.5 w-3.5 text-warning" />
               </Button>
             )}
@@ -198,49 +189,32 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
         <DialogHeader>
           <DialogTitle>Edit Company</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="space-y-1.5 rounded-lg border-2 border-primary/40 bg-primary/5 p-3">
-            <Label className="text-xs font-semibold uppercase tracking-wide text-primary">
-              🏷️ Primary Category
-            </Label>
-            <Select
-              value={primaryCategory}
-              onValueChange={(v) => setPrimaryCategory(v as PrimaryCategory | "custom")}
-            >
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="custom">— Custom (use fields below) —</SelectItem>
-                {PRIMARY_CATEGORY_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>
-                    {o.emoji} {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-[10px] text-muted-foreground">
-              Selecting a category auto-sets all status fields below.
+
+        {/* Auto-derived preview banner — purely informational */}
+        <div className="rounded-lg border bg-muted/40 p-3 flex items-start gap-2">
+          <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+          <div className="text-xs space-y-0.5">
+            <p>
+              <span className="text-muted-foreground">Auto-derived category:</span>{" "}
+              <span className="font-semibold">{derivedCategory.replaceAll("_", " ")}</span>
+            </p>
+            <p>
+              <span className="text-muted-foreground">Legacy status:</span>{" "}
+              <span className="font-semibold">{derivedLegacyStatus}</span>
+            </p>
+            <p>
+              <span className="text-muted-foreground">Ready to Sell:</span>{" "}
+              <span className={isReadyToSell ? "text-emerald-500 font-semibold" : "text-muted-foreground"}>
+                {isReadyToSell ? "Yes" : "No"}
+              </span>
+              <span className="text-muted-foreground/70"> · calculated automatically from raw fields below</span>
             </p>
           </div>
+        </div>
 
-          <label className="flex items-start gap-3 rounded-lg border-2 border-emerald-500/40 bg-emerald-500/5 p-3 cursor-pointer hover:bg-emerald-500/10 transition">
-            <input
-              type="checkbox"
-              checked={markReadyToSell}
-              onChange={(e) => setMarkReadyToSell(e.target.checked)}
-              className="mt-0.5 h-4 w-4 accent-emerald-500"
-            />
-            <div className="flex-1">
-              <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-                💎 Mark as Ready to Sell
-              </div>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Overrides all status fields: Active · Available · No Strike Off · Auth Available · Address Updated · AD01 Not Required
-              </p>
-            </div>
-          </label>
-
-          <div className="rounded-lg border p-3 space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          {/* 1. Basic Info */}
+          <Section title="1 · Basic Info">
             <div className="space-y-1.5">
               <Label>Old Company Name</Label>
               <Input
@@ -257,141 +231,41 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
                 required
               />
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label>Company Number</Label>
-              <Input
-                value={form.company_number}
-                onChange={(e) => set("company_number", e.target.value)}
-                required
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Company Number</Label>
+                <Input
+                  value={form.company_number}
+                  onChange={(e) => set("company_number", e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Incorporation Date</Label>
+                <Input
+                  type="date"
+                  value={form.incorporation_date}
+                  onChange={(e) => set("incorporation_date", e.target.value)}
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Incorporation Date</Label>
-              <Input
-                type="date"
-                value={form.incorporation_date}
-                onChange={(e) => set("incorporation_date", e.target.value)}
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>UTR Number</Label>
+                <Input
+                  value={form.utr_number}
+                  onChange={(e) => set("utr_number", e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>SIC Codes (comma separated)</Label>
+                <Input
+                  value={form.sic_codes}
+                  onChange={(e) => set("sic_codes", e.target.value)}
+                  placeholder="62020, 62090"
+                />
+              </div>
             </div>
-          </div>
-          <div className="rounded-lg border p-3 space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Registered Address</p>
-            <div className="space-y-1.5">
-              <Label>Old Address</Label>
-              <Input
-                value={form.previous_address}
-                onChange={(e) => set("previous_address", e.target.value)}
-                placeholder="Leave empty if never changed"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Current Address</Label>
-              <Input
-                value={form.company_address}
-                onChange={(e) => set("company_address", e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label>Auth Code</Label>
-              <Input
-                value={form.auth_code}
-                onChange={(e) => set("auth_code", e.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>UTR Number</Label>
-              <Input
-                value={form.utr_number}
-                onChange={(e) => set("utr_number", e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>SIC Codes (comma separated)</Label>
-            <Input
-              value={form.sic_codes}
-              onChange={(e) => set("sic_codes", e.target.value)}
-              placeholder="62020, 62090"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label>Company Status</Label>
-              <Select value={form.lifecycle_status} onValueChange={(v) => set("lifecycle_status", v as LifecycleStatus)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="dissolved">Dissolved</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Availability</Label>
-              <Select value={form.availability_status} onValueChange={(v) => set("availability_status", v as AvailabilityStatus)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="sold">Sold Out</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Strike Off Status</Label>
-              <Select value={form.strike_off_status ? "yes" : "no"} onValueChange={(v) => set("strike_off_status", v === "yes")}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="no">No Strike Off</SelectItem>
-                  <SelectItem value="yes">Strike Off Notice</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Auth Code Status</Label>
-              <Select value={form.auth_code_status} onValueChange={(v) => set("auth_code_status", v as AuthCodeStatus)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="missing">Missing</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Address Status</Label>
-              <Select value={form.address_status} onValueChange={(v) => set("address_status", v as AddressStatus)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Default Address">Default</SelectItem>
-                  <SelectItem value="Changed/Updated">Normal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>AD01 Status</Label>
-              <Select value={form.ad01_status} onValueChange={(v) => set("ad01_status", v as Ad01Status)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="not_required">Not Required</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="processing">Processing</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5 col-span-2">
-              <Label>AD01 Filing Date</Label>
-              <Input
-                type="date"
-                value={form.ad01_filing_date}
-                onChange={(e) => set("ad01_filing_date", e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="rounded-lg border p-3 space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Director</p>
             <div className="space-y-1.5">
               <Label>Old Director</Label>
               <Input
@@ -402,10 +276,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
             </div>
             <div className="space-y-1.5">
               <Label>Current Director</Label>
-              <Select
-                value={form.director_id}
-                onValueChange={(v) => set("director_id", v)}
-              >
+              <Select value={form.director_id} onValueChange={(v) => set("director_id", v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select current director" />
                 </SelectTrigger>
@@ -421,7 +292,183 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
                 </SelectContent>
               </Select>
             </div>
-          </div>
+          </Section>
+
+          {/* 2. Company Health */}
+          <Section title="2 · Company Health" hint="Lifecycle from Companies House.">
+            <div className="space-y-1.5">
+              <Label>Lifecycle</Label>
+              <Select
+                value={form.lifecycle_status}
+                onValueChange={(v) => set("lifecycle_status", v as LifecycleStatus)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="dissolved">Dissolved</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </Section>
+
+          {/* 3. Sale Status */}
+          <Section title="3 · Sale Status" hint="Sold companies leave operational tracking.">
+            <div className="space-y-1.5">
+              <Label>Availability</Label>
+              <Select
+                value={form.availability_status}
+                onValueChange={(v) => set("availability_status", v as AvailabilityStatus)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="sold">Sold Out</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </Section>
+
+          {/* 4. Auth Status */}
+          <Section
+            title="4 · Auth Status"
+            hint="A company with no auth code is treated as Auth Missing."
+          >
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Auth Code</Label>
+                <Input
+                  value={form.auth_code}
+                  onChange={(e) => set("auth_code", e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Auth Code Status</Label>
+                <Select
+                  value={form.auth_code_status}
+                  onValueChange={(v) => set("auth_code_status", v as AuthCodeStatus)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="missing">Missing</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </Section>
+
+          {/* 5. Address Status */}
+          <Section title="5 · Address Status">
+            <div className="space-y-1.5">
+              <Label>Old Address</Label>
+              <Input
+                value={form.previous_address}
+                onChange={(e) => set("previous_address", e.target.value)}
+                placeholder="Leave empty if never changed"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Current Address</Label>
+              <Input
+                value={form.company_address}
+                onChange={(e) => set("company_address", e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Address Status</Label>
+              <Select
+                value={form.address_status}
+                onValueChange={(v) => set("address_status", v as AddressStatus)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Default Address">Default</SelectItem>
+                  <SelectItem value="Changed/Updated">Normal</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </Section>
+
+          {/* 6. Strike Off */}
+          <Section
+            title="6 · Strike Off"
+            hint="Independent flag — never auto-cleared by other actions."
+          >
+            <div className="space-y-1.5">
+              <Label>Strike Off Notice</Label>
+              <Select
+                value={form.strike_off_status ? "yes" : "no"}
+                onValueChange={(v) => set("strike_off_status", v === "yes")}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="no">No</SelectItem>
+                  <SelectItem value="yes">Yes — Strike Off Notice</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </Section>
+
+          {/* 7. AD01 */}
+          <Section
+            title="7 · AD01"
+            hint='"Not Required" never counts as Complete on the dashboard.'
+          >
+            <div className="space-y-1.5">
+              <Label>AD01 Required?</Label>
+              <Select
+                value={form.ad01_required ? "yes" : "no"}
+                onValueChange={(v) => set("ad01_required", v === "yes")}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="no">No — Not Required</SelectItem>
+                  <SelectItem value="yes">Yes</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {form.ad01_required && (
+              <>
+                <div className="space-y-1.5">
+                  <Label>AD01 Status</Label>
+                  <Select
+                    value={form.ad01_status === "not_required" ? "pending" : form.ad01_status}
+                    onValueChange={(v) => set("ad01_status", v as Ad01Status)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="processing">Processing</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>AD01 Filing Date</Label>
+                  <Input
+                    type="date"
+                    value={form.ad01_filing_date}
+                    onChange={(e) => set("ad01_filing_date", e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+          </Section>
+
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
