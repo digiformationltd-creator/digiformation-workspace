@@ -158,3 +158,66 @@
 }
 
 
+
+/* ───── Hero KPI ambient glow ─────
+   Subtle, slow opacity pulse on a radial gradient overlay.
+   GPU-friendly: only opacity animates. */
+@keyframes kpi-glow-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.75; }
+}
+@keyframes kpi-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.kpi-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.45;
+  animation: kpi-glow-pulse 5.5s ease-in-out infinite;
+  will-change: opacity;
+}
+.kpi-glow-success {
+  background: radial-gradient(120% 80% at 100% 0%, oklch(0.78 0.17 155 / 0.22), transparent 60%);
+}
+.kpi-glow-warning {
+  background: radial-gradient(120% 80% at 100% 0%, oklch(0.82 0.16 80 / 0.22), transparent 60%);
+  animation-duration: 4.5s;
+}
+.kpi-glow-alert {
+  background: radial-gradient(120% 80% at 100% 0%, oklch(0.80 0.17 60 / 0.22), transparent 60%);
+  animation-duration: 5s;
+}
+.kpi-glow-danger {
+  background: radial-gradient(120% 80% at 100% 0%, oklch(0.72 0.20 25 / 0.25), transparent 60%);
+  animation-duration: 3.8s;
+}
+
+/* Hover intensifies the glow */
+.group:hover > .kpi-glow {
+  opacity: 0.95;
+  transition: opacity 0.3s ease-out;
+}
+
+/* Shimmer sweep on the top accent bar */
+.kpi-bar-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.kpi-bar-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: kpi-shimmer 4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-glow,
+  .kpi-bar-shimmer::after { animation: none; }
+  .kpi-glow { opacity: 0.5; }
+}
