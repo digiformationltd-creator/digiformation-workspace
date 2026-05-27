@@ -13,50 +13,25 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Company } from "@/types";
-import { isOwnedCompany } from "@/lib/ownership";
+import { COUNTERS } from "@/lib/companyRules";
 
 interface Props {
   companies: Company[];
 }
 
 export function SummaryCards({ companies }: Props) {
-  const owned = companies.filter(isOwnedCompany);
-  const totalCompanies = companies.length;
-
-  // Internal tracking only applies to non-sold companies.
-  // Sold companies leave our operational tracking entirely.
-  const internal = companies.filter((c) => c.availability_status !== "sold");
-
-  const dissolved = internal.filter((c) => c.lifecycle_status === "dissolved").length;
-  const activeCompanies = companies.filter((c) => c.lifecycle_status === "active").length;
-  const sold = companies.filter((c) => c.availability_status === "sold").length;
-  const available = companies.filter((c) => c.availability_status === "available").length;
-  const strikeOff = internal.filter((c) => c.strike_off_status === true).length;
-  // Auth Missing & Default Address counters reflect ALL companies with that flag
-  // (multi-layer model — a company can appear in multiple issue counters at once).
-  const authMissing = internal.filter((c) => c.auth_code_status === "missing").length;
-  const defaultAddress = internal.filter((c) => c.address_status === "Default Address").length;
-
-  // AD01 Pending = subset of above, restricted to ad01_status = pending.
-  const ad01PendingAuth = internal.filter((c) => c.ad01_status === "pending" && c.auth_code_status === "missing").length;
-  const ad01PendingDefault = internal.filter((c) => c.ad01_status === "pending" && c.address_status === "Default Address").length;
-  const ad01Pending = ad01PendingAuth + ad01PendingDefault;
-  const ad01Processing = internal.filter((c) => c.ad01_status === "processing").length;
-  const ad01Filed = internal.filter((c) => c.ad01_status === "completed").length;
-
-  // Ready to Sell = clean, available, active companies with NO open issues
-  // AND the authentication code has actually been received/entered.
-  const readyToSell = companies.filter(
-    (c) =>
-      c.lifecycle_status === "active" &&
-      c.availability_status === "available" &&
-      c.strike_off_status === false &&
-      c.auth_code_status !== "missing" &&
-      !!c.auth_code && c.auth_code.trim() !== "" &&
-      c.address_status !== "Default Address",
-  ).length;
-
-  void owned;
+  const totalCompanies = COUNTERS.total(companies);
+  const dissolved = COUNTERS.dissolved(companies);
+  const activeCompanies = COUNTERS.active(companies);
+  const sold = COUNTERS.sold(companies);
+  const available = COUNTERS.available(companies);
+  const strikeOff = COUNTERS.strikeOff(companies);
+  const authMissing = COUNTERS.authMissing(companies);
+  const defaultAddress = COUNTERS.defaultAddress(companies);
+  const ad01Pending = COUNTERS.ad01Pending(companies);
+  const ad01Processing = COUNTERS.ad01Processing(companies);
+  const ad01Filed = COUNTERS.ad01Complete(companies);
+  const readyToSell = COUNTERS.readyToSell(companies);
 
   const cards = [
     {
