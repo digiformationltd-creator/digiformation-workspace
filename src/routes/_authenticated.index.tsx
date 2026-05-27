@@ -181,26 +181,31 @@ function DashboardPage() {
 
   const chKeyMissing = false;
 
-  const segmentDefs: { key: FilterKey | "all"; label: string }[] = [
-    { key: "all", label: "All" },
-    { key: "ready-to-sell", label: "Ready to Sell" },
-    { key: "auth-missing", label: "Auth Missing" },
-    { key: "default-address", label: "Default Addr." },
-    { key: "strike-off", label: "Strike Off" },
+  const segmentDefs: { key: FilterKey | "all"; label: string; primary?: boolean }[] = [
+    { key: "all", label: "All", primary: true },
+    { key: "ready-to-sell", label: "Ready to Sell", primary: true },
+    { key: "auth-missing", label: "Auth Missing", primary: true },
+    { key: "default-address", label: "Default Addr.", primary: true },
+    { key: "strike-off", label: "Strike Off", primary: true },
+    { key: "active", label: "Active", primary: true },
+    { key: "sold", label: "Sold", primary: true },
     { key: "ad01-processing", label: "AD01 Processing" },
-    { key: "active", label: "Active" },
     { key: "pending-sale", label: "Available" },
     { key: "ad01", label: "AD01 Pending" },
     { key: "ad01-filed", label: "AD01 Complete" },
     { key: "ad01-not-required", label: "AD01 Not Req." },
     { key: "dissolved", label: "Dissolved" },
-    { key: "sold", label: "Sold" },
   ];
   const segments = segmentDefs.map((s) => ({
     key: s.key === "all" ? undefined : s.key,
     label: s.label,
+    primary: !!s.primary,
     count: COUNTER_BY_FILTER[s.key as FilterKey](companies),
   }));
+  const primarySegments = segments.filter((s) => s.primary);
+  const overflowSegments = segments.filter((s) => !s.primary);
+  const overflowActive = overflowSegments.find((s) => s.key === quickFilter);
+
 
   const FILTER_TO_CATEGORY: Partial<Record<FilterKey, PrimaryCategory>> = {
     "ready-to-sell": "ready_to_sell",
