@@ -111,8 +111,8 @@ export const markAd01Filed = createServerFn({ method: "POST" })
       .update({
         address_status: "Changed/Updated",
         ad01_filing_date: today,
-        updated_at: new Date().toISOString(),
       })
+
       .eq("id", data.id)
       .select()
       .single();
