@@ -174,6 +174,42 @@ function DashboardPage() {
 
   const chKeyMissing = false;
 
+  const segmentDefs: { key: FilterKey | "all"; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "ready-to-sell", label: "Ready to Sell" },
+    { key: "auth-missing", label: "Auth Missing" },
+    { key: "default-address", label: "Default Addr." },
+    { key: "strike-off", label: "Strike Off" },
+    { key: "ad01-processing", label: "AD01 Processing" },
+    { key: "active", label: "Active" },
+    { key: "pending-sale", label: "Available" },
+    { key: "ad01", label: "AD01 Pending" },
+    { key: "ad01-filed", label: "AD01 Complete" },
+    { key: "ad01-not-required", label: "AD01 Not Req." },
+    { key: "dissolved", label: "Dissolved" },
+    { key: "sold", label: "Sold" },
+  ];
+  const segments = segmentDefs.map((s) => ({
+    key: s.key === "all" ? undefined : s.key,
+    label: s.label,
+    count: COUNTER_BY_FILTER[s.key as FilterKey](companies),
+  }));
+
+  const FILTER_TO_CATEGORY: Partial<Record<FilterKey, PrimaryCategory>> = {
+    "ready-to-sell": "ready_to_sell",
+    "auth-missing": "auth_missing",
+    "default-address": "address_default",
+    "strike-off": "strike_off",
+    "sold": "sold",
+    "ad01-processing": "ad01_processing",
+    "active": "active",
+  };
+  const onlyCategory = quickFilter
+    ? FILTER_TO_CATEGORY[quickFilter as FilterKey]
+    : undefined;
+  const useSectionView = !quickFilter || onlyCategory !== undefined;
+
+
   return (
     <div className="space-y-5">
       {/* TOP BAR — title left, actions right, single horizontal band */}
@@ -217,59 +253,36 @@ function DashboardPage() {
 
       {/* TIER 2 — Sticky operational toolbar (filter pills + result count + export) */}
       <div className="sticky top-0 z-20 -mx-2 px-2 py-2 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b">
-        {(() => {
-          const segmentDefs: { key: FilterKey | "all"; label: string }[] = [
-            { key: "all", label: "All" },
-            { key: "ready-to-sell", label: "Ready to Sell" },
-            { key: "auth-missing", label: "Auth Missing" },
-            { key: "default-address", label: "Default Addr." },
-            { key: "strike-off", label: "Strike Off" },
-            { key: "ad01-processing", label: "AD01 Processing" },
-            { key: "active", label: "Active" },
-            { key: "pending-sale", label: "Available" },
-            { key: "ad01", label: "AD01 Pending" },
-            { key: "ad01-filed", label: "AD01 Complete" },
-            { key: "ad01-not-required", label: "AD01 Not Req." },
-            { key: "dissolved", label: "Dissolved" },
-            { key: "sold", label: "Sold" },
-          ];
-          const segments = segmentDefs.map((s) => ({
-            key: s.key === "all" ? undefined : s.key,
-            label: s.label,
-            count: COUNTER_BY_FILTER[s.key as FilterKey](companies),
-          }));
-          return (
-            <div className="flex items-center gap-2">
-              <div className="flex gap-1.5 overflow-x-auto pb-1 flex-1 min-w-0 scrollbar-thin">
-                {segments.map((s) => {
-                  const isActive = (quickFilter ?? undefined) === s.key;
-                  return (
-                    <Link
-                      key={s.label}
-                      to="/"
-                      search={s.key ? { filter: s.key } : {}}
-                      className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-colors ${
-                        isActive
-                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                          : "bg-card hover:bg-muted text-foreground border-border"
-                      }`}
-                    >
-                      {s.label}
-                      <span
-                        className={`tabular-nums text-[10px] rounded-full px-1.5 py-0.5 ${
-                          isActive ? "bg-primary-foreground/20" : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {s.count}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })()}
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 flex-1 min-w-0 scrollbar-thin">
+            {segments.map((s) => {
+              const isActive = (quickFilter ?? undefined) === s.key;
+              return (
+                <Link
+                  key={s.label}
+                  to="/"
+                  search={s.key ? { filter: s.key } : {}}
+                  className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-colors ${
+                    isActive
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                      : "bg-card hover:bg-muted text-foreground border-border"
+                  }`}
+                >
+                  {s.label}
+                  <span
+                    className={`tabular-nums text-[10px] rounded-full px-1.5 py-0.5 ${
+                      isActive ? "bg-primary-foreground/20" : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {s.count}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
+
 
       {/* TIER 3 — Detail filters (collapsible secondary) */}
       <div className="bg-card rounded-xl border p-3">
@@ -316,72 +329,53 @@ function DashboardPage() {
             Each company appears in EXACTLY ONE section. For technical
             filters (AD01 stages, Dissolved, Available) fall back to flat
             rendering since they cross category boundaries. */}
-        {(() => {
-          const FILTER_TO_CATEGORY: Partial<Record<FilterKey, PrimaryCategory>> = {
-            "ready-to-sell": "ready_to_sell",
-            "auth-missing": "auth_missing",
-            "default-address": "address_default",
-            "strike-off": "strike_off",
-            "sold": "sold",
-            "ad01-processing": "ad01_processing",
-            "active": "active",
-          };
-          const onlyCategory = quickFilter
-            ? FILTER_TO_CATEGORY[quickFilter as FilterKey]
-            : undefined;
-          const useSectionView = !quickFilter || onlyCategory !== undefined;
-
-          if (useSectionView) {
-            return filteredCompanies.length === 0 ? (
-              <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
-                No companies match your filters.
-              </div>
-            ) : (
-              <CompanySections
+        {useSectionView ? (
+          filteredCompanies.length === 0 ? (
+            <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
+              No companies match your filters.
+            </div>
+          ) : (
+            <CompanySections
+              companies={filteredCompanies}
+              directors={directors}
+              onUpdate={updateCompany}
+              onDelete={isAdmin ? deleteCompany : undefined}
+              isAdmin={isAdmin}
+              onlyCategory={onlyCategory}
+            />
+          )
+        ) : (
+          <>
+            <div className="grid gap-3 md:hidden">
+              {filteredCompanies.length === 0 ? (
+                <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
+                  No companies match your filters.
+                </div>
+              ) : (
+                filteredCompanies.map((c) => (
+                  <CompanyCard
+                    key={c.id}
+                    company={c}
+                    directors={directors}
+                    onUpdate={updateCompany}
+                    onDelete={isAdmin ? deleteCompany : undefined}
+                    isAdmin={isAdmin}
+                  />
+                ))
+              )}
+            </div>
+            <div className="hidden md:block">
+              <CompaniesTable
                 companies={filteredCompanies}
                 directors={directors}
                 onUpdate={updateCompany}
                 onDelete={isAdmin ? deleteCompany : undefined}
                 isAdmin={isAdmin}
-                onlyCategory={onlyCategory}
               />
-            );
-          }
+            </div>
+          </>
+        )}
 
-          // Fallback flat view for technical filters that don't map to a
-          // single primary category.
-          return (
-            <>
-              <div className="grid gap-3 md:hidden">
-                {filteredCompanies.length === 0 ? (
-                  <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
-                    No companies match your filters.
-                  </div>
-                ) : (
-                  filteredCompanies.map((c) => (
-                    <CompanyCard
-                      key={c.id}
-                      company={c}
-                      directors={directors}
-                      onUpdate={updateCompany}
-                      onDelete={isAdmin ? deleteCompany : undefined}
-                      isAdmin={isAdmin}
-                    />
-                  ))
-                )}
-              </div>
-              <div className="hidden md:block">
-                <CompaniesTable
-                  companies={filteredCompanies}
-                  directors={directors}
-                  onUpdate={updateCompany}
-                  onDelete={isAdmin ? deleteCompany : undefined}
-                  isAdmin={isAdmin}
-                />
-              </div>
-            </>
-          );
-        })()}
       </div>
 
 
