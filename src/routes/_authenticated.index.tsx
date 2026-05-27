@@ -44,10 +44,8 @@ function DashboardPage() {
   const [activeStatus, setActiveStatus] = useState("all");
   const [addressFilter, setAddressFilter] = useState("all");
   const [authFilter, setAuthFilter] = useState("all");
-  
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [newDirectorName, setNewDirectorName] = useState("");
+
+
 
 
   const { filter: quickFilter } = Route.useSearch();
