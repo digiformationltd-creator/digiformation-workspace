@@ -313,19 +313,9 @@ export const updateCompanyCHStatus = createServerFn({ method: "POST" })
     if (error) throw dbError(error, "updateCompanyCHStatus");
     // address_match_status is derived by the DB trigger from company_address vs ch_address.
 
-    const storedAddress = result?.company_address || "";
-    const chAddress = chData.registered_office_address
-      ? JSON.stringify(chData.registered_office_address)
-      : "";
-    const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
-
-    await supabaseAdmin
-      .from("companies")
-      .update({ address_match_status: addressMatch })
-      .eq("id", data.id);
-
     return { company: result };
   });
+
 
 interface BulkSyncResult {
   company_id: string;
