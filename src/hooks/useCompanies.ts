@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { updateCompanyCHStatus, bulkSyncCompaniesHouse } from "@/lib/companies.functions";
 import { safeDbError } from "@/lib/safeError";
-import type { Company, Director, CompanyStatus } from "@/types";
+import type { Company, Director } from "@/types";
 
 async function fetchCompaniesDirect(): Promise<Company[]> {
   const { data, error } = await supabase
@@ -49,7 +49,7 @@ export function useCompanies() {
     mutationFn: async ({ id, updates }: { id: string; updates: Record<string, unknown> }) => {
       const { error } = await supabase
         .from("companies")
-        .update({ ...updates, updated_at: new Date().toISOString() })
+        .update(updates as never)
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to update company.");
     },
@@ -73,9 +73,10 @@ export function useCompanies() {
 
   const markSoldMutation = useMutation({
     mutationFn: async (id: string) => {
+      // status & updated_at are derived by DB trigger from availability_status.
       const { error } = await supabase
         .from("companies")
-        .update({ status: "Sold/Transferred" as CompanyStatus, availability_status: "sold", updated_at: new Date().toISOString() } as never)
+        .update({ availability_status: "sold" } as never)
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to update status.");
     },
@@ -86,11 +87,12 @@ export function useCompanies() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+
   const markAd01Mutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("companies")
-        .update({ ad01_status: "processing", updated_at: new Date().toISOString() } as never)
+        .update({ ad01_status: "processing" } as never)
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to mark AD01 processing.");
     },
@@ -115,8 +117,8 @@ export function useCompanies() {
         .update({
           ad01_status: "completed",
           ad01_filing_date: current?.ad01_filing_date ?? today,
-          updated_at: new Date().toISOString(),
         } as never)
+
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to mark AD01 complete.");
       if (!current?.ad01_filing_date) {

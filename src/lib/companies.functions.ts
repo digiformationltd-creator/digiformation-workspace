@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
-import type { CompanyStatus } from "@/types";
+
 
 interface CompanyInsert {
   company_name: string;
@@ -12,12 +12,12 @@ interface CompanyInsert {
   sic_codes?: string[] | null;
   auth_code?: string | null;
   utr_number?: string | null;
-  status?: CompanyStatus;
   address_status?: "Default Address" | "Changed/Updated" | "Active";
   ad01_filing_date?: string | null;
   director_id?: string | null;
   tags?: string[] | null;
 }
+
 
 // UK Companies House number format: 8 alphanumeric chars (e.g. 12345678, SC123456, NI123456, OC123456)
 const CH_NUMBER_RE = /^[A-Z0-9]{2}\d{6}$|^\d{8}$/;
@@ -111,8 +111,8 @@ export const markAd01Filed = createServerFn({ method: "POST" })
       .update({
         address_status: "Changed/Updated",
         ad01_filing_date: today,
-        updated_at: new Date().toISOString(),
       })
+
       .eq("id", data.id)
       .select()
       .single();
@@ -214,7 +214,7 @@ export const importCompaniesCSV = createServerFn({ method: "POST" })
           : null,
         auth_code: row["Auth Code"] || row["auth_code"] || null,
         utr_number: row["UTR Number"] || row["utr_number"] || null,
-        status: (row["Status"] || row["status"] || "Active") as CompanyStatus,
+        // status is derived by DB trigger — never set from CSV.
         address_status: (row["Address Status"] ||
           row["address_status"] ||
           "Default Address") as "Default Address" | "Changed/Updated" | "Active",
@@ -313,19 +313,9 @@ export const updateCompanyCHStatus = createServerFn({ method: "POST" })
     if (error) throw dbError(error, "updateCompanyCHStatus");
     // address_match_status is derived by the DB trigger from company_address vs ch_address.
 
-    const storedAddress = result?.company_address || "";
-    const chAddress = chData.registered_office_address
-      ? JSON.stringify(chData.registered_office_address)
-      : "";
-    const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
-
-    await supabaseAdmin
-      .from("companies")
-      .update({ address_match_status: addressMatch })
-      .eq("id", data.id);
-
     return { company: result };
   });
+
 
 interface BulkSyncResult {
   company_id: string;
@@ -343,7 +333,8 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
 
     const { data: companies, error } = await supabaseAdmin
       .from("companies")
-      .select("id, company_number, company_address");
+      .select("id, company_number");
+
     if (error) throw dbError(error, "bulkSyncCompaniesHouse/list");
 
     const results: BulkSyncResult[] = [];
@@ -366,12 +357,8 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
           continue;
         }
         const chData = (await response.json()) as Record<string, Json>;
-        const storedAddress = company.company_address || "";
-        const chAddress = chData.registered_office_address
-          ? JSON.stringify(chData.registered_office_address)
-          : "";
-        const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
 
+        // address_match_status is derived by the DB trigger from company_address vs ch_address.
         await supabaseAdmin
           .from("companies")
           .update({
@@ -380,10 +367,10 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
             ch_address: chData.registered_office_address
               ? JSON.stringify(chData.registered_office_address)
               : null,
-            address_match_status: addressMatch,
             last_ch_sync: new Date().toISOString(),
           })
           .eq("id", company.id);
+
 
         results.push({
           company_id: company.id,
