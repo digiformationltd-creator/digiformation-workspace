@@ -153,3 +153,114 @@ export const FILTERS: Record<FilterKey, (c: Company) => boolean> = {
   "ad01-filed": (c) => !RULES.isSold(c) && RULES.isAd01Complete(c),
   "ready-to-sell": RULES.isReadyToSell,
 };
+
+// ---------------------------------------------------------------------------
+// Shared write-payload builder.
+// Both Add Company and Edit Company forms call this with the same raw fields.
+// Guarantees the legacy `status` enum + `ad01_status` are derived identically
+// everywhere — no inline duplication, no hidden overrides.
+// ---------------------------------------------------------------------------
+import type {
+  AddressStatus,
+  Ad01Status,
+  AuthCodeStatus,
+  AvailabilityStatus,
+  LifecycleStatus,
+} from "@/types";
+
+export interface CompanyFormRaw {
+  company_name: string;
+  company_number: string;
+  previous_name?: string;
+  previous_address?: string;
+  previous_director_name?: string;
+  incorporation_date?: string;
+  company_address?: string;
+  auth_code?: string;
+  utr_number?: string;
+  sic_codes?: string; // comma-separated
+  director_id?: string; // "" or "none" → null
+  lifecycle_status: LifecycleStatus;
+  availability_status: AvailabilityStatus;
+  auth_code_status: AuthCodeStatus;
+  address_status: AddressStatus;
+  strike_off_status: boolean;
+  ad01_required: boolean;          // UI: Yes/No
+  ad01_status: Ad01Status;         // only used when ad01_required = true
+  ad01_filing_date?: string;
+  ch_accounts_next_due?: string;
+  ch_confirmation_statement_next_due?: string;
+}
+
+const blank = (s?: string) => (s && s.trim() !== "" ? s.trim() : null);
+
+export function buildCompanyWritePayload(raw: CompanyFormRaw) {
+  const effectiveAd01: Ad01Status = raw.ad01_required ? raw.ad01_status : "not_required";
+
+  const previewForDerivation: Company = {
+    id: "",
+    company_name: raw.company_name,
+    company_number: raw.company_number,
+    previous_name: null,
+    previous_address: null,
+    previous_director_name: null,
+    incorporation_date: null,
+    company_address: null,
+    sic_codes: null,
+    auth_code: blank(raw.auth_code),
+    utr_number: null,
+    status: "Active",
+    address_status: raw.address_status,
+    lifecycle_status: raw.lifecycle_status,
+    availability_status: raw.availability_status,
+    strike_off_status: raw.strike_off_status,
+    auth_code_status: raw.auth_code_status,
+    ad01_status: effectiveAd01,
+    ad01_filing_date: null,
+    director_id: null,
+    tags: null,
+    last_ch_sync: null,
+    ch_company_status: null,
+    ch_company_profile: null,
+    ch_address: null,
+    address_match_status: null,
+    ch_expiry_date: null,
+    ch_operation_date: null,
+    ch_filing_rate: null,
+    ch_accounts_next_due: null,
+    ch_confirmation_statement_next_due: null,
+    created_at: "",
+    updated_at: "",
+  };
+
+  return {
+    company_name: raw.company_name.trim() || raw.previous_name?.trim() || "(Unnamed)",
+    company_number:
+      (raw.company_number?.trim() || `TEMP-${Date.now().toString(36).toUpperCase()}`).toUpperCase(),
+    previous_name: blank(raw.previous_name),
+    previous_address: blank(raw.previous_address),
+    previous_director_name: blank(raw.previous_director_name),
+    incorporation_date: blank(raw.incorporation_date),
+    company_address:
+      blank(raw.company_address) ?? blank(raw.previous_address) ?? null,
+    auth_code: blank(raw.auth_code),
+    utr_number: blank(raw.utr_number),
+    sic_codes: raw.sic_codes
+      ? raw.sic_codes.split(",").map((s) => s.trim()).filter(Boolean)
+      : null,
+    director_id:
+      !raw.director_id || raw.director_id === "none" ? null : raw.director_id,
+    // raw atomic facts
+    address_status: raw.address_status,
+    lifecycle_status: raw.lifecycle_status,
+    availability_status: raw.availability_status,
+    strike_off_status: raw.strike_off_status,
+    auth_code_status: raw.auth_code_status,
+    ad01_status: effectiveAd01,
+    ad01_filing_date: blank(raw.ad01_filing_date),
+    ch_accounts_next_due: blank(raw.ch_accounts_next_due),
+    ch_confirmation_statement_next_due: blank(raw.ch_confirmation_statement_next_due),
+    // derived centrally — never inline
+    status: RULES.deriveLegacyStatus(previewForDerivation),
+  };
+}

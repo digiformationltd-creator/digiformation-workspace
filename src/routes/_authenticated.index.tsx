@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { Plus, Loader2, RefreshCw, ShieldAlert, Download } from "lucide-react";
+import { Loader2, RefreshCw, ShieldAlert, Download } from "lucide-react";
 import { exportCompaniesToExcel } from "@/lib/exportExcel";
 import { Button } from "@/components/ui/button";
 import { useCompanies } from "@/hooks/useCompanies";
@@ -9,30 +9,11 @@ import { FilterBar } from "@/components/FilterBar";
 import { CompaniesTable } from "@/components/CompaniesTable";
 import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
+import { AddCompanyDialog } from "@/components/AddCompanyDialog";
 import logo from "@/assets/digiformation-logo.png";
 import { isOwnedCompany } from "@/lib/ownership";
 import { useUserRole } from "@/hooks/useUserRole";
-
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
-import type { Company, Ad01Status } from "@/types";
-import { applyCategory, PRIMARY_CATEGORY_OPTIONS, type PrimaryCategory } from "@/lib/companyCategory";
 
 type DashSearch = { filter?: string };
 
@@ -63,10 +44,8 @@ function DashboardPage() {
   const [activeStatus, setActiveStatus] = useState("all");
   const [addressFilter, setAddressFilter] = useState("all");
   const [authFilter, setAuthFilter] = useState("all");
-  
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [newDirectorName, setNewDirectorName] = useState("");
+
+
 
 
   const { filter: quickFilter } = Route.useSearch();
@@ -222,102 +201,8 @@ function DashboardPage() {
     return filtered;
   }, [companies, searchTerm, selectedDirector, activeStatus, addressFilter, authFilter, quickFilter, directorMap]);
 
-
-  const handleAddCompany = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    setSubmitting(true);
-    try {
-      const currentName = ((formData.get("company_name") as string) || "").trim();
-      const originalName = ((formData.get("previous_name") as string) || "").trim();
-      const currentAddress = ((formData.get("company_address") as string) || "").trim();
-      const originalAddress = ((formData.get("previous_address") as string) || "").trim();
-      const companyNumber = ((formData.get("company_number") as string) || "").trim();
-
-      const markReadyToSell = formData.get("mark_ready_to_sell") === "on";
-      const primaryCategory = (formData.get("primary_category") as string) || "custom";
-      const catOverride =
-        primaryCategory !== "custom"
-          ? applyCategory(primaryCategory as PrimaryCategory)
-          : null;
-
-      const lifecycle = catOverride
-        ? catOverride.lifecycle_status
-        : markReadyToSell
-        ? "active"
-        : (((formData.get("lifecycle_status") as string) || "active") as "active" | "dissolved");
-      const availability = catOverride
-        ? catOverride.availability_status
-        : markReadyToSell
-        ? "available"
-        : (((formData.get("availability_status") as string) || "available") as "available" | "sold");
-      const strikeOff = catOverride
-        ? catOverride.strike_off_status
-        : markReadyToSell
-        ? false
-        : (formData.get("strike_off_status") as string) === "yes";
-      const authStatus = catOverride
-        ? catOverride.auth_code_status
-        : markReadyToSell
-        ? "available"
-        : (((formData.get("auth_code_status") as string) || "missing") as "available" | "missing");
-      const addrStatus = catOverride
-        ? catOverride.address_status
-        : markReadyToSell
-        ? ("Changed/Updated" as Company["address_status"])
-        : ((formData.get("address_status") as Company["address_status"]) || "Default Address");
-      const ad01Status = catOverride
-        ? catOverride.ad01_status
-        : markReadyToSell
-        ? "not_required"
-        : (((formData.get("ad01_status") as string) || "pending") as Ad01Status);
-
-      // Legacy single-enum "status" — kept in sync for backward compatibility
-      const legacyStatus: Company["status"] =
-        lifecycle === "dissolved"
-          ? "Dissolved"
-          : strikeOff
-          ? "Strike Off Notice"
-          : availability === "sold"
-          ? "Sold/Transferred"
-          : availability === "available"
-          ? "Available Company"
-          : "Active";
-
-      await createCompany({
-        company_name: currentName || originalName || "(Unnamed)",
-        company_number: (companyNumber || `TEMP-${Date.now().toString(36).toUpperCase()}`),
-        incorporation_date: (formData.get("incorporation_date") as string) || null,
-        company_address: currentAddress || originalAddress || null,
-        previous_name: originalName || null,
-        previous_address: originalAddress || null,
-        previous_director_name: (formData.get("previous_director_name") as string) || null,
-        sic_codes: (formData.get("sic_codes") as string)
-          ? (formData.get("sic_codes") as string).split(",").map((s) => s.trim())
-          : null,
-        auth_code: (formData.get("auth_code") as string) || null,
-        utr_number: (formData.get("utr_number") as string) || null,
-        director_id: (formData.get("director_id") as string) || null,
-        status: legacyStatus,
-        address_status: addrStatus,
-        lifecycle_status: lifecycle,
-        availability_status: availability,
-        strike_off_status: strikeOff,
-        auth_code_status: authStatus,
-        ad01_status: ad01Status,
-        ch_accounts_next_due: (formData.get("ch_accounts_next_due") as string) || null,
-        ch_confirmation_statement_next_due: (formData.get("ch_confirmation_statement_next_due") as string) || null,
-      });
-      form.reset();
-      setShowAddForm(false);
-    } catch {
-      // toast handled in hook
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  // Add Company logic now lives in <AddCompanyDialog />, which uses the
+  // centralized buildCompanyWritePayload helper from companyRules.ts.
 
 
   if (loading) {
@@ -362,249 +247,11 @@ function DashboardPage() {
             Refresh
           </Button>
           {isAdmin && (
-          <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="flex-1 sm:flex-none min-w-0">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Company
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Add New Company</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleAddCompany} className="space-y-4">
-
-                <div className="space-y-1.5 rounded-lg border-2 border-primary/40 bg-primary/5 p-3">
-                  <Label htmlFor="primary_category" className="text-xs font-semibold uppercase tracking-wide text-primary">
-                    🏷️ Primary Category
-                  </Label>
-                  <Select name="primary_category" defaultValue="custom">
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="custom">— Custom (use fields below) —</SelectItem>
-                      {PRIMARY_CATEGORY_OPTIONS.map((o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                          {o.emoji} {o.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-[10px] text-muted-foreground">
-                    Selecting a category auto-sets all status fields below.
-                  </p>
-                </div>
-
-
-                <label className="flex items-start gap-3 rounded-lg border-2 border-emerald-500/40 bg-emerald-500/5 p-3 cursor-pointer hover:bg-emerald-500/10 transition">
-                  <input
-                    type="checkbox"
-                    name="mark_ready_to_sell"
-                    className="mt-0.5 h-4 w-4 accent-emerald-500"
-                  />
-                  <div className="flex-1">
-                    <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-                      💎 Mark as Ready to Sell
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Auto-sets: Active · Available · No Strike Off · Auth Available · Address Updated · AD01 Not Required
-                    </p>
-                  </div>
-                </label>
-
-
-                <div className="rounded-lg border p-3 space-y-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Company Name</p>
-                  <div className="space-y-2">
-                    <Label htmlFor="previous_name">Old Company Name</Label>
-                    <Input id="previous_name" name="previous_name" placeholder="Leave empty if never renamed" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="company_name">Current Company Name</Label>
-                    <Input id="company_name" name="company_name" placeholder="Current trading name" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="company_number">Company Number</Label>
-                  <Input id="company_number" name="company_number" />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="incorporation_date">Incorporation Date</Label>
-                  <Input id="incorporation_date" name="incorporation_date" type="date" />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="lifecycle_status">Company Status</Label>
-                    <Select name="lifecycle_status" defaultValue="active">
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="dissolved">Dissolved</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="availability_status">Availability</Label>
-                    <Select name="availability_status" defaultValue="available">
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="available">Available</SelectItem>
-                        <SelectItem value="sold">Sold Out</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="strike_off_status">Strike Off Status</Label>
-                    <Select name="strike_off_status" defaultValue="no">
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="no">No Strike Off</SelectItem>
-                        <SelectItem value="yes">Strike Off Notice</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="auth_code_status">Authentication Code</Label>
-                    <Select name="auth_code_status" defaultValue="missing">
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="available">Available</SelectItem>
-                        <SelectItem value="missing">Missing</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="ad01_status">AD01 Status</Label>
-                    <Select name="ad01_status" defaultValue="pending">
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="not_required">Not Required</SelectItem>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="processing">Processing</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="address_status">Address Status</Label>
-                    <Select name="address_status" defaultValue="Changed/Updated">
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Changed/Updated">Changed / Updated</SelectItem>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Default Address">Default Address</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-
-                <div className="rounded-lg border p-3 space-y-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Registered Address</p>
-                  <div className="space-y-2">
-                    <Label htmlFor="previous_address">Old Address</Label>
-                    <Input id="previous_address" name="previous_address" placeholder="Leave empty if never changed" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="company_address">Current Address</Label>
-                    <Input id="company_address" name="company_address" placeholder="Current registered address" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="address_status">Address Status</Label>
-                    <Select name="address_status" defaultValue="Default Address">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Default Address">Default</SelectItem>
-                        <SelectItem value="Changed/Updated">Normal</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-
-                <div className="rounded-lg border p-3 space-y-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Director</p>
-                  <div className="space-y-2">
-                    <Label htmlFor="previous_director_name">Old Director</Label>
-                    <Input id="previous_director_name" name="previous_director_name" placeholder="Leave empty if never changed" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="director_id">Current Director</Label>
-                    <Select name="director_id">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select current director" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {directors
-                          .filter((d) => d.is_owner)
-                          .map((d) => (
-                            <SelectItem key={d.id} value={d.id}>
-                              {d.name}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                    <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                      <Input
-                        placeholder="Or add a new director name..."
-                        value={newDirectorName}
-                        onChange={(e) => setNewDirectorName(e.target.value)}
-                        className="h-9 text-xs"
-                      />
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        disabled={!newDirectorName.trim()}
-                        onClick={() => {
-                          const name = newDirectorName.trim();
-                          if (!name) return;
-                          createDirector(name);
-                          setNewDirectorName("");
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="auth_code">Auth Code</Label>
-                    <Input id="auth_code" name="auth_code" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="utr_number">UTR Number</Label>
-                    <Input id="utr_number" name="utr_number" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="ch_confirmation_statement_next_due">Confirmation Statement Due</Label>
-                    <Input id="ch_confirmation_statement_next_due" name="ch_confirmation_statement_next_due" type="date" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="ch_accounts_next_due">Annual Accounts Due</Label>
-                    <Input id="ch_accounts_next_due" name="ch_accounts_next_due" type="date" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sic_codes">SIC Codes (comma separated)</Label>
-                  <Input id="sic_codes" name="sic_codes" placeholder="62020, 62090" />
-                </div>
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Add Company
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+            <AddCompanyDialog
+              directors={directors}
+              createCompany={createCompany}
+              createDirector={createDirector}
+            />
           )}
         </div>
       </div>
