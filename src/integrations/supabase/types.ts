@@ -75,6 +75,8 @@ export type Database = {
           previous_address: string | null
           previous_director_name: string | null
           previous_name: string | null
+          primary_category: string | null
+          ready_to_sell: boolean
           sic_codes: string[] | null
           status: Database["public"]["Enums"]["company_status"] | null
           strike_off_status: boolean
@@ -110,6 +112,8 @@ export type Database = {
           previous_address?: string | null
           previous_director_name?: string | null
           previous_name?: string | null
+          primary_category?: string | null
+          ready_to_sell?: boolean
           sic_codes?: string[] | null
           status?: Database["public"]["Enums"]["company_status"] | null
           strike_off_status?: boolean
@@ -145,6 +149,8 @@ export type Database = {
           previous_address?: string | null
           previous_director_name?: string | null
           previous_name?: string | null
+          primary_category?: string | null
+          ready_to_sell?: boolean
           sic_codes?: string[] | null
           status?: Database["public"]["Enums"]["company_status"] | null
           strike_off_status?: boolean
@@ -226,7 +232,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      normalize_address: { Args: { addr: string }; Returns: string }
     }
     Enums: {
       address_status: "Default Address" | "Changed/Updated" | "Active"
