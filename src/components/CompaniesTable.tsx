@@ -328,16 +328,11 @@ export function CompaniesTable({
                     />
                   </td>
                   <td className="px-2 py-1.5">
-                    {(() => {
-                      const cat = deriveCategory(company);
-                      return (
-                        <Badge variant="outline" className={`${categoryBadgeClass(cat)} text-[9px] px-1.5 py-0 truncate`}>
-                          {categoryLabel(cat)}
-                        </Badge>
-                      );
-                    })()}
+                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-[9px] px-1.5 py-0 whitespace-nowrap">
+                      💎 Ready to Sell
+                    </Badge>
                   </td>
-                  <td className="px-2 py-1.5">
+                  <td className="px-2 py-1.5 overflow-hidden">
                     {(() => {
                       const newCurrent = company.previous_director_name;
                       const ours = company.director?.name;
@@ -346,9 +341,9 @@ export function CompaniesTable({
                       return (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className={`truncate flex items-center gap-1 text-[11px] ${changed ? "cursor-help underline decoration-dotted underline-offset-2" : ""}`}>
+                            <div className={`truncate text-[11px] ${changed ? "cursor-help underline decoration-dotted underline-offset-2" : ""}`}>
                               {display || <span className="text-muted-foreground">—</span>}
-                            </span>
+                            </div>
                           </TooltipTrigger>
                           <TooltipContent className="text-xs max-w-[320px]">
                             <div><strong>Current director:</strong> {display || "—"}</div>
