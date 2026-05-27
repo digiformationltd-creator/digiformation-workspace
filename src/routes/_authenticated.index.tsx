@@ -263,9 +263,9 @@ function DashboardPage() {
         <SummaryCards companies={companies} />
 
         {/* Row 3: THE unified filter bar — only filter interface in the app */}
-        <div className="flex items-center gap-1.5 min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0 flex-wrap xl:flex-nowrap">
           {/* Search */}
-          <div className="relative flex-1 min-w-0">
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/60" />
             <Input
               placeholder="Search name, number, director, address, UTR, auth code…"
@@ -284,24 +284,46 @@ function DashboardPage() {
             )}
           </div>
 
-          {/* Category dropdown (URL filter, category dim) */}
+          {/* Priority filter chips — always visible, scroll horizontally on narrow screens */}
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar min-w-0 flex-1">
+            {PRIMARY_CHIPS.map((f) => {
+              const isActive = quickFilter === f.key;
+              const count = countOf(f.key);
+              return (
+                <Button
+                  key={f.key}
+                  variant={isActive ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setQuickFilter(isActive ? undefined : (f.key as FilterKey))}
+                  className="h-8 shrink-0 text-[11px] gap-1.5 px-2.5"
+                >
+                  <span>{f.label}</span>
+                  <span className={`tabular-nums text-[10px] rounded px-1 ${isActive ? "bg-primary-foreground/20" : "bg-muted text-muted-foreground"}`}>
+                    {count}
+                  </span>
+                </Button>
+              );
+            })}
+          </div>
+
+          {/* More Filters — secondary/low-priority only */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant={activeIsCategory ? "default" : "outline"}
+                variant={activeIsSecondary ? "default" : "outline"}
                 size="sm"
                 className="h-8 shrink-0 text-[11px] gap-1"
               >
-                <Filter className="h-3 w-3" />
-                {activeIsCategory ? activeFilter!.label : "Category"}
+                <MoreHorizontal className="h-3 w-3" />
+                {activeIsSecondary ? activeFilter!.label : "More"}
                 <ChevronDown className="h-3 w-3 opacity-60" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                Lifecycle
+                More Filters
               </DropdownMenuLabel>
-              {CATEGORY_FILTERS.map((f) => {
+              {SECONDARY_FILTERS.map((f) => {
                 const isActive =
                   f.key === "all" ? !quickFilter : quickFilter === f.key;
                 return (
@@ -317,52 +339,6 @@ function DashboardPage() {
                   </DropdownMenuItem>
                 );
               })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Issues dropdown (URL filter, issue dim) */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant={activeIsIssue ? "default" : "outline"}
-                size="sm"
-                className="h-8 shrink-0 text-[11px] gap-1"
-              >
-                <AlertTriangle className="h-3 w-3" />
-                {activeIsIssue ? activeFilter!.label : "Issues"}
-                <ChevronDown className="h-3 w-3 opacity-60" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                Operational Issues
-              </DropdownMenuLabel>
-              {ISSUE_FILTERS.map((f) => {
-                const isActive = quickFilter === f.key;
-                return (
-                  <DropdownMenuItem
-                    key={f.key}
-                    onSelect={() => setQuickFilter(f.key as FilterKey)}
-                    className={`text-xs flex items-center justify-between ${isActive ? "font-semibold text-primary" : ""}`}
-                  >
-                    <span>{f.label}</span>
-                    <span className="tabular-nums text-[10px] text-muted-foreground">
-                      {countOf(f.key)}
-                    </span>
-                  </DropdownMenuItem>
-                );
-              })}
-              {activeIsIssue && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onSelect={() => setQuickFilter(undefined)}
-                    className="text-xs text-muted-foreground"
-                  >
-                    Clear issue filter
-                  </DropdownMenuItem>
-                </>
-              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -429,21 +405,63 @@ function DashboardPage() {
               <span className="text-primary ml-2">· {activeDirectorName}</span>
             )}
           </span>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 gap-1.5 text-[11px]"
-            disabled={filteredCompanies.length === 0}
-            onClick={() => {
-              const label = quickFilter ?? "all-companies";
-              exportCompaniesToExcel(filteredCompanies, label);
-              toast.success(`Exported ${filteredCompanies.length} companies`);
-            }}
-          >
-            <Download className="h-3.5 w-3.5" />
-            Export Excel
-          </Button>
+          <div className="flex items-center">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 gap-1.5 text-[11px] rounded-r-none border-r-0"
+              disabled={filteredCompanies.length === 0}
+              onClick={() => {
+                const label = quickFilter ?? "current-view";
+                exportCompaniesToExcel(filteredCompanies, label);
+                toast.success(`Exported ${filteredCompanies.length} companies`);
+              }}
+            >
+              <Download className="h-3.5 w-3.5" />
+              Export view
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 px-1.5 rounded-l-none"
+                  aria-label="Export by segment"
+                >
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-60">
+                <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Export by Segment
+                </DropdownMenuLabel>
+                {EXPORT_SEGMENTS.map((seg) => {
+                  const subset = applyFilterKey([...companies], seg.key);
+                  return (
+                    <DropdownMenuItem
+                      key={seg.key}
+                      disabled={subset.length === 0}
+                      onSelect={() => {
+                        exportCompaniesToExcel(subset, seg.key);
+                        toast.success(`Exported ${subset.length} · ${seg.label}`);
+                      }}
+                      className="text-xs flex items-center justify-between gap-3"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Download className="h-3 w-3 opacity-60" />
+                        {seg.label}
+                      </span>
+                      <span className="tabular-nums text-[10px] text-muted-foreground">
+                        {subset.length}
+                      </span>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
+
 
         {/* Section view (DB-derived primary_category) vs flat for technical filters */}
         {useSectionView ? (
