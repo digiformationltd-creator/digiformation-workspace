@@ -178,13 +178,6 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
             <p className="text-muted-foreground/70">
               Status, category and address-match are all owned by the database.
             </p>
-            <p>
-              <span className="text-muted-foreground">Ready to Sell:</span>{" "}
-              <span className={isReadyToSell ? "text-emerald-500 font-semibold" : "text-muted-foreground"}>
-                {isReadyToSell ? "Yes" : "No"}
-              </span>
-              <span className="text-muted-foreground/70"> · calculated automatically</span>
-            </p>
           </div>
         </div>
 

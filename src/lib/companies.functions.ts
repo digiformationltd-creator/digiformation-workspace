@@ -74,9 +74,10 @@ export const updateCompany = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string; updates: Partial<CompanyInsert> }) => data)
   .handler(async ({ data }) => {
+    // updated_at is now set by the DB trigger; status changes are auto-logged.
     const { data: result, error } = await supabaseAdmin
       .from("companies")
-      .update({ ...data.updates, updated_at: new Date().toISOString() })
+      .update(data.updates)
       .eq("id", data.id)
       .select()
       .single();
@@ -88,28 +89,15 @@ export const markAsSold = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { data: company } = await supabaseAdmin
-      .from("companies")
-      .select("status")
-      .eq("id", data.id)
-      .single();
-    if (!company) throw new Error("Company not found");
-
+    // Setting availability_status=sold makes the DB trigger re-derive
+    // status='Sold/Transferred' and log the change automatically.
     const { data: result, error } = await supabaseAdmin
       .from("companies")
-      .update({ status: "Sold/Transferred", updated_at: new Date().toISOString() })
+      .update({ availability_status: "sold" })
       .eq("id", data.id)
       .select()
       .single();
     if (error) throw dbError(error, "markAsSold");
-
-    await supabaseAdmin.from("company_status_logs").insert({
-      company_id: data.id,
-      old_status: company.status,
-      new_status: "Sold/Transferred",
-      changed_by: null,
-    });
-
     return { company: result };
   });
 
@@ -323,6 +311,7 @@ export const updateCompanyCHStatus = createServerFn({ method: "POST" })
       .select()
       .single();
     if (error) throw dbError(error, "updateCompanyCHStatus");
+    // address_match_status is derived by the DB trigger from company_address vs ch_address.
 
     const storedAddress = result?.company_address || "";
     const chAddress = chData.registered_office_address
