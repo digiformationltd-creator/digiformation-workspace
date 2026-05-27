@@ -43,7 +43,6 @@ export function SummaryCards({ companies }: Props) {
   const ad01Pending = ad01PendingAuth + ad01PendingDefault;
   const ad01Processing = internal.filter((c) => c.ad01_status === "processing").length;
   const ad01Filed = internal.filter((c) => c.ad01_status === "completed").length;
-  const ad01NotRequired = internal.filter((c) => c.ad01_status === "not_required").length;
 
   // Ready to Sell = clean, available, active companies with NO open issues
   // AND the authentication code has actually been received/entered.
@@ -169,16 +168,6 @@ export function SummaryCards({ companies }: Props) {
       ring: "group-hover:ring-green-500/40",
       iconBg: "bg-green-500/10 text-green-600 group-hover:bg-green-500 group-hover:text-white",
       hint: "Completed AD01 filings",
-    },
-    {
-      title: "AD01 Not Required",
-      value: ad01NotRequired,
-      icon: FileCheck,
-      filter: "ad01-not-required",
-      accent: "from-slate-500/20 to-gray-500/10",
-      ring: "group-hover:ring-slate-500/40",
-      iconBg: "bg-slate-500/10 text-slate-600 group-hover:bg-slate-500 group-hover:text-white",
-      hint: "AD01 never needed",
     },
     {
       title: "Ready to Sell",

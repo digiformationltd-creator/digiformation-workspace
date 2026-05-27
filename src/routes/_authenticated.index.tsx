@@ -108,8 +108,6 @@ function DashboardPage() {
       filtered = filtered.filter((c) => c.ad01_status === "processing");
     } else if (quickFilter === "ad01-filed") {
       filtered = filtered.filter((c) => c.ad01_status === "completed");
-    } else if (quickFilter === "ad01-not-required") {
-      filtered = filtered.filter((c) => c.ad01_status === "not_required");
     } else if (quickFilter === "pending-sale") {
       filtered = filtered.filter((c) => c.availability_status === "available");
     } else if (quickFilter === "sold") {
