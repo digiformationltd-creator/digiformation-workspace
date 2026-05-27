@@ -8,8 +8,7 @@ import {
   ChevronDown,
   Search,
   X,
-  Filter,
-  AlertTriangle,
+  MoreHorizontal,
   Users,
 } from "lucide-react";
 import {
