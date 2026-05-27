@@ -53,7 +53,8 @@ export function applyCategory(cat: PrimaryCategory): CategoryFields {
         auth_code_status: "available",
         address_status: "Changed/Updated",
         strike_off_status: false,
-        ad01_status: "completed",
+        // No address/auth issue — AD01 was never needed.
+        ad01_status: "not_required",
         status: "Available Company",
       };
     case "auth_missing":
@@ -63,7 +64,8 @@ export function applyCategory(cat: PrimaryCategory): CategoryFields {
         auth_code_status: "missing",
         address_status: "Changed/Updated",
         strike_off_status: false,
-        ad01_status: "completed",
+        // Only auth missing — no address change required, so AD01 not required.
+        ad01_status: "not_required",
         status: "Active",
       };
     case "address_default":
@@ -93,7 +95,7 @@ export function applyCategory(cat: PrimaryCategory): CategoryFields {
         auth_code_status: "available",
         address_status: "Changed/Updated",
         strike_off_status: false,
-        ad01_status: "completed",
+        ad01_status: "not_required",
         status: "Sold/Transferred",
       };
   }

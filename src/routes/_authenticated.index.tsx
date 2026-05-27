@@ -108,6 +108,8 @@ function DashboardPage() {
       filtered = filtered.filter((c) => c.ad01_status === "processing");
     } else if (quickFilter === "ad01-filed") {
       filtered = filtered.filter((c) => c.ad01_status === "completed");
+    } else if (quickFilter === "ad01-not-required") {
+      filtered = filtered.filter((c) => c.ad01_status === "not_required");
     } else if (quickFilter === "pending-sale") {
       filtered = filtered.filter((c) => c.availability_status === "available");
     } else if (quickFilter === "sold") {
@@ -271,7 +273,7 @@ function DashboardPage() {
       const ad01Status = catOverride
         ? catOverride.ad01_status
         : markReadyToSell
-        ? "completed"
+        ? "not_required"
         : (((formData.get("ad01_status") as string) || "pending") as Ad01Status);
 
       // Legacy single-enum "status" — kept in sync for backward compatibility
@@ -615,6 +617,7 @@ function DashboardPage() {
           { key: "ad01", label: "AD01 Pending", count: companies.filter((c) => c.ad01_status === "pending" && (c.auth_code_status === "missing" || c.address_status === "Default Address")).length },
           { key: "ad01-processing", label: "AD01 Processing", count: companies.filter((c) => c.ad01_status === "processing").length },
           { key: "ad01-filed", label: "AD01 Complete", count: companies.filter((c) => c.ad01_status === "completed").length },
+          { key: "ad01-not-required", label: "AD01 Not Required", count: companies.filter((c) => c.ad01_status === "not_required").length },
         ];
         return (
           <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
