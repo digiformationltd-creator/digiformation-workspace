@@ -490,6 +490,17 @@ function DashboardPage() {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address_status">Address Status</Label>
+                    <Select name="address_status" defaultValue="Changed/Updated">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Changed/Updated">Changed / Updated</SelectItem>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Default Address">Default Address</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
 
