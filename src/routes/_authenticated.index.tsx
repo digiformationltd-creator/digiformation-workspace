@@ -1,6 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { Loader2, RefreshCw, ShieldAlert, Download } from "lucide-react";
+import { Loader2, RefreshCw, ShieldAlert, Download, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import { exportCompaniesToExcel } from "@/lib/exportExcel";
 import { Button } from "@/components/ui/button";
 import { useCompanies } from "@/hooks/useCompanies";
@@ -174,26 +181,31 @@ function DashboardPage() {
 
   const chKeyMissing = false;
 
-  const segmentDefs: { key: FilterKey | "all"; label: string }[] = [
-    { key: "all", label: "All" },
-    { key: "ready-to-sell", label: "Ready to Sell" },
-    { key: "auth-missing", label: "Auth Missing" },
-    { key: "default-address", label: "Default Addr." },
-    { key: "strike-off", label: "Strike Off" },
+  const segmentDefs: { key: FilterKey | "all"; label: string; primary?: boolean }[] = [
+    { key: "all", label: "All", primary: true },
+    { key: "ready-to-sell", label: "Ready to Sell", primary: true },
+    { key: "auth-missing", label: "Auth Missing", primary: true },
+    { key: "default-address", label: "Default Addr.", primary: true },
+    { key: "strike-off", label: "Strike Off", primary: true },
+    { key: "active", label: "Active", primary: true },
+    { key: "sold", label: "Sold", primary: true },
     { key: "ad01-processing", label: "AD01 Processing" },
-    { key: "active", label: "Active" },
     { key: "pending-sale", label: "Available" },
     { key: "ad01", label: "AD01 Pending" },
     { key: "ad01-filed", label: "AD01 Complete" },
     { key: "ad01-not-required", label: "AD01 Not Req." },
     { key: "dissolved", label: "Dissolved" },
-    { key: "sold", label: "Sold" },
   ];
   const segments = segmentDefs.map((s) => ({
     key: s.key === "all" ? undefined : s.key,
     label: s.label,
+    primary: !!s.primary,
     count: COUNTER_BY_FILTER[s.key as FilterKey](companies),
   }));
+  const primarySegments = segments.filter((s) => s.primary);
+  const overflowSegments = segments.filter((s) => !s.primary);
+  const overflowActive = overflowSegments.find((s) => s.key === quickFilter);
+
 
   const FILTER_TO_CATEGORY: Partial<Record<FilterKey, PrimaryCategory>> = {
     "ready-to-sell": "ready_to_sell",
@@ -211,58 +223,55 @@ function DashboardPage() {
 
 
   return (
-    <div className="space-y-5">
-      {/* TOP BAR — title left, actions right, single horizontal band */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 flex items-center justify-center">
-            <img src={logo} alt="Digiformation" className="h-full w-full object-contain" />
-          </div>
-          <div className="flex flex-col justify-center min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight truncate">
-              Tracking Dashboard
-            </h1>
-            <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-              UK limited companies · operational workflow
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:shrink-0">
-          {chKeyMissing && (
-            <div className="flex items-center gap-2 text-[11px] text-warning bg-warning/10 px-2.5 py-1.5 rounded-lg">
-              <ShieldAlert className="h-3.5 w-3.5" />
-              CH API key not configured
+    <div className="space-y-2">
+      {/* CONTROL CLUSTER — sticky: header + KPIs + filter pills, always in view */}
+      <div className="sticky top-0 z-20 -mx-2 px-2 pt-2 pb-2 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75 space-y-2 border-b">
+        {/* Row 1: brand + actions */}
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="h-9 w-9 shrink-0 flex items-center justify-center">
+              <img src={logo} alt="Digiformation" className="h-full w-full object-contain" />
             </div>
-          )}
-          <Button variant="outline" size="sm" onClick={refresh} className="h-9">
-            <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-            Refresh
-          </Button>
-          {isAdmin && (
-            <AddCompanyDialog
-              directors={directors}
-              createCompany={createCompany}
-              createDirector={createDirector}
-            />
-          )}
+            <div className="flex flex-col justify-center min-w-0 leading-tight">
+              <h1 className="text-base font-bold tracking-tight truncate">Tracking Dashboard</h1>
+              <p className="text-[10px] text-muted-foreground truncate">UK limited companies · operations</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {chKeyMissing && (
+              <div className="hidden md:flex items-center gap-1.5 text-[10px] text-warning bg-warning/10 px-2 py-1 rounded-md">
+                <ShieldAlert className="h-3 w-3" />
+                CH API key missing
+              </div>
+            )}
+            <Button variant="outline" size="sm" onClick={refresh} className="h-8 text-xs">
+              <RefreshCw className="mr-1 h-3 w-3" />
+              Refresh
+            </Button>
+            {isAdmin && (
+              <AddCompanyDialog
+                directors={directors}
+                createCompany={createCompany}
+                createDirector={createDirector}
+              />
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* TIER 1 — Hero KPI strip + secondary stats */}
-      <SummaryCards companies={companies} />
+        {/* Row 2: KPI strip */}
+        <SummaryCards companies={companies} />
 
-      {/* TIER 2 — Sticky operational toolbar (filter pills + result count + export) */}
-      <div className="sticky top-0 z-20 -mx-2 px-2 py-2 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b">
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1.5 overflow-x-auto pb-1 flex-1 min-w-0 scrollbar-thin">
-            {segments.map((s) => {
+        {/* Row 3: primary filter pills + overflow dropdown — no wrap, no scroll */}
+        <div className="flex items-center gap-1.5 min-w-0">
+          <div className="flex gap-1 flex-1 min-w-0 flex-nowrap overflow-hidden">
+            {primarySegments.map((s) => {
               const isActive = (quickFilter ?? undefined) === s.key;
               return (
                 <Link
                   key={s.label}
                   to="/"
                   search={s.key ? { filter: s.key } : {}}
-                  className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-colors ${
+                  className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary shadow-sm"
                       : "bg-card hover:bg-muted text-foreground border-border"
@@ -270,7 +279,7 @@ function DashboardPage() {
                 >
                   {s.label}
                   <span
-                    className={`tabular-nums text-[10px] rounded-full px-1.5 py-0.5 ${
+                    className={`tabular-nums text-[10px] rounded-full px-1.5 ${
                       isActive ? "bg-primary-foreground/20" : "bg-muted text-muted-foreground"
                     }`}
                   >
@@ -280,12 +289,40 @@ function DashboardPage() {
               );
             })}
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={overflowActive ? "default" : "outline"}
+                size="sm"
+                className="h-7 shrink-0 text-[11px] gap-1"
+              >
+                {overflowActive ? overflowActive.label : "More filters"}
+                <ChevronDown className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {overflowSegments.map((s) => {
+                const isActive = quickFilter === s.key;
+                return (
+                  <DropdownMenuItem key={s.label} asChild>
+                    <Link
+                      to="/"
+                      search={s.key ? { filter: s.key } : {}}
+                      className={`flex items-center justify-between w-full text-xs ${isActive ? "font-semibold text-primary" : ""}`}
+                    >
+                      <span>{s.label}</span>
+                      <span className="tabular-nums text-[10px] text-muted-foreground">{s.count}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
-
-      {/* TIER 3 — Detail filters (collapsible secondary) */}
-      <div className="bg-card rounded-xl border p-3">
+      {/* Detail filters (search + director + status) — compact band */}
+      <div className="bg-card rounded-lg border p-2">
         <FilterBar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -296,13 +333,15 @@ function DashboardPage() {
           onStatusChange={handleStatusChange}
           addressFilter={addressFilter}
           onAddressFilterChange={handleAddressChange}
+
           authFilter={authFilter}
           onAuthFilterChange={handleAuthChange}
         />
       </div>
 
-      <div className="space-y-3 min-w-0">
+      <div className="space-y-2 min-w-0">
         <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground px-1">
+
           <span>
             Showing <strong className="text-foreground tabular-nums">{filteredCompanies.length}</strong> of <span className="tabular-nums">{companies.length}</span> companies
             {selectedDirector !== "all" && <span className="text-primary ml-2">· Filtered by director</span>}
