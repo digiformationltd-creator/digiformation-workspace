@@ -36,32 +36,37 @@ interface MiniCard {
   muted?: boolean;
 }
 
-const TONE: Record<HeroCard["tone"], { ring: string; iconBg: string; valueText: string; bar: string }> = {
+const TONE: Record<HeroCard["tone"], { ring: string; iconBg: string; valueText: string; bar: string; glow: string }> = {
   success: {
-    ring: "ring-emerald-500/20 hover:ring-emerald-500/50",
+    ring: "ring-emerald-500/20 hover:ring-emerald-500/60",
     iconBg: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
     valueText: "text-emerald-600 dark:text-emerald-400",
     bar: "bg-emerald-500",
+    glow: "kpi-glow-success",
   },
   warning: {
-    ring: "ring-amber-500/20 hover:ring-amber-500/50",
+    ring: "ring-amber-500/20 hover:ring-amber-500/60",
     iconBg: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
     valueText: "text-amber-600 dark:text-amber-400",
     bar: "bg-amber-500",
+    glow: "kpi-glow-warning",
   },
   danger: {
-    ring: "ring-rose-500/20 hover:ring-rose-500/50",
+    ring: "ring-rose-500/20 hover:ring-rose-500/60",
     iconBg: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
     valueText: "text-rose-600 dark:text-rose-400",
     bar: "bg-rose-500",
+    glow: "kpi-glow-danger",
   },
   alert: {
-    ring: "ring-orange-500/20 hover:ring-orange-500/50",
+    ring: "ring-orange-500/20 hover:ring-orange-500/60",
     iconBg: "bg-orange-500/15 text-orange-600 dark:text-orange-400",
     valueText: "text-orange-600 dark:text-orange-400",
     bar: "bg-orange-500",
+    glow: "kpi-glow-alert",
   },
 };
+
 
 export function SummaryCards({ companies }: Props) {
   // Hero KPIs — the 4 things staff act on FIRST
