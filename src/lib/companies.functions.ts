@@ -214,7 +214,7 @@ export const importCompaniesCSV = createServerFn({ method: "POST" })
           : null,
         auth_code: row["Auth Code"] || row["auth_code"] || null,
         utr_number: row["UTR Number"] || row["utr_number"] || null,
-        status: (row["Status"] || row["status"] || "Active") as CompanyStatus,
+        // status is derived by DB trigger — never set from CSV.
         address_status: (row["Address Status"] ||
           row["address_status"] ||
           "Default Address") as "Default Address" | "Changed/Updated" | "Active",
