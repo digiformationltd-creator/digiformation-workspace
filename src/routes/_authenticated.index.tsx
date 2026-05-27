@@ -222,18 +222,18 @@ function DashboardPage() {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {/* ───── STICKY CONTROL CLUSTER — single source of all primary UI ───── */}
-      <div className="sticky top-0 z-20 -mx-2 px-2 pt-2 pb-2 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75 space-y-2 border-b">
+      <div className="sticky top-0 z-20 -mx-2 px-2 pt-2 pb-2 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75 space-y-3 border-b">
         {/* Row 1: brand + actions */}
         <div className="flex items-center justify-between gap-2 min-w-0">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="h-9 w-9 shrink-0 flex items-center justify-center">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 shrink-0 flex items-center justify-center">
               <img src={logo} alt="Digiformation" className="h-full w-full object-contain" />
             </div>
             <div className="flex flex-col justify-center min-w-0 leading-tight">
-              <h1 className="text-base font-bold tracking-tight truncate">Tracking Dashboard</h1>
-              <p className="text-[10px] text-muted-foreground truncate">
+              <h1 className="text-lg font-semibold tracking-tight truncate">Tracking Dashboard</h1>
+              <p className="text-[11px] text-muted-foreground truncate">
                 UK limited companies · operations
               </p>
             </div>
