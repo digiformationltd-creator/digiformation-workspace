@@ -26,7 +26,7 @@ import type {
   AddressStatus,
   Company,
 } from "@/types";
-import { RULES, buildCompanyWritePayload } from "@/lib/companyRules";
+import { RULES, buildCompanyWritePayload, categoryLabel } from "@/lib/companyRules";
 
 interface Props {
   directors: Director[];
@@ -89,7 +89,7 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
   const set = <K extends keyof typeof DEFAULTS>(k: K, v: (typeof DEFAULTS)[K]) =>
     setForm((p) => ({ ...p, [k]: v }));
 
-  // ---- Live derived preview (centralized RULES — never duplicated) ----
+  // ---- Live derived preview (client fallback — DB trigger owns final value) ----
   const preview: Company = {
     id: "",
     company_name: form.company_name,
@@ -117,6 +117,8 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
     ch_company_profile: null,
     ch_address: null,
     address_match_status: null,
+    primary_category: null,
+    ready_to_sell: false,
     ch_expiry_date: null,
     ch_operation_date: null,
     ch_filing_rate: null,
@@ -125,20 +127,9 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
     created_at: "",
     updated_at: "",
   };
-  const derivedCategory = RULES.derivePrimaryCategory(preview);
+  const derivedCategory = RULES.derivePrimaryCategoryFromRaw(preview);
   const isReadyToSell = RULES.isReadyToSell(preview);
-  const derivedLegacyStatus = RULES.deriveLegacyStatus(preview);
-
-  const friendlyCategory =
-    {
-      ready_to_sell: "Active / Ready to Sell",
-      auth_missing: "Auth Missing",
-      address_default: "Default Address",
-      strike_off: "Strike Off",
-      ad01_processing: "AD01 Processing",
-      sold: "Sold Out",
-      active: "Active",
-    }[derivedCategory] ?? derivedCategory;
+  const friendlyCategory = categoryLabel(derivedCategory);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,15 +169,14 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
               <span className="font-semibold">{friendlyCategory}</span>
             </p>
             <p>
-              <span className="text-muted-foreground">Legacy status:</span>{" "}
-              <span className="font-semibold">{derivedLegacyStatus}</span>
-            </p>
-            <p>
               <span className="text-muted-foreground">Ready to Sell:</span>{" "}
               <span className={isReadyToSell ? "text-emerald-500 font-semibold" : "text-muted-foreground"}>
                 {isReadyToSell ? "Yes" : "No"}
               </span>
-              <span className="text-muted-foreground/70"> · calculated automatically</span>
+              <span className="text-muted-foreground/70"> · the database derives this automatically</span>
+            </p>
+            <p className="text-muted-foreground/70">
+              Status, category and address-match are all owned by the database.
             </p>
           </div>
         </div>
