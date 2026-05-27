@@ -43,6 +43,7 @@ export function SummaryCards({ companies }: Props) {
   const ad01Pending = ad01PendingAuth + ad01PendingDefault;
   const ad01Processing = internal.filter((c) => c.ad01_status === "processing").length;
   const ad01Filed = internal.filter((c) => c.ad01_status === "completed").length;
+  const ad01NotRequired = internal.filter((c) => c.ad01_status === "not_required").length;
 
   // Ready to Sell = clean, available, active companies with NO open issues
   // AND the authentication code has actually been received/entered.
