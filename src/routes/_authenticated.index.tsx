@@ -13,6 +13,7 @@ import { AddCompanyDialog } from "@/components/AddCompanyDialog";
 import logo from "@/assets/digiformation-logo.png";
 import { isOwnedCompany } from "@/lib/ownership";
 import { useUserRole } from "@/hooks/useUserRole";
+import { applyFilterKey, RULES, COUNTER_BY_FILTER, type FilterKey } from "@/lib/companyRules";
 import { toast } from "sonner";
 
 type DashSearch = { filter?: string };
@@ -75,43 +76,8 @@ function DashboardPage() {
   }, [directors]);
 
   const filteredCompanies = useMemo(() => {
-    let filtered = [...companies];
-
-    if (quickFilter === "active") {
-      filtered = filtered.filter((c) => c.lifecycle_status === "active");
-    } else if (quickFilter === "dissolved") {
-      filtered = filtered.filter((c) => c.lifecycle_status === "dissolved");
-    } else if (quickFilter === "ad01") {
-      filtered = filtered.filter((c) => c.ad01_status === "pending" && (c.auth_code_status === "missing" || c.address_status === "Default Address"));
-    } else if (quickFilter === "ad01-processing") {
-      filtered = filtered.filter((c) => c.ad01_status === "processing");
-    } else if (quickFilter === "ad01-filed") {
-      filtered = filtered.filter((c) => c.ad01_status === "completed");
-    } else if (quickFilter === "pending-sale") {
-      filtered = filtered.filter((c) => c.availability_status === "available");
-    } else if (quickFilter === "sold") {
-      filtered = filtered.filter((c) => c.availability_status === "sold");
-    } else if (quickFilter === "default-address") {
-      // Multi-layer: show ALL companies with Default Address flag (independent of strike-off / auth overlap)
-      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.address_status === "Default Address");
-    } else if (quickFilter === "strike-off") {
-      // Multi-layer: show ALL companies with Strike Off flag (independent of address / auth overlap)
-      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.strike_off_status === true);
-    } else if (quickFilter === "auth-missing") {
-      // Multi-layer: show ALL companies with Auth Missing flag
-      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.auth_code_status === "missing");
-    } else if (quickFilter === "ready-to-sell") {
-      filtered = filtered.filter(
-        (c) =>
-          c.lifecycle_status === "active" &&
-          c.availability_status === "available" &&
-          c.strike_off_status === false &&
-          c.auth_code_status !== "missing" &&
-          !!c.auth_code && c.auth_code.trim() !== "" &&
-          c.address_status !== "Default Address",
-      );
-    }
-
+    // 1) Quick filter from URL (single source of truth — FILTERS map).
+    let filtered = applyFilterKey([...companies], quickFilter);
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -138,16 +104,7 @@ function DashboardPage() {
 
     if (activeStatus !== "all") {
       if (activeStatus === "Ready to Sell") {
-        filtered = filtered.filter(
-          (c) =>
-            c.lifecycle_status === "active" &&
-            c.availability_status === "available" &&
-            c.strike_off_status === false &&
-            c.auth_code_status !== "missing" &&
-            !!c.auth_code && c.auth_code.trim() !== "" &&
-            c.address_status !== "Default Address",
-        );
-
+        filtered = filtered.filter(RULES.isReadyToSell);
       } else {
         filtered = filtered.filter((c) => c.status === activeStatus);
       }
@@ -158,9 +115,9 @@ function DashboardPage() {
     }
 
     if (authFilter === "has") {
-      filtered = filtered.filter((c) => !!c.auth_code && c.auth_code.trim() !== "" && c.auth_code.trim().toLowerCase() !== "pending");
+      filtered = filtered.filter((c) => !RULES.isAuthMissing(c));
     } else if (authFilter === "missing") {
-      filtered = filtered.filter((c) => !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending");
+      filtered = filtered.filter(RULES.isAuthMissing);
     }
 
     // Sort tiers:
