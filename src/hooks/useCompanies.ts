@@ -92,7 +92,7 @@ export function useCompanies() {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("companies")
-        .update({ ad01_status: "processing", updated_at: new Date().toISOString() } as never)
+        .update({ ad01_status: "processing" } as never)
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to mark AD01 processing.");
     },
