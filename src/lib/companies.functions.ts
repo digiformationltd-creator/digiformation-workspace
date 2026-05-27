@@ -333,7 +333,8 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
 
     const { data: companies, error } = await supabaseAdmin
       .from("companies")
-      .select("id, company_number, company_address");
+      .select("id, company_number");
+
     if (error) throw dbError(error, "bulkSyncCompaniesHouse/list");
 
     const results: BulkSyncResult[] = [];
