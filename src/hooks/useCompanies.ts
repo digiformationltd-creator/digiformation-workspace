@@ -73,9 +73,10 @@ export function useCompanies() {
 
   const markSoldMutation = useMutation({
     mutationFn: async (id: string) => {
+      // status & updated_at are derived by DB trigger from availability_status.
       const { error } = await supabase
         .from("companies")
-        .update({ status: "Sold/Transferred" as CompanyStatus, availability_status: "sold", updated_at: new Date().toISOString() } as never)
+        .update({ availability_status: "sold" } as never)
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to update status.");
     },
@@ -85,6 +86,7 @@ export function useCompanies() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
 
   const markAd01Mutation = useMutation({
     mutationFn: async (id: string) => {
