@@ -201,11 +201,8 @@ function DashboardPage() {
   const activeFilter = quickFilter
     ? ALL_FILTERS.find((f) => f.key === quickFilter)
     : undefined;
-  const activeIsIssue = quickFilter
-    ? ISSUE_FILTERS.some((f) => f.key === quickFilter)
-    : false;
-  const activeIsCategory = quickFilter
-    ? CATEGORY_FILTERS.some((f) => f.key === quickFilter && f.key !== "all")
+  const activeIsSecondary = quickFilter
+    ? SECONDARY_FILTERS.some((f) => f.key === quickFilter && f.key !== "all")
     : false;
 
   const onlyCategory = quickFilter ? FILTER_TO_CATEGORY[quickFilter as FilterKey] : undefined;
