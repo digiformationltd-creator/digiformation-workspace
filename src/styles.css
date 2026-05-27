@@ -157,5 +157,28 @@
   animation: spark-pop 0.7s ease-out forwards;
 }
 
+/* ─── Professional hover glow for dashboard cards ─── */
+.card-glow {
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card-glow:hover {
+  box-shadow: 0 0 0 1px var(--color-border), 0 0 20px 4px color-mix(in oklab, var(--color-primary) 12%, transparent);
+}
+
+.card-glow-emerald:hover {
+  box-shadow: 0 0 0 1px var(--color-border), 0 0 20px 4px color-mix(in oklab, var(--color-success) 14%, transparent);
+}
+.card-glow-amber:hover {
+  box-shadow: 0 0 0 1px var(--color-border), 0 0 20px 4px color-mix(in oklab, var(--color-warning) 14%, transparent);
+}
+.card-glow-rose:hover {
+  box-shadow: 0 0 0 1px var(--color-border), 0 0 20px 4px color-mix(in oklab, var(--color-destructive) 14%, transparent);
+}
+.card-glow-orange:hover {
+  box-shadow: 0 0 0 1px var(--color-border), 0 0 20px 4px color-mix(in oklab, var(--color-chart-3) 14%, transparent);
+}
+
+
+
 
 
