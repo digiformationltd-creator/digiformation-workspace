@@ -175,34 +175,31 @@ function DashboardPage() {
   const chKeyMissing = false;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-center gap-3 rounded-xl px-2 sm:px-4 py-2 sm:py-3 -ml-2 min-w-0">
-          <div className="h-16 w-16 sm:h-28 sm:w-28 shrink-0 flex items-center justify-center -mt-2">
-            <img
-              src={logo}
-              alt="Digiformation"
-              className="h-full w-full object-contain opacity-90"
-            />
+    <div className="space-y-5">
+      {/* TOP BAR — title left, actions right, single horizontal band */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 flex items-center justify-center">
+            <img src={logo} alt="Digiformation" className="h-full w-full object-contain" />
           </div>
           <div className="flex flex-col justify-center min-w-0">
-            <h1 className="text-lg sm:text-3xl font-bold tracking-tight leading-tight truncate">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight truncate">
               Tracking Dashboard
             </h1>
-            <p className="text-xs sm:text-base text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">
-              Manage and track all your UK limited companies
+            <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
+              UK limited companies · operational workflow
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:shrink-0">
           {chKeyMissing && (
-            <div className="flex items-center gap-2 text-xs text-warning bg-warning/10 px-3 py-1.5 rounded-lg">
+            <div className="flex items-center gap-2 text-[11px] text-warning bg-warning/10 px-2.5 py-1.5 rounded-lg">
               <ShieldAlert className="h-3.5 w-3.5" />
               CH API key not configured
             </div>
           )}
-          <Button variant="outline" size="sm" onClick={refresh} className="flex-1 sm:flex-none min-w-0">
-            <RefreshCw className="mr-2 h-4 w-4" />
+          <Button variant="outline" size="sm" onClick={refresh} className="h-9">
+            <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
             Refresh
           </Button>
           {isAdmin && (
@@ -214,6 +211,105 @@ function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* TIER 1 — Hero KPI strip + secondary stats */}
+      <SummaryCards companies={companies} />
+
+      {/* TIER 2 — Sticky operational toolbar (filter pills + result count + export) */}
+      <div className="sticky top-0 z-20 -mx-2 px-2 py-2 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b">
+        {(() => {
+          const segmentDefs: { key: FilterKey | "all"; label: string }[] = [
+            { key: "all", label: "All" },
+            { key: "ready-to-sell", label: "Ready to Sell" },
+            { key: "auth-missing", label: "Auth Missing" },
+            { key: "default-address", label: "Default Addr." },
+            { key: "strike-off", label: "Strike Off" },
+            { key: "ad01-processing", label: "AD01 Processing" },
+            { key: "active", label: "Active" },
+            { key: "pending-sale", label: "Available" },
+            { key: "ad01", label: "AD01 Pending" },
+            { key: "ad01-filed", label: "AD01 Complete" },
+            { key: "ad01-not-required", label: "AD01 Not Req." },
+            { key: "dissolved", label: "Dissolved" },
+            { key: "sold", label: "Sold" },
+          ];
+          const segments = segmentDefs.map((s) => ({
+            key: s.key === "all" ? undefined : s.key,
+            label: s.label,
+            count: COUNTER_BY_FILTER[s.key as FilterKey](companies),
+          }));
+          return (
+            <div className="flex items-center gap-2">
+              <div className="flex gap-1.5 overflow-x-auto pb-1 flex-1 min-w-0 scrollbar-thin">
+                {segments.map((s) => {
+                  const isActive = (quickFilter ?? undefined) === s.key;
+                  return (
+                    <Link
+                      key={s.label}
+                      to="/"
+                      search={s.key ? { filter: s.key } : {}}
+                      className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-colors ${
+                        isActive
+                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                          : "bg-card hover:bg-muted text-foreground border-border"
+                      }`}
+                    >
+                      {s.label}
+                      <span
+                        className={`tabular-nums text-[10px] rounded-full px-1.5 py-0.5 ${
+                          isActive ? "bg-primary-foreground/20" : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {s.count}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* TIER 3 — Detail filters (collapsible secondary) */}
+      <div className="bg-card rounded-xl border p-3">
+        <FilterBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          selectedDirector={selectedDirector}
+          onDirectorChange={setSelectedDirector}
+          directors={directors}
+          activeStatus={activeStatus}
+          onStatusChange={handleStatusChange}
+          addressFilter={addressFilter}
+          onAddressFilterChange={handleAddressChange}
+          authFilter={authFilter}
+          onAuthFilterChange={handleAuthChange}
+        />
+      </div>
+
+      <div className="space-y-3 min-w-0">
+        <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground px-1">
+          <span>
+            Showing <strong className="text-foreground tabular-nums">{filteredCompanies.length}</strong> of <span className="tabular-nums">{companies.length}</span> companies
+            {selectedDirector !== "all" && <span className="text-primary ml-2">· Filtered by director</span>}
+          </span>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 gap-1.5 text-[11px]"
+            disabled={filteredCompanies.length === 0}
+            onClick={() => {
+              const label = quickFilter === "all" ? "all-companies" : quickFilter;
+              exportCompaniesToExcel(filteredCompanies, label);
+              toast.success(`Exported ${filteredCompanies.length} companies`);
+            }}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export Excel
+          </Button>
+        </div>
+
 
 
       <SummaryCards companies={companies} />
