@@ -253,59 +253,36 @@ function DashboardPage() {
 
       {/* TIER 2 — Sticky operational toolbar (filter pills + result count + export) */}
       <div className="sticky top-0 z-20 -mx-2 px-2 py-2 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b">
-        {(() => {
-          const segmentDefs: { key: FilterKey | "all"; label: string }[] = [
-            { key: "all", label: "All" },
-            { key: "ready-to-sell", label: "Ready to Sell" },
-            { key: "auth-missing", label: "Auth Missing" },
-            { key: "default-address", label: "Default Addr." },
-            { key: "strike-off", label: "Strike Off" },
-            { key: "ad01-processing", label: "AD01 Processing" },
-            { key: "active", label: "Active" },
-            { key: "pending-sale", label: "Available" },
-            { key: "ad01", label: "AD01 Pending" },
-            { key: "ad01-filed", label: "AD01 Complete" },
-            { key: "ad01-not-required", label: "AD01 Not Req." },
-            { key: "dissolved", label: "Dissolved" },
-            { key: "sold", label: "Sold" },
-          ];
-          const segments = segmentDefs.map((s) => ({
-            key: s.key === "all" ? undefined : s.key,
-            label: s.label,
-            count: COUNTER_BY_FILTER[s.key as FilterKey](companies),
-          }));
-          return (
-            <div className="flex items-center gap-2">
-              <div className="flex gap-1.5 overflow-x-auto pb-1 flex-1 min-w-0 scrollbar-thin">
-                {segments.map((s) => {
-                  const isActive = (quickFilter ?? undefined) === s.key;
-                  return (
-                    <Link
-                      key={s.label}
-                      to="/"
-                      search={s.key ? { filter: s.key } : {}}
-                      className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-colors ${
-                        isActive
-                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                          : "bg-card hover:bg-muted text-foreground border-border"
-                      }`}
-                    >
-                      {s.label}
-                      <span
-                        className={`tabular-nums text-[10px] rounded-full px-1.5 py-0.5 ${
-                          isActive ? "bg-primary-foreground/20" : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {s.count}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })()}
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 flex-1 min-w-0 scrollbar-thin">
+            {segments.map((s) => {
+              const isActive = (quickFilter ?? undefined) === s.key;
+              return (
+                <Link
+                  key={s.label}
+                  to="/"
+                  search={s.key ? { filter: s.key } : {}}
+                  className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-colors ${
+                    isActive
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                      : "bg-card hover:bg-muted text-foreground border-border"
+                  }`}
+                >
+                  {s.label}
+                  <span
+                    className={`tabular-nums text-[10px] rounded-full px-1.5 py-0.5 ${
+                      isActive ? "bg-primary-foreground/20" : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {s.count}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
+
 
       {/* TIER 3 — Detail filters (collapsible secondary) */}
       <div className="bg-card rounded-xl border p-3">
