@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { Plus, Loader2, RefreshCw, ShieldAlert, Download } from "lucide-react";
+import { Loader2, RefreshCw, ShieldAlert, Download } from "lucide-react";
 import { exportCompaniesToExcel } from "@/lib/exportExcel";
 import { Button } from "@/components/ui/button";
 import { useCompanies } from "@/hooks/useCompanies";
@@ -9,30 +9,11 @@ import { FilterBar } from "@/components/FilterBar";
 import { CompaniesTable } from "@/components/CompaniesTable";
 import { CompanyCard } from "@/components/CompanyCard";
 import { CSVImport } from "@/components/CSVImport";
+import { AddCompanyDialog } from "@/components/AddCompanyDialog";
 import logo from "@/assets/digiformation-logo.png";
 import { isOwnedCompany } from "@/lib/ownership";
 import { useUserRole } from "@/hooks/useUserRole";
-
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
-import type { Company, Ad01Status } from "@/types";
-import { applyCategory, PRIMARY_CATEGORY_OPTIONS, type PrimaryCategory } from "@/lib/companyCategory";
 
 type DashSearch = { filter?: string };
 
