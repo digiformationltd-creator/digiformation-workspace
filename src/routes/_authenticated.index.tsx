@@ -307,38 +307,78 @@ function DashboardPage() {
           </Button>
         </div>
 
-        {/* Mobile: cards */}
-        <div className="grid gap-3 md:hidden">
-          {filteredCompanies.length === 0 ? (
-            <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
-              No companies match your filters.
-            </div>
-          ) : (
-            filteredCompanies.map((c) => (
-              <CompanyCard
-                key={c.id}
-                company={c}
+        {/* Section view: companies grouped by DB-derived primary_category.
+            Each company appears in EXACTLY ONE section. For technical
+            filters (AD01 stages, Dissolved, Available) fall back to flat
+            rendering since they cross category boundaries. */}
+        {(() => {
+          const FILTER_TO_CATEGORY: Partial<Record<FilterKey, PrimaryCategory>> = {
+            "ready-to-sell": "ready_to_sell",
+            "auth-missing": "auth_missing",
+            "default-address": "address_default",
+            "strike-off": "strike_off",
+            "sold": "sold",
+            "ad01-processing": "ad01_processing",
+            "active": "active",
+          };
+          const onlyCategory = quickFilter
+            ? FILTER_TO_CATEGORY[quickFilter as FilterKey]
+            : undefined;
+          const useSectionView = !quickFilter || onlyCategory !== undefined;
+
+          if (useSectionView) {
+            return filteredCompanies.length === 0 ? (
+              <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
+                No companies match your filters.
+              </div>
+            ) : (
+              <CompanySections
+                companies={filteredCompanies}
                 directors={directors}
                 onUpdate={updateCompany}
                 onDelete={isAdmin ? deleteCompany : undefined}
                 isAdmin={isAdmin}
+                onlyCategory={onlyCategory}
               />
-            ))
-          )}
-        </div>
+            );
+          }
 
-        {/* Desktop: compact table */}
-        <div className="hidden md:block">
+          // Fallback flat view for technical filters that don't map to a
+          // single primary category.
+          return (
+            <>
+              <div className="grid gap-3 md:hidden">
+                {filteredCompanies.length === 0 ? (
+                  <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
+                    No companies match your filters.
+                  </div>
+                ) : (
+                  filteredCompanies.map((c) => (
+                    <CompanyCard
+                      key={c.id}
+                      company={c}
+                      directors={directors}
+                      onUpdate={updateCompany}
+                      onDelete={isAdmin ? deleteCompany : undefined}
+                      isAdmin={isAdmin}
+                    />
+                  ))
+                )}
+              </div>
+              <div className="hidden md:block">
+                <CompaniesTable
+                  companies={filteredCompanies}
+                  directors={directors}
+                  onUpdate={updateCompany}
+                  onDelete={isAdmin ? deleteCompany : undefined}
+                  isAdmin={isAdmin}
+                />
+              </div>
+            </>
+          );
+        })()}
+      </div>
 
-            <CompaniesTable
-              companies={filteredCompanies}
-              directors={directors}
-              onUpdate={updateCompany}
-              onDelete={isAdmin ? deleteCompany : undefined}
-              isAdmin={isAdmin}
-            />
-          </div>
-        </div>
 
 
 
