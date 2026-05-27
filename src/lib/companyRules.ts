@@ -115,8 +115,27 @@ export const COUNTERS = {
         (RULES.isAuthMissing(c) || RULES.isDefaultAddress(c)),
     ).length,
   ad01Processing: (list: Company[]) => internal(list).filter(RULES.isAd01Processing).length,
+  // NEVER counts not_required — those are explicitly excluded.
   ad01Complete: (list: Company[]) => internal(list).filter(RULES.isAd01Complete).length,
+  ad01NotRequired: (list: Company[]) => internal(list).filter(RULES.isAd01NotRequired).length,
   readyToSell: (list: Company[]) => list.filter(RULES.isReadyToSell).length,
+};
+
+/** Counter lookup by FilterKey — used by segment tabs to stay in sync with FILTERS. */
+export const COUNTER_BY_FILTER: Record<FilterKey, (list: Company[]) => number> = {
+  "all": COUNTERS.total,
+  "active": COUNTERS.active,
+  "dissolved": COUNTERS.dissolved,
+  "pending-sale": COUNTERS.available,
+  "sold": COUNTERS.sold,
+  "strike-off": COUNTERS.strikeOff,
+  "auth-missing": COUNTERS.authMissing,
+  "default-address": COUNTERS.defaultAddress,
+  "ad01": COUNTERS.ad01Pending,
+  "ad01-processing": COUNTERS.ad01Processing,
+  "ad01-filed": COUNTERS.ad01Complete,
+  "ad01-not-required": COUNTERS.ad01NotRequired,
+  "ready-to-sell": COUNTERS.readyToSell,
 };
 
 // ---------------------------------------------------------------------------
@@ -134,6 +153,7 @@ export type FilterKey =
   | "ad01"
   | "ad01-processing"
   | "ad01-filed"
+  | "ad01-not-required"
   | "ready-to-sell";
 
 export const FILTERS: Record<FilterKey, (c: Company) => boolean> = {
@@ -151,8 +171,16 @@ export const FILTERS: Record<FilterKey, (c: Company) => boolean> = {
     (RULES.isAuthMissing(c) || RULES.isDefaultAddress(c)),
   "ad01-processing": (c) => !RULES.isSold(c) && RULES.isAd01Processing(c),
   "ad01-filed": (c) => !RULES.isSold(c) && RULES.isAd01Complete(c),
+  "ad01-not-required": (c) => !RULES.isSold(c) && RULES.isAd01NotRequired(c),
   "ready-to-sell": RULES.isReadyToSell,
 };
+
+/** Apply a FilterKey safely; unknown keys = no filtering. */
+export function applyFilterKey(list: Company[], key: string | undefined): Company[] {
+  if (!key) return list;
+  const fn = FILTERS[key as FilterKey];
+  return fn ? list.filter(fn) : list;
+}
 
 // ---------------------------------------------------------------------------
 // Shared write-payload builder.
