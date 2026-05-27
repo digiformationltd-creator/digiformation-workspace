@@ -356,12 +356,8 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
           continue;
         }
         const chData = (await response.json()) as Record<string, Json>;
-        const storedAddress = company.company_address || "";
-        const chAddress = chData.registered_office_address
-          ? JSON.stringify(chData.registered_office_address)
-          : "";
-        const addressMatch = storedAddress === chAddress ? "Matched" : "Mismatched";
 
+        // address_match_status is derived by the DB trigger from company_address vs ch_address.
         await supabaseAdmin
           .from("companies")
           .update({
@@ -370,10 +366,10 @@ export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
             ch_address: chData.registered_office_address
               ? JSON.stringify(chData.registered_office_address)
               : null,
-            address_match_status: addressMatch,
             last_ch_sync: new Date().toISOString(),
           })
           .eq("id", company.id);
+
 
         results.push({
           company_id: company.id,
