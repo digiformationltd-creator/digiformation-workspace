@@ -617,6 +617,7 @@ function DashboardPage() {
           { key: "ad01", label: "AD01 Pending", count: companies.filter((c) => c.ad01_status === "pending" && (c.auth_code_status === "missing" || c.address_status === "Default Address")).length },
           { key: "ad01-processing", label: "AD01 Processing", count: companies.filter((c) => c.ad01_status === "processing").length },
           { key: "ad01-filed", label: "AD01 Complete", count: companies.filter((c) => c.ad01_status === "completed").length },
+          { key: "ad01-not-required", label: "AD01 Not Required", count: companies.filter((c) => c.ad01_status === "not_required").length },
         ];
         return (
           <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
