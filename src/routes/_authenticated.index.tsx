@@ -174,6 +174,42 @@ function DashboardPage() {
 
   const chKeyMissing = false;
 
+  const segmentDefs: { key: FilterKey | "all"; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "ready-to-sell", label: "Ready to Sell" },
+    { key: "auth-missing", label: "Auth Missing" },
+    { key: "default-address", label: "Default Addr." },
+    { key: "strike-off", label: "Strike Off" },
+    { key: "ad01-processing", label: "AD01 Processing" },
+    { key: "active", label: "Active" },
+    { key: "pending-sale", label: "Available" },
+    { key: "ad01", label: "AD01 Pending" },
+    { key: "ad01-filed", label: "AD01 Complete" },
+    { key: "ad01-not-required", label: "AD01 Not Req." },
+    { key: "dissolved", label: "Dissolved" },
+    { key: "sold", label: "Sold" },
+  ];
+  const segments = segmentDefs.map((s) => ({
+    key: s.key === "all" ? undefined : s.key,
+    label: s.label,
+    count: COUNTER_BY_FILTER[s.key as FilterKey](companies),
+  }));
+
+  const FILTER_TO_CATEGORY: Partial<Record<FilterKey, PrimaryCategory>> = {
+    "ready-to-sell": "ready_to_sell",
+    "auth-missing": "auth_missing",
+    "default-address": "address_default",
+    "strike-off": "strike_off",
+    "sold": "sold",
+    "ad01-processing": "ad01_processing",
+    "active": "active",
+  };
+  const onlyCategory = quickFilter
+    ? FILTER_TO_CATEGORY[quickFilter as FilterKey]
+    : undefined;
+  const useSectionView = !quickFilter || onlyCategory !== undefined;
+
+
   return (
     <div className="space-y-5">
       {/* TOP BAR — title left, actions right, single horizontal band */}
