@@ -339,8 +339,9 @@ function DashboardPage() {
         />
       </div>
 
-      <div className="space-y-3 min-w-0">
+      <div className="space-y-2 min-w-0">
         <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground px-1">
+
           <span>
             Showing <strong className="text-foreground tabular-nums">{filteredCompanies.length}</strong> of <span className="tabular-nums">{companies.length}</span> companies
             {selectedDirector !== "all" && <span className="text-primary ml-2">· Filtered by director</span>}
