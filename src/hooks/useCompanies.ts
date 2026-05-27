@@ -117,8 +117,8 @@ export function useCompanies() {
         .update({
           ad01_status: "completed",
           ad01_filing_date: current?.ad01_filing_date ?? today,
-          updated_at: new Date().toISOString(),
         } as never)
+
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to mark AD01 complete.");
       if (!current?.ad01_filing_date) {
