@@ -1,6 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { Loader2, RefreshCw, ShieldAlert, Download } from "lucide-react";
+import { Loader2, RefreshCw, ShieldAlert, Download, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import { exportCompaniesToExcel } from "@/lib/exportExcel";
 import { Button } from "@/components/ui/button";
 import { useCompanies } from "@/hooks/useCompanies";
