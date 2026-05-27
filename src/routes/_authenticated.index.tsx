@@ -409,7 +409,7 @@ function DashboardPage() {
                       💎 Mark as Ready to Sell
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Auto-sets: Active · Available · No Strike Off · Auth Code Available · Address Updated · AD01 Completed
+                      Auto-sets: Active · Available · No Strike Off · Auth Available · Address Updated · AD01 Not Required
                     </p>
                   </div>
                 </label>
@@ -487,6 +487,17 @@ function DashboardPage() {
                         <SelectItem value="pending">Pending</SelectItem>
                         <SelectItem value="processing">Processing</SelectItem>
                         <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address_status">Address Status</Label>
+                    <Select name="address_status" defaultValue="Changed/Updated">
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Changed/Updated">Changed / Updated</SelectItem>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Default Address">Default Address</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

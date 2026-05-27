@@ -234,7 +234,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
                 💎 Mark as Ready to Sell
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Overrides all status fields: Active · Available · No Strike Off · Auth Available · Address Updated · AD01 Completed
+                Overrides all status fields: Active · Available · No Strike Off · Auth Available · Address Updated · AD01 Not Required
               </p>
             </div>
           </label>
