@@ -119,7 +119,7 @@ export function EditCompanyDialog({ company, directors, onUpdate, triggerStyle =
         : markReadyToSell ? "Changed/Updated" : form.address_status;
       const effAd01Status: Ad01Status = catOverride
         ? catOverride.ad01_status
-        : markReadyToSell ? "completed" : form.ad01_status;
+        : markReadyToSell ? "not_required" : form.ad01_status;
 
       // Auto-clear strike-off when AD01 is completed and address is no longer default
       const autoClearStrikeOff =
