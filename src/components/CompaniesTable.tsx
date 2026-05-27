@@ -328,9 +328,14 @@ export function CompaniesTable({
                     />
                   </td>
                   <td className="px-2 py-1.5">
-                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-[9px] px-1.5 py-0 whitespace-nowrap">
-                      💎 Ready to Sell
-                    </Badge>
+                    {(() => {
+                      const cat = deriveCategory(company);
+                      return (
+                        <Badge variant="outline" className={`${categoryBadgeClass(cat)} text-[9px] px-1.5 py-0 whitespace-nowrap`}>
+                          {categoryLabel(cat)}
+                        </Badge>
+                      );
+                    })()}
                   </td>
                   <td className="px-2 py-1.5 overflow-hidden">
                     {(() => {
