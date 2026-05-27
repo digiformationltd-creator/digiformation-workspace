@@ -271,7 +271,7 @@ function DashboardPage() {
       const ad01Status = catOverride
         ? catOverride.ad01_status
         : markReadyToSell
-        ? "completed"
+        ? "not_required"
         : (((formData.get("ad01_status") as string) || "pending") as Ad01Status);
 
       // Legacy single-enum "status" — kept in sync for backward compatibility
