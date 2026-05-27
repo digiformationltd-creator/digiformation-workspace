@@ -13,8 +13,10 @@ import { AddCompanyDialog } from "@/components/AddCompanyDialog";
 import logo from "@/assets/digiformation-logo.png";
 import { isOwnedCompany } from "@/lib/ownership";
 import { useUserRole } from "@/hooks/useUserRole";
-import { applyFilterKey, RULES, COUNTER_BY_FILTER, type FilterKey } from "@/lib/companyRules";
+import { applyFilterKey, RULES, COUNTER_BY_FILTER, type FilterKey, type PrimaryCategory } from "@/lib/companyRules";
+import { CompanySections } from "@/components/CompanySections";
 import { toast } from "sonner";
+
 
 type DashSearch = { filter?: string };
 
