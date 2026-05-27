@@ -409,7 +409,7 @@ function DashboardPage() {
                       💎 Mark as Ready to Sell
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Auto-sets: Active · Available · No Strike Off · Auth Code Available · Address Updated · AD01 Completed
+                      Auto-sets: Active · Available · No Strike Off · Auth Available · Address Updated · AD01 Not Required
                     </p>
                   </div>
                 </label>
