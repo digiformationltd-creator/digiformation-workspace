@@ -129,10 +129,12 @@ export function SummaryCards({ companies }: Props) {
               to="/"
               search={{ filter: c.filter }}
               style={{ animationDelay: `${i * 50}ms` }}
-              className={`group relative overflow-hidden rounded-xl border bg-card p-4 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md animate-fade-in`}
+              className={`group relative overflow-hidden rounded-xl border bg-card p-4 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in`}
             >
-              <div className={`absolute top-0 left-0 right-0 h-1 ${t.bar} opacity-80`} />
-              <div className="flex items-start justify-between gap-3">
+              <div className={`kpi-glow ${t.glow}`} aria-hidden="true" />
+              <div className={`absolute top-0 left-0 right-0 h-1 ${t.bar} opacity-80 kpi-bar-shimmer`} />
+              <div className="relative flex items-start justify-between gap-3">
+
                 <div className="min-w-0 flex-1">
                   <p className="text-[10px] sm:text-[11px] font-semibold text-muted-foreground uppercase tracking-wider truncate">
                     {c.title}
