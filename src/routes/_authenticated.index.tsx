@@ -13,6 +13,7 @@ import { AddCompanyDialog } from "@/components/AddCompanyDialog";
 import logo from "@/assets/digiformation-logo.png";
 import { isOwnedCompany } from "@/lib/ownership";
 import { useUserRole } from "@/hooks/useUserRole";
+import { applyFilterKey, RULES, COUNTER_BY_FILTER, type FilterKey } from "@/lib/companyRules";
 import { toast } from "sonner";
 
 type DashSearch = { filter?: string };
@@ -75,43 +76,8 @@ function DashboardPage() {
   }, [directors]);
 
   const filteredCompanies = useMemo(() => {
-    let filtered = [...companies];
-
-    if (quickFilter === "active") {
-      filtered = filtered.filter((c) => c.lifecycle_status === "active");
-    } else if (quickFilter === "dissolved") {
-      filtered = filtered.filter((c) => c.lifecycle_status === "dissolved");
-    } else if (quickFilter === "ad01") {
-      filtered = filtered.filter((c) => c.ad01_status === "pending" && (c.auth_code_status === "missing" || c.address_status === "Default Address"));
-    } else if (quickFilter === "ad01-processing") {
-      filtered = filtered.filter((c) => c.ad01_status === "processing");
-    } else if (quickFilter === "ad01-filed") {
-      filtered = filtered.filter((c) => c.ad01_status === "completed");
-    } else if (quickFilter === "pending-sale") {
-      filtered = filtered.filter((c) => c.availability_status === "available");
-    } else if (quickFilter === "sold") {
-      filtered = filtered.filter((c) => c.availability_status === "sold");
-    } else if (quickFilter === "default-address") {
-      // Multi-layer: show ALL companies with Default Address flag (independent of strike-off / auth overlap)
-      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.address_status === "Default Address");
-    } else if (quickFilter === "strike-off") {
-      // Multi-layer: show ALL companies with Strike Off flag (independent of address / auth overlap)
-      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.strike_off_status === true);
-    } else if (quickFilter === "auth-missing") {
-      // Multi-layer: show ALL companies with Auth Missing flag
-      filtered = filtered.filter((c) => c.availability_status !== "sold" && c.auth_code_status === "missing");
-    } else if (quickFilter === "ready-to-sell") {
-      filtered = filtered.filter(
-        (c) =>
-          c.lifecycle_status === "active" &&
-          c.availability_status === "available" &&
-          c.strike_off_status === false &&
-          c.auth_code_status !== "missing" &&
-          !!c.auth_code && c.auth_code.trim() !== "" &&
-          c.address_status !== "Default Address",
-      );
-    }
-
+    // 1) Quick filter from URL (single source of truth — FILTERS map).
+    let filtered = applyFilterKey([...companies], quickFilter);
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -138,16 +104,7 @@ function DashboardPage() {
 
     if (activeStatus !== "all") {
       if (activeStatus === "Ready to Sell") {
-        filtered = filtered.filter(
-          (c) =>
-            c.lifecycle_status === "active" &&
-            c.availability_status === "available" &&
-            c.strike_off_status === false &&
-            c.auth_code_status !== "missing" &&
-            !!c.auth_code && c.auth_code.trim() !== "" &&
-            c.address_status !== "Default Address",
-        );
-
+        filtered = filtered.filter(RULES.isReadyToSell);
       } else {
         filtered = filtered.filter((c) => c.status === activeStatus);
       }
@@ -158,9 +115,9 @@ function DashboardPage() {
     }
 
     if (authFilter === "has") {
-      filtered = filtered.filter((c) => !!c.auth_code && c.auth_code.trim() !== "" && c.auth_code.trim().toLowerCase() !== "pending");
+      filtered = filtered.filter((c) => !RULES.isAuthMissing(c));
     } else if (authFilter === "missing") {
-      filtered = filtered.filter((c) => !c.auth_code || c.auth_code.trim() === "" || c.auth_code.trim().toLowerCase() === "pending");
+      filtered = filtered.filter(RULES.isAuthMissing);
     }
 
     // Sort tiers:
@@ -261,20 +218,25 @@ function DashboardPage() {
 
       {/* Segment tabs — match rules used by Summary cards */}
       {(() => {
-        const segments = [
-          { key: undefined as string | undefined, label: "All", count: companies.length },
-          { key: "active", label: "Active", count: companies.filter((c) => c.lifecycle_status === "active").length },
-          { key: "dissolved", label: "Dissolved", count: companies.filter((c) => c.lifecycle_status === "dissolved").length },
-          { key: "pending-sale", label: "Available", count: companies.filter((c) => c.availability_status === "available").length },
-          { key: "sold", label: "Sold", count: companies.filter((c) => c.availability_status === "sold").length },
-          { key: "strike-off", label: "Strike Off", count: companies.filter((c) => c.strike_off_status === true).length },
-          { key: "default-address", label: "Default Addr.", count: companies.filter((c) => c.address_status === "Default Address").length },
-          { key: "auth-missing", label: "Auth Missing", count: companies.filter((c) => c.auth_code_status === "missing").length },
-          { key: "ad01", label: "AD01 Pending", count: companies.filter((c) => c.ad01_status === "pending" && (c.auth_code_status === "missing" || c.address_status === "Default Address")).length },
-          { key: "ad01-processing", label: "AD01 Processing", count: companies.filter((c) => c.ad01_status === "processing").length },
-          { key: "ad01-filed", label: "AD01 Complete", count: companies.filter((c) => c.ad01_status === "completed").length },
-          { key: "ad01-not-required", label: "AD01 Not Required", count: companies.filter((c) => c.ad01_status === "not_required").length },
+        const segmentDefs: { key: FilterKey | "all"; label: string }[] = [
+          { key: "all", label: "All" },
+          { key: "active", label: "Active" },
+          { key: "dissolved", label: "Dissolved" },
+          { key: "pending-sale", label: "Available" },
+          { key: "sold", label: "Sold" },
+          { key: "strike-off", label: "Strike Off" },
+          { key: "default-address", label: "Default Addr." },
+          { key: "auth-missing", label: "Auth Missing" },
+          { key: "ad01", label: "AD01 Pending" },
+          { key: "ad01-processing", label: "AD01 Processing" },
+          { key: "ad01-filed", label: "AD01 Complete" },
+          { key: "ad01-not-required", label: "AD01 Not Required" },
         ];
+        const segments = segmentDefs.map((s) => ({
+          key: s.key === "all" ? undefined : s.key,
+          label: s.label,
+          count: COUNTER_BY_FILTER[s.key as FilterKey](companies),
+        }));
         return (
           <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
             {segments.map((s) => {
