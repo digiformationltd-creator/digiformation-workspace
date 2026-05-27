@@ -131,8 +131,7 @@ export function SummaryCards({ companies }: Props) {
               style={{ animationDelay: `${i * 50}ms` }}
               className={`group relative overflow-hidden rounded-lg border bg-card px-3 py-2.5 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in`}
             >
-              <div className={`kpi-glow ${t.glow}`} aria-hidden="true" />
-              <div className={`absolute top-0 left-0 right-0 h-0.5 ${t.bar} opacity-80 kpi-bar-shimmer`} />
+              <div className={`absolute top-0 left-0 right-0 h-0.5 ${t.bar} opacity-80`} />
               <div className="relative flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate">
