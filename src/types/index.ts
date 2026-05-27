@@ -41,6 +41,10 @@ export interface Company {
   ch_company_profile: Record<string, unknown> | null;
   ch_address: string | null;
   address_match_status: string | null;
+  /** DB-derived: single-bucket category, computed by trigger. */
+  primary_category: string | null;
+  /** DB-derived: true only for clean, sellable companies. */
+  ready_to_sell: boolean;
   ch_expiry_date: string | null;
   ch_operation_date: string | null;
   ch_filing_rate: string | null;

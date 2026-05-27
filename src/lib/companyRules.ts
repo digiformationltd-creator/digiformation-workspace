@@ -1,19 +1,24 @@
 /**
  * companyRules.ts — SINGLE SOURCE OF TRUTH for company business logic.
  *
- * Every counter, filter, badge, section-placement, and form derivation MUST
- * import its predicate from this file. Do NOT duplicate any of this logic
- * elsewhere — if a rule needs to change, change it here and every consumer
- * stays consistent automatically.
+ * Most derived values (primary_category, ready_to_sell, status,
+ * address_match_status) are now computed by a Postgres trigger on the
+ * companies table. The helpers below prefer those DB-derived columns
+ * and fall back to client-side derivation only when they are absent
+ * (defensive — should never happen in normal reads).
  */
 
 import type {
   Company,
-  CompanyStatus,
+  AddressStatus,
+  Ad01Status,
+  AuthCodeStatus,
+  AvailabilityStatus,
+  LifecycleStatus,
 } from "@/types";
 
 // ---------------------------------------------------------------------------
-// Primary category — exactly one per company, used for section placement.
+// Primary category — exactly one per company.
 // Priority order (highest first):
 //   sold → strike_off → address_default → auth_missing → ad01_processing → ready_to_sell → active
 // ---------------------------------------------------------------------------
@@ -28,42 +33,57 @@ export const PRIMARY_CATEGORIES = [
 ] as const;
 export type PrimaryCategory = (typeof PRIMARY_CATEGORIES)[number];
 
+const isPrimaryCategory = (v: unknown): v is PrimaryCategory =>
+  typeof v === "string" && (PRIMARY_CATEGORIES as readonly string[]).includes(v);
+
 // ---------------------------------------------------------------------------
-// Atomic predicates. Every rule below is derived ONLY from raw column values.
+// Atomic predicates — pure functions over raw column values.
 // ---------------------------------------------------------------------------
 const hasAuthCode = (c: Company) => !!c.auth_code && c.auth_code.trim() !== "";
 
 export const RULES = {
-  // Lifecycle / sale
   isActive: (c: Company) => c.lifecycle_status === "active",
   isDissolved: (c: Company) => c.lifecycle_status === "dissolved",
   isAvailable: (c: Company) => c.availability_status === "available",
   isSold: (c: Company) => c.availability_status === "sold",
 
-  // Issues
   isStrikeOff: (c: Company) => c.strike_off_status === true,
   isDefaultAddress: (c: Company) => c.address_status === "Default Address",
   isAuthMissing: (c: Company) =>
     c.auth_code_status === "missing" || !hasAuthCode(c),
 
-  // AD01
   isAd01Required: (c: Company) => c.ad01_status !== "not_required",
   isAd01NotRequired: (c: Company) => c.ad01_status === "not_required",
   isAd01Pending: (c: Company) => c.ad01_status === "pending",
   isAd01Processing: (c: Company) => c.ad01_status === "processing",
   isAd01Complete: (c: Company) => c.ad01_status === "completed",
 
-  // Composite — Ready to Sell means: active, available, no issues, real auth code.
-  isReadyToSell: (c: Company) =>
-    c.lifecycle_status === "active" &&
-    c.availability_status === "available" &&
-    c.strike_off_status === false &&
-    c.auth_code_status !== "missing" &&
-    hasAuthCode(c) &&
-    c.address_status !== "Default Address",
+  /**
+   * Prefer the DB-derived `ready_to_sell` column; fall back to client logic.
+   */
+  isReadyToSell: (c: Company) => {
+    if (typeof c.ready_to_sell === "boolean") return c.ready_to_sell;
+    return (
+      c.lifecycle_status === "active" &&
+      c.availability_status === "available" &&
+      c.strike_off_status === false &&
+      c.auth_code_status !== "missing" &&
+      hasAuthCode(c) &&
+      c.address_status !== "Default Address"
+    );
+  },
 
-  /** Pick exactly one bucket for section placement / primary badge. */
-  derivePrimaryCategory(c: Company): PrimaryCategory {
+  /**
+   * Prefer the DB-derived `primary_category` column; fall back to client logic.
+   * Use this for section placement and the primary badge.
+   */
+  getPrimaryCategory(c: Company): PrimaryCategory {
+    if (isPrimaryCategory(c.primary_category)) return c.primary_category;
+    return RULES.derivePrimaryCategoryFromRaw(c);
+  },
+
+  /** Pure client derivation — used as fallback and in form previews. */
+  derivePrimaryCategoryFromRaw(c: Company): PrimaryCategory {
     if (RULES.isSold(c)) return "sold";
     if (RULES.isStrikeOff(c)) return "strike_off";
     if (RULES.isDefaultAddress(c)) return "address_default";
@@ -73,7 +93,7 @@ export const RULES = {
     return "active";
   },
 
-  /** All issues this company has — used for secondary badges. */
+  /** All issue tags this company has — used for secondary badges. */
   deriveSecondaryTags(c: Company): PrimaryCategory[] {
     const tags: PrimaryCategory[] = [];
     if (RULES.isStrikeOff(c)) tags.push("strike_off");
@@ -82,21 +102,40 @@ export const RULES = {
     if (RULES.isAd01Processing(c)) tags.push("ad01_processing");
     return tags;
   },
-
-  /** Derive the legacy `status` enum from atomic flags. */
-  deriveLegacyStatus(c: Company): CompanyStatus {
-    if (RULES.isDissolved(c)) return "Dissolved";
-    if (RULES.isStrikeOff(c)) return "Strike Off Notice";
-    if (RULES.isSold(c)) return "Sold/Transferred";
-    if (RULES.isAvailable(c)) return "Available Company";
-    return "Active";
-  },
 };
 
 // ---------------------------------------------------------------------------
-// Counters — every dashboard card reads from here. No inline counting allowed.
+// Display helpers — labels, icons, badge styling (used by CompaniesTable etc).
 // ---------------------------------------------------------------------------
-/** Companies excluded from operational counters once sold (they leave our tracking). */
+const CATEGORY_LABELS: Record<PrimaryCategory, string> = {
+  ready_to_sell: "🟢 Ready to Sell",
+  auth_missing: "🔑 Auth Missing",
+  address_default: "📍 Default Address",
+  strike_off: "⚠️ Strike Off",
+  ad01_processing: "📨 AD01 Processing",
+  sold: "💰 Sold Out",
+  active: "Active",
+};
+
+const CATEGORY_BADGE_CLASS: Record<PrimaryCategory, string> = {
+  ready_to_sell: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
+  auth_missing: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
+  address_default: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30",
+  strike_off: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30",
+  ad01_processing: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30",
+  sold: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30",
+  active: "bg-muted text-muted-foreground border-border",
+};
+
+export const categoryLabel = (cat: PrimaryCategory) => CATEGORY_LABELS[cat];
+export const categoryBadgeClass = (cat: PrimaryCategory) => CATEGORY_BADGE_CLASS[cat];
+
+// ---------------------------------------------------------------------------
+// Counters — every dashboard card reads from here.
+// Counters use ATOMIC flags (not primary_category) because a company can
+// appear in multiple issue counters simultaneously (e.g. strike_off AND
+// default_address) even though it has only ONE primary category.
+// ---------------------------------------------------------------------------
 const internal = (list: Company[]) => list.filter((c) => !RULES.isSold(c));
 
 export const COUNTERS = {
@@ -115,31 +154,14 @@ export const COUNTERS = {
         (RULES.isAuthMissing(c) || RULES.isDefaultAddress(c)),
     ).length,
   ad01Processing: (list: Company[]) => internal(list).filter(RULES.isAd01Processing).length,
-  // NEVER counts not_required — those are explicitly excluded.
   ad01Complete: (list: Company[]) => internal(list).filter(RULES.isAd01Complete).length,
   ad01NotRequired: (list: Company[]) => internal(list).filter(RULES.isAd01NotRequired).length,
+  // Prefer DB column via RULES.isReadyToSell (already DB-first).
   readyToSell: (list: Company[]) => list.filter(RULES.isReadyToSell).length,
 };
 
-/** Counter lookup by FilterKey — used by segment tabs to stay in sync with FILTERS. */
-export const COUNTER_BY_FILTER: Record<FilterKey, (list: Company[]) => number> = {
-  "all": COUNTERS.total,
-  "active": COUNTERS.active,
-  "dissolved": COUNTERS.dissolved,
-  "pending-sale": COUNTERS.available,
-  "sold": COUNTERS.sold,
-  "strike-off": COUNTERS.strikeOff,
-  "auth-missing": COUNTERS.authMissing,
-  "default-address": COUNTERS.defaultAddress,
-  "ad01": COUNTERS.ad01Pending,
-  "ad01-processing": COUNTERS.ad01Processing,
-  "ad01-filed": COUNTERS.ad01Complete,
-  "ad01-not-required": COUNTERS.ad01NotRequired,
-  "ready-to-sell": COUNTERS.readyToSell,
-};
-
 // ---------------------------------------------------------------------------
-// Filters — keyed by URL-search `filter` param. Used by FilterBar + quick links.
+// Filter map — keyed by URL `filter` param.
 // ---------------------------------------------------------------------------
 export type FilterKey =
   | "all"
@@ -175,7 +197,22 @@ export const FILTERS: Record<FilterKey, (c: Company) => boolean> = {
   "ready-to-sell": RULES.isReadyToSell,
 };
 
-/** Apply a FilterKey safely; unknown keys = no filtering. */
+export const COUNTER_BY_FILTER: Record<FilterKey, (list: Company[]) => number> = {
+  "all": COUNTERS.total,
+  "active": COUNTERS.active,
+  "dissolved": COUNTERS.dissolved,
+  "pending-sale": COUNTERS.available,
+  "sold": COUNTERS.sold,
+  "strike-off": COUNTERS.strikeOff,
+  "auth-missing": COUNTERS.authMissing,
+  "default-address": COUNTERS.defaultAddress,
+  "ad01": COUNTERS.ad01Pending,
+  "ad01-processing": COUNTERS.ad01Processing,
+  "ad01-filed": COUNTERS.ad01Complete,
+  "ad01-not-required": COUNTERS.ad01NotRequired,
+  "ready-to-sell": COUNTERS.readyToSell,
+};
+
 export function applyFilterKey(list: Company[], key: string | undefined): Company[] {
   if (!key) return list;
   const fn = FILTERS[key as FilterKey];
@@ -183,19 +220,27 @@ export function applyFilterKey(list: Company[], key: string | undefined): Compan
 }
 
 // ---------------------------------------------------------------------------
-// Shared write-payload builder.
-// Both Add Company and Edit Company forms call this with the same raw fields.
-// Guarantees the legacy `status` enum + `ad01_status` are derived identically
-// everywhere — no inline duplication, no hidden overrides.
+// AD01 helper: derive whether AD01 is required from raw facts.
+// Used by forms to keep ad01_required toggle in sync with reality.
 // ---------------------------------------------------------------------------
-import type {
-  AddressStatus,
-  Ad01Status,
-  AuthCodeStatus,
-  AvailabilityStatus,
-  LifecycleStatus,
-} from "@/types";
+export interface AD01Context {
+  address_status: AddressStatus;
+  auth_code_status: AuthCodeStatus;
+  auth_code?: string | null;
+}
+export function isAD01Required(ctx: AD01Context): boolean {
+  const noAuth =
+    ctx.auth_code_status === "missing" ||
+    !ctx.auth_code ||
+    ctx.auth_code.trim() === "";
+  return ctx.address_status === "Default Address" || noAuth;
+}
 
+// ---------------------------------------------------------------------------
+// Shared write-payload builder for Add Company + Edit Company.
+// Sends ONLY raw atomic facts. The DB trigger derives status,
+// primary_category, ready_to_sell and address_match_status.
+// ---------------------------------------------------------------------------
 export interface CompanyFormRaw {
   company_name: string;
   company_number: string;
@@ -206,15 +251,15 @@ export interface CompanyFormRaw {
   company_address?: string;
   auth_code?: string;
   utr_number?: string;
-  sic_codes?: string; // comma-separated
-  director_id?: string; // "" or "none" → null
+  sic_codes?: string;
+  director_id?: string;
   lifecycle_status: LifecycleStatus;
   availability_status: AvailabilityStatus;
   auth_code_status: AuthCodeStatus;
   address_status: AddressStatus;
   strike_off_status: boolean;
-  ad01_required: boolean;          // UI: Yes/No
-  ad01_status: Ad01Status;         // only used when ad01_required = true
+  ad01_required: boolean;
+  ad01_status: Ad01Status;
   ad01_filing_date?: string;
   ch_accounts_next_due?: string;
   ch_confirmation_statement_next_due?: string;
@@ -223,43 +268,9 @@ export interface CompanyFormRaw {
 const blank = (s?: string) => (s && s.trim() !== "" ? s.trim() : null);
 
 export function buildCompanyWritePayload(raw: CompanyFormRaw) {
+  // PHASE 5 safety: if AD01 is not required, force the status to not_required
+  // so the dashboard never counts it as Completed.
   const effectiveAd01: Ad01Status = raw.ad01_required ? raw.ad01_status : "not_required";
-
-  const previewForDerivation: Company = {
-    id: "",
-    company_name: raw.company_name,
-    company_number: raw.company_number,
-    previous_name: null,
-    previous_address: null,
-    previous_director_name: null,
-    incorporation_date: null,
-    company_address: null,
-    sic_codes: null,
-    auth_code: blank(raw.auth_code),
-    utr_number: null,
-    status: "Active",
-    address_status: raw.address_status,
-    lifecycle_status: raw.lifecycle_status,
-    availability_status: raw.availability_status,
-    strike_off_status: raw.strike_off_status,
-    auth_code_status: raw.auth_code_status,
-    ad01_status: effectiveAd01,
-    ad01_filing_date: null,
-    director_id: null,
-    tags: null,
-    last_ch_sync: null,
-    ch_company_status: null,
-    ch_company_profile: null,
-    ch_address: null,
-    address_match_status: null,
-    ch_expiry_date: null,
-    ch_operation_date: null,
-    ch_filing_rate: null,
-    ch_accounts_next_due: null,
-    ch_confirmation_statement_next_due: null,
-    created_at: "",
-    updated_at: "",
-  };
 
   return {
     company_name: raw.company_name.trim() || raw.previous_name?.trim() || "(Unnamed)",
@@ -278,7 +289,7 @@ export function buildCompanyWritePayload(raw: CompanyFormRaw) {
       : null,
     director_id:
       !raw.director_id || raw.director_id === "none" ? null : raw.director_id,
-    // raw atomic facts
+    // raw atomic facts — DB trigger derives everything else
     address_status: raw.address_status,
     lifecycle_status: raw.lifecycle_status,
     availability_status: raw.availability_status,
@@ -288,7 +299,7 @@ export function buildCompanyWritePayload(raw: CompanyFormRaw) {
     ad01_filing_date: blank(raw.ad01_filing_date),
     ch_accounts_next_due: blank(raw.ch_accounts_next_due),
     ch_confirmation_statement_next_due: blank(raw.ch_confirmation_statement_next_due),
-    // derived centrally — never inline
-    status: RULES.deriveLegacyStatus(previewForDerivation),
+    // NOTE: `status`, `primary_category`, `ready_to_sell` and
+    // `address_match_status` are intentionally omitted — owned by DB trigger.
   };
 }

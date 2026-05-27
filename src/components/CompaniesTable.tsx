@@ -33,7 +33,7 @@ import { EditableCell } from "@/components/EditableCell";
 import { EditCompanyDialog } from "@/components/EditCompanyDialog";
 import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import type { Company, Director } from "@/types";
-import { deriveCategory, categoryBadgeClass, categoryLabel } from "@/lib/companyCategory";
+import { RULES, categoryBadgeClass, categoryLabel } from "@/lib/companyRules";
 
 interface Props {
   companies: Company[];
@@ -113,7 +113,7 @@ export function CompaniesTable({
           >
             <div className="space-y-1.5 text-[12px]">
               {(() => {
-                const cat = deriveCategory(company);
+                const cat = RULES.getPrimaryCategory(company);
                 return (
                   <Badge variant="outline" className={`${categoryBadgeClass(cat)} text-[9px] px-1.5 py-0`}>
                     {categoryLabel(cat)}
@@ -329,7 +329,7 @@ export function CompaniesTable({
                   </td>
                   <td className="px-2 py-1.5">
                     {(() => {
-                      const cat = deriveCategory(company);
+                      const cat = RULES.getPrimaryCategory(company);
                       return (
                         <Badge variant="outline" className={`${categoryBadgeClass(cat)} text-[9px] px-1.5 py-0 whitespace-nowrap`}>
                           {categoryLabel(cat)}
