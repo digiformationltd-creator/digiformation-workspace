@@ -218,20 +218,25 @@ function DashboardPage() {
 
       {/* Segment tabs — match rules used by Summary cards */}
       {(() => {
-        const segments = [
-          { key: undefined as string | undefined, label: "All", count: companies.length },
-          { key: "active", label: "Active", count: companies.filter((c) => c.lifecycle_status === "active").length },
-          { key: "dissolved", label: "Dissolved", count: companies.filter((c) => c.lifecycle_status === "dissolved").length },
-          { key: "pending-sale", label: "Available", count: companies.filter((c) => c.availability_status === "available").length },
-          { key: "sold", label: "Sold", count: companies.filter((c) => c.availability_status === "sold").length },
-          { key: "strike-off", label: "Strike Off", count: companies.filter((c) => c.strike_off_status === true).length },
-          { key: "default-address", label: "Default Addr.", count: companies.filter((c) => c.address_status === "Default Address").length },
-          { key: "auth-missing", label: "Auth Missing", count: companies.filter((c) => c.auth_code_status === "missing").length },
-          { key: "ad01", label: "AD01 Pending", count: companies.filter((c) => c.ad01_status === "pending" && (c.auth_code_status === "missing" || c.address_status === "Default Address")).length },
-          { key: "ad01-processing", label: "AD01 Processing", count: companies.filter((c) => c.ad01_status === "processing").length },
-          { key: "ad01-filed", label: "AD01 Complete", count: companies.filter((c) => c.ad01_status === "completed").length },
-          { key: "ad01-not-required", label: "AD01 Not Required", count: companies.filter((c) => c.ad01_status === "not_required").length },
+        const segmentDefs: { key: FilterKey | "all"; label: string }[] = [
+          { key: "all", label: "All" },
+          { key: "active", label: "Active" },
+          { key: "dissolved", label: "Dissolved" },
+          { key: "pending-sale", label: "Available" },
+          { key: "sold", label: "Sold" },
+          { key: "strike-off", label: "Strike Off" },
+          { key: "default-address", label: "Default Addr." },
+          { key: "auth-missing", label: "Auth Missing" },
+          { key: "ad01", label: "AD01 Pending" },
+          { key: "ad01-processing", label: "AD01 Processing" },
+          { key: "ad01-filed", label: "AD01 Complete" },
+          { key: "ad01-not-required", label: "AD01 Not Required" },
         ];
+        const segments = segmentDefs.map((s) => ({
+          key: s.key === "all" ? undefined : s.key,
+          label: s.label,
+          count: COUNTER_BY_FILTER[s.key as FilterKey](companies),
+        }));
         return (
           <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
             {segments.map((s) => {
