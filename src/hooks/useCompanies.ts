@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { updateCompanyCHStatus, bulkSyncCompaniesHouse } from "@/lib/companies.functions";
 import { safeDbError } from "@/lib/safeError";
-import type { Company, Director, CompanyStatus } from "@/types";
+import type { Company, Director } from "@/types";
 
 async function fetchCompaniesDirect(): Promise<Company[]> {
   const { data, error } = await supabase
