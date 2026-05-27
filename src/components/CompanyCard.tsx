@@ -78,7 +78,7 @@ export function CompanyCard({ company, directors, onUpdate, onDelete, isAdmin = 
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="rounded-xl border bg-card p-4 space-y-3">
+      <div className="rounded-xl border bg-card p-4 space-y-3 card-glow">
         {/* Header */}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">

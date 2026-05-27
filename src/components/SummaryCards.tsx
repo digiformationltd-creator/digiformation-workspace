@@ -129,7 +129,7 @@ export function SummaryCards({ companies }: Props) {
               to="/"
               search={{ filter: c.filter }}
               style={{ animationDelay: `${i * 50}ms` }}
-              className={`group relative overflow-hidden rounded-lg border bg-card px-3 py-2.5 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in`}
+              className={`group relative overflow-hidden rounded-lg border bg-card px-3 py-2.5 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in card-glow card-glow-${c.tone === "success" ? "emerald" : c.tone === "warning" ? "amber" : c.tone === "danger" ? "rose" : "orange"}`}
             >
               <div className={`absolute top-0 left-0 right-0 h-0.5 ${t.bar} opacity-80`} />
               <div className="relative flex items-center justify-between gap-2">
@@ -154,7 +154,7 @@ export function SummaryCards({ companies }: Props) {
       <div className="grid grid-cols-4 md:grid-cols-8 gap-1.5">
         {mini.map((c, i) => {
           const inner = (
-            <div className={`group h-full rounded-md border bg-card/60 px-2 py-1.5 transition-colors hover:bg-card hover:border-border ${c.muted ? "opacity-70 hover:opacity-100" : ""}`}>
+            <div className={`group h-full rounded-md border bg-card/60 px-2 py-1.5 transition-colors hover:bg-card hover:border-border card-glow ${c.muted ? "opacity-70 hover:opacity-100" : ""}`}>
               <div className="flex items-center gap-1 mb-0.5">
                 <c.icon className="h-3 w-3 text-muted-foreground shrink-0" />
                 <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wide truncate">

@@ -109,7 +109,7 @@ export function CompaniesTable({
         {sortedCompanies.map((company) => (
           <div
             key={company.id}
-            className="rounded-lg border bg-card p-3 space-y-2 overflow-hidden"
+            className="rounded-lg border bg-card p-3 space-y-2 overflow-hidden card-glow"
           >
             <div className="space-y-1.5 text-[12px]">
               {(() => {
