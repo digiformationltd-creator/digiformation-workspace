@@ -160,25 +160,37 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
           <DialogTitle>Add New Company</DialogTitle>
         </DialogHeader>
 
-        {/* Live auto-derived preview — purely informational */}
-        <div className="rounded-lg border bg-muted/40 p-3 flex items-start gap-2">
-          <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-          <div className="text-xs space-y-0.5">
-            <p>
-              <span className="text-muted-foreground">This company will appear in:</span>{" "}
-              <span className="font-semibold">{friendlyCategory}</span>
-            </p>
-            <p>
-              <span className="text-muted-foreground">Ready to Sell:</span>{" "}
-              <span className={isReadyToSell ? "text-emerald-500 font-semibold" : "text-muted-foreground"}>
-                {isReadyToSell ? "Yes" : "No"}
-              </span>
-              <span className="text-muted-foreground/70"> · the database derives this automatically</span>
-            </p>
-            <p className="text-muted-foreground/70">
-              Status, category and address-match are all owned by the database.
+        {/* System-derived (read-only) — these values are owned by the database trigger */}
+        <div className="rounded-lg border bg-muted/40 p-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary shrink-0" />
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              System Auto-Derived · Read-Only
             </p>
           </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <span className="text-muted-foreground">Section</span>
+              <p className="font-semibold">{friendlyCategory}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Ready to Sell</span>
+              <p className={isReadyToSell ? "text-emerald-500 font-semibold" : "font-semibold text-muted-foreground"}>
+                {isReadyToSell ? "Yes" : "No"}
+              </p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Status</span>
+              <p className="font-semibold text-muted-foreground/80 italic">derived on save</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Address Match</span>
+              <p className="font-semibold text-muted-foreground/80 italic">derived on save</p>
+            </div>
+          </div>
+          <p className="text-[10px] text-muted-foreground/70">
+            You only enter raw facts. The database derives category, status, ready-to-sell and address match automatically.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
