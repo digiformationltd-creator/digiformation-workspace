@@ -9,7 +9,7 @@ import {
   KeyRound,
   FileCheck,
   Sparkles,
-  
+  type LucideIcon,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Company } from "@/types";
@@ -19,206 +19,172 @@ interface Props {
   companies: Company[];
 }
 
-export function SummaryCards({ companies }: Props) {
-  const totalCompanies = COUNTERS.total(companies);
-  const dissolved = COUNTERS.dissolved(companies);
-  const activeCompanies = COUNTERS.active(companies);
-  const sold = COUNTERS.sold(companies);
-  const available = COUNTERS.available(companies);
-  const strikeOff = COUNTERS.strikeOff(companies);
-  const authMissing = COUNTERS.authMissing(companies);
-  const defaultAddress = COUNTERS.defaultAddress(companies);
-  const ad01Pending = COUNTERS.ad01Pending(companies);
-  const ad01Processing = COUNTERS.ad01Processing(companies);
-  const ad01Filed = COUNTERS.ad01Complete(companies);
-  const readyToSell = COUNTERS.readyToSell(companies);
+interface HeroCard {
+  title: string;
+  value: number;
+  icon: LucideIcon;
+  filter: string;
+  tone: "success" | "warning" | "danger" | "alert";
+  hint: string;
+}
 
-  const cards = [
+interface MiniCard {
+  title: string;
+  value: number;
+  icon: LucideIcon;
+  filter?: string;
+  muted?: boolean;
+}
+
+const TONE: Record<HeroCard["tone"], { ring: string; iconBg: string; valueText: string; bar: string }> = {
+  success: {
+    ring: "ring-emerald-500/20 hover:ring-emerald-500/50",
+    iconBg: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    valueText: "text-emerald-600 dark:text-emerald-400",
+    bar: "bg-emerald-500",
+  },
+  warning: {
+    ring: "ring-amber-500/20 hover:ring-amber-500/50",
+    iconBg: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+    valueText: "text-amber-600 dark:text-amber-400",
+    bar: "bg-amber-500",
+  },
+  danger: {
+    ring: "ring-rose-500/20 hover:ring-rose-500/50",
+    iconBg: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
+    valueText: "text-rose-600 dark:text-rose-400",
+    bar: "bg-rose-500",
+  },
+  alert: {
+    ring: "ring-orange-500/20 hover:ring-orange-500/50",
+    iconBg: "bg-orange-500/15 text-orange-600 dark:text-orange-400",
+    valueText: "text-orange-600 dark:text-orange-400",
+    bar: "bg-orange-500",
+  },
+};
+
+export function SummaryCards({ companies }: Props) {
+  // Hero KPIs — the 4 things staff act on FIRST
+  const hero: HeroCard[] = [
     {
-      title: "Total Companies",
-      value: totalCompanies,
-      icon: Building2,
-      filter: undefined,
-      accent: "from-indigo-500/20 to-violet-500/10",
-      ring: "group-hover:ring-indigo-500/40",
-      iconBg: "bg-indigo-500/10 text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white",
-      hint: "All companies registered",
-    },
-    {
-      title: "Active",
-      value: activeCompanies,
-      icon: CheckCircle,
-      filter: "active",
-      accent: "from-emerald-500/20 to-teal-500/10",
-      ring: "group-hover:ring-emerald-500/40",
-      iconBg: "bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white",
-      hint: "Total - Dissolved",
-    },
-    {
-      title: "Dissolved",
-      value: dissolved,
-      icon: AlertTriangle,
-      filter: "dissolved",
-      accent: "from-zinc-500/20 to-slate-500/10",
-      ring: "group-hover:ring-zinc-500/40",
-      iconBg: "bg-zinc-500/10 text-zinc-600 group-hover:bg-zinc-500 group-hover:text-white",
-      hint: "Companies dissolved",
-    },
-    {
-      title: "Available Company",
-      value: available,
-      icon: TrendingUp,
-      filter: "pending-sale",
-      accent: "from-amber-500/20 to-orange-500/10",
-      ring: "group-hover:ring-amber-500/40",
-      iconBg: "bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white",
-      hint: "Total - Sold",
-    },
-    {
-      title: "Sold / Transferred",
-      value: sold,
-      icon: Truck,
-      filter: "sold",
-      accent: "from-sky-500/20 to-cyan-500/10",
-      ring: "group-hover:ring-sky-500/40",
-      iconBg: "bg-sky-500/10 text-sky-500 group-hover:bg-sky-500 group-hover:text-white",
-      hint: "Renamed or non-owner director",
-    },
-    {
-      title: "Strike Off Notice",
-      value: strikeOff,
-      icon: AlertTriangle,
-      filter: "strike-off",
-      accent: "from-rose-500/20 to-red-500/10",
-      ring: "group-hover:ring-rose-500/40",
-      iconBg: "bg-rose-500/10 text-rose-500 group-hover:bg-rose-500 group-hover:text-white",
-      hint: "Strike off notice issued",
-    },
-    {
-      title: "AD01 Pending",
-      value: ad01Pending,
-      icon: Clock,
-      filter: "ad01",
-      accent: "from-orange-500/20 to-red-500/10",
-      ring: "group-hover:ring-orange-500/40",
-      iconBg: "bg-orange-500/10 text-orange-600 group-hover:bg-orange-500 group-hover:text-white",
-      hint: "Awaiting AD01 filing",
-    },
-    {
-      title: "AD01 Processing",
-      value: ad01Processing,
-      icon: Clock,
-      filter: "ad01-processing",
-      accent: "from-blue-500/20 to-cyan-500/10",
-      ring: "group-hover:ring-blue-500/40",
-      iconBg: "bg-blue-500/10 text-blue-600 group-hover:bg-blue-500 group-hover:text-white",
-      hint: "Filed — awaiting new auth/address",
+      title: "Ready to Sell",
+      value: COUNTERS.readyToSell(companies),
+      icon: Sparkles,
+      filter: "ready-to-sell",
+      tone: "success",
+      hint: "Clean inventory ready for transfer",
     },
     {
       title: "Auth Missing",
-      value: authMissing,
+      value: COUNTERS.authMissing(companies),
       icon: KeyRound,
       filter: "auth-missing",
-      accent: "from-fuchsia-500/20 to-pink-500/10",
-      ring: "group-hover:ring-fuchsia-500/40",
-      iconBg: "bg-fuchsia-500/10 text-fuchsia-600 group-hover:bg-fuchsia-500 group-hover:text-white",
+      tone: "warning",
       hint: "Active companies without auth code",
     },
     {
       title: "Default Address",
-      value: defaultAddress,
+      value: COUNTERS.defaultAddress(companies),
       icon: Home,
       filter: "default-address",
-      accent: "from-yellow-500/20 to-amber-500/10",
-      ring: "group-hover:ring-yellow-500/40",
-      iconBg: "bg-yellow-500/10 text-yellow-600 group-hover:bg-yellow-500 group-hover:text-white",
+      tone: "alert",
       hint: "PO Box / Cardiff registered",
     },
     {
-      title: "AD01 Complete",
-      value: ad01Filed,
-      icon: FileCheck,
-      filter: "ad01-filed",
-      accent: "from-green-500/20 to-emerald-500/10",
-      ring: "group-hover:ring-green-500/40",
-      iconBg: "bg-green-500/10 text-green-600 group-hover:bg-green-500 group-hover:text-white",
-      hint: "Completed AD01 filings",
-    },
-    {
-      title: "Ready to Sell",
-      value: readyToSell,
-      icon: Sparkles,
-      filter: "ready-to-sell",
-      accent: "from-purple-500/20 to-pink-500/10",
-      ring: "group-hover:ring-purple-500/40",
-      iconBg: "bg-purple-500/10 text-purple-600 group-hover:bg-purple-500 group-hover:text-white",
-      hint: "Clean companies — no open issues",
+      title: "Strike Off",
+      value: COUNTERS.strikeOff(companies),
+      icon: AlertTriangle,
+      filter: "strike-off",
+      tone: "danger",
+      hint: "Notices requiring urgent action",
     },
   ];
 
+  // Secondary stats — context, not action
+  const mini: MiniCard[] = [
+    { title: "Total", value: COUNTERS.total(companies), icon: Building2 },
+    { title: "Active", value: COUNTERS.active(companies), icon: CheckCircle, filter: "active" },
+    { title: "Available", value: COUNTERS.available(companies), icon: TrendingUp, filter: "pending-sale" },
+    { title: "AD01 Pending", value: COUNTERS.ad01Pending(companies), icon: Clock, filter: "ad01" },
+    { title: "AD01 Processing", value: COUNTERS.ad01Processing(companies), icon: Clock, filter: "ad01-processing" },
+    { title: "AD01 Complete", value: COUNTERS.ad01Complete(companies), icon: FileCheck, filter: "ad01-filed" },
+    { title: "Dissolved", value: COUNTERS.dissolved(companies), icon: AlertTriangle, filter: "dissolved", muted: true },
+    { title: "Sold", value: COUNTERS.sold(companies), icon: Truck, filter: "sold", muted: true },
+  ];
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
-      {cards.map((card, i) => {
-        const inner = (
-          <>
-            <div
-              className={`pointer-events-none absolute inset-0 opacity-0 bg-gradient-to-br ${card.accent}
-                transition-opacity duration-300 group-hover:opacity-100`}
-            />
-            <div
-              className="pointer-events-none absolute -inset-x-10 -top-10 h-32 rotate-12
-                bg-gradient-to-r from-transparent via-white/10 to-transparent
-                translate-x-[-120%] group-hover:translate-x-[120%] transition-transform duration-700 ease-out"
-            />
-            <div className="relative flex items-center justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] sm:text-[11px] font-medium text-muted-foreground uppercase tracking-wide truncate">
-                  {card.title}
-                </p>
-                <p className="text-xl sm:text-2xl font-bold mt-1 tabular-nums transition-transform duration-300 group-hover:scale-110 origin-left">
-                  {card.value}
-                </p>
-                <p className="text-[10px] text-muted-foreground/70 mt-0.5 truncate hidden sm:block">
-                  {card.hint}
+    <div className="space-y-3">
+      {/* Tier 1 — Hero Priority KPIs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {hero.map((c, i) => {
+          const t = TONE[c.tone];
+          return (
+            <Link
+              key={c.title}
+              to="/"
+              search={{ filter: c.filter }}
+              style={{ animationDelay: `${i * 50}ms` }}
+              className={`group relative overflow-hidden rounded-xl border bg-card p-4 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md animate-fade-in`}
+            >
+              <div className={`absolute top-0 left-0 right-0 h-1 ${t.bar} opacity-80`} />
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] sm:text-[11px] font-semibold text-muted-foreground uppercase tracking-wider truncate">
+                    {c.title}
+                  </p>
+                  <p className={`text-3xl sm:text-4xl font-bold mt-1.5 tabular-nums leading-none ${t.valueText}`}>
+                    {c.value}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/80 mt-1.5 line-clamp-1">
+                    {c.hint}
+                  </p>
+                </div>
+                <div className={`rounded-lg p-2 shrink-0 ${t.iconBg}`}>
+                  <c.icon className="h-5 w-5" />
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Tier 2 — Secondary context strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+        {mini.map((c, i) => {
+          const inner = (
+            <div className={`group h-full rounded-lg border bg-card/60 px-3 py-2.5 transition-colors hover:bg-card hover:border-border ${c.muted ? "opacity-70 hover:opacity-100" : ""}`}>
+              <div className="flex items-center gap-2 mb-0.5">
+                <c.icon className="h-3 w-3 text-muted-foreground shrink-0" />
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide truncate">
+                  {c.title}
                 </p>
               </div>
-              <div
-                className={`rounded-lg p-1.5 sm:p-2 shrink-0 transition-all duration-300
-                  group-hover:rotate-6 group-hover:scale-110 ${card.iconBg}`}
-              >
-                <card.icon className="h-4 w-4 sm:h-5 sm:w-5" />
-              </div>
+              <p className="text-lg font-semibold tabular-nums leading-tight">{c.value}</p>
             </div>
-          </>
-        );
-
-        const className = `group relative overflow-hidden rounded-xl border bg-card p-3 sm:p-4 shadow-sm
-            ring-1 ring-transparent transition-all duration-300 ease-out
-            hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]
-            animate-fade-in ${card.ring} ${card.filter ? "cursor-pointer" : "cursor-default"}`;
-
-        return card.filter ? (
-          <Link
-            key={card.title}
-            to="/"
-            search={{ filter: card.filter }}
-            style={{ animationDelay: `${i * 60}ms` }}
-            className={className}
-          >
-            {inner}
-          </Link>
-        ) : (
-          <Link
-            key={card.title}
-            to="/"
-            search={{}}
-            style={{ animationDelay: `${i * 60}ms` }}
-            className={className}
-          >
-            {inner}
-          </Link>
-        );
-      })}
+          );
+          return c.filter ? (
+            <Link
+              key={c.title}
+              to="/"
+              search={{ filter: c.filter }}
+              style={{ animationDelay: `${(i + 4) * 30}ms` }}
+              className="animate-fade-in"
+            >
+              {inner}
+            </Link>
+          ) : (
+            <Link
+              key={c.title}
+              to="/"
+              search={{}}
+              style={{ animationDelay: `${(i + 4) * 30}ms` }}
+              className="animate-fade-in"
+            >
+              {inner}
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
