@@ -49,7 +49,7 @@ export function useCompanies() {
     mutationFn: async ({ id, updates }: { id: string; updates: Record<string, unknown> }) => {
       const { error } = await supabase
         .from("companies")
-        .update(updates)
+        .update(updates as never)
         .eq("id", id);
       if (error) throw safeDbError(error, "Failed to update company.");
     },
