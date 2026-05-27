@@ -12,12 +12,12 @@ interface CompanyInsert {
   sic_codes?: string[] | null;
   auth_code?: string | null;
   utr_number?: string | null;
-  status?: CompanyStatus;
   address_status?: "Default Address" | "Changed/Updated" | "Active";
   ad01_filing_date?: string | null;
   director_id?: string | null;
   tags?: string[] | null;
 }
+
 
 // UK Companies House number format: 8 alphanumeric chars (e.g. 12345678, SC123456, NI123456, OC123456)
 const CH_NUMBER_RE = /^[A-Z0-9]{2}\d{6}$|^\d{8}$/;
