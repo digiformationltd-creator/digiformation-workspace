@@ -107,7 +107,7 @@ export function EditCompanyDialog({
     v: ReturnType<typeof initial>[K],
   ) => setForm((p) => ({ ...p, [k]: v }));
 
-  // ---------- Live derived preview (uses central RULES — never duplicates logic) ----------
+  // ---------- Live derived preview (DB-first; client logic is fallback only) ----------
   const previewCompany: Company = {
     ...company,
     auth_code: form.auth_code || null,
@@ -117,18 +117,19 @@ export function EditCompanyDialog({
     strike_off_status: form.strike_off_status,
     auth_code_status: form.auth_code_status,
     ad01_status: form.ad01_required ? form.ad01_status : "not_required",
+    // Wipe DB-derived fields so the preview reflects the FORM, not stale row state.
+    primary_category: null,
+    ready_to_sell: false,
   };
-  const derivedCategory = RULES.derivePrimaryCategory(previewCompany);
+  const derivedCategory = RULES.derivePrimaryCategoryFromRaw(previewCompany);
   const isReadyToSell = RULES.isReadyToSell(previewCompany);
-  const derivedLegacyStatus = RULES.deriveLegacyStatus(previewCompany);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      // Save only RAW FACTS. Categories, badges, counters and the legacy
-      // `status` enum are derived centrally via RULES — no hidden overrides,
-      // no auto-clearing of unrelated fields.
+      // Save only RAW FACTS. The DB trigger derives status, primary_category,
+      // ready_to_sell and address_match_status.
       const effectiveAd01: Ad01Status = form.ad01_required ? form.ad01_status : "not_required";
 
       await onUpdate(company.id, {
@@ -145,7 +146,6 @@ export function EditCompanyDialog({
           ? form.sic_codes.split(",").map((s) => s.trim()).filter(Boolean)
           : null,
         director_id: form.director_id === "none" ? null : form.director_id,
-        // raw atomic facts:
         address_status: form.address_status,
         lifecycle_status: form.lifecycle_status,
         availability_status: form.availability_status,
@@ -153,8 +153,8 @@ export function EditCompanyDialog({
         auth_code_status: form.auth_code_status,
         ad01_status: effectiveAd01,
         ad01_filing_date: form.ad01_filing_date || null,
-        // legacy status mirror, derived centrally (no inline logic here):
-        status: derivedLegacyStatus,
+        // status, primary_category, ready_to_sell, address_match_status, updated_at
+        // are all owned by the DB trigger — never write them here.
       });
       setOpen(false);
     } finally {
@@ -199,15 +199,11 @@ export function EditCompanyDialog({
               <span className="font-semibold">{derivedCategory.replaceAll("_", " ")}</span>
             </p>
             <p>
-              <span className="text-muted-foreground">Legacy status:</span>{" "}
-              <span className="font-semibold">{derivedLegacyStatus}</span>
-            </p>
-            <p>
               <span className="text-muted-foreground">Ready to Sell:</span>{" "}
               <span className={isReadyToSell ? "text-emerald-500 font-semibold" : "text-muted-foreground"}>
                 {isReadyToSell ? "Yes" : "No"}
               </span>
-              <span className="text-muted-foreground/70"> · calculated automatically from raw fields below</span>
+              <span className="text-muted-foreground/70"> · the database derives this automatically</span>
             </p>
           </div>
         </div>
