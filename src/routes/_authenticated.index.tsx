@@ -50,23 +50,25 @@ export const Route = createFileRoute("/_authenticated/")({
 // ─── Filter taxonomy (single source of truth for the unified bar) ───
 type FilterDef = { key: FilterKey | "all"; label: string };
 
-const CATEGORY_FILTERS: FilterDef[] = [
-  { key: "all", label: "All Companies" },
+// Always-visible priority chips (operational critical).
+const PRIMARY_CHIPS: FilterDef[] = [
   { key: "ready-to-sell", label: "Ready to Sell" },
+  { key: "auth-missing", label: "Auth Missing" },
+  { key: "default-address", label: "Default Address" },
+  { key: "strike-off", label: "Strike Off" },
+  { key: "ad01", label: "AD01 Pending" },
+];
+
+// Secondary filters — collapsed under "More Filters".
+const SECONDARY_FILTERS: FilterDef[] = [
+  { key: "all", label: "All Companies" },
   { key: "active", label: "Active" },
   { key: "pending-sale", label: "Available" },
-  { key: "ad01", label: "AD01 Pending" },
   { key: "ad01-processing", label: "AD01 Processing" },
   { key: "ad01-filed", label: "AD01 Complete" },
   { key: "ad01-not-required", label: "AD01 Not Required" },
   { key: "sold", label: "Sold" },
   { key: "dissolved", label: "Dissolved" },
-];
-
-const ISSUE_FILTERS: FilterDef[] = [
-  { key: "auth-missing", label: "Auth Missing" },
-  { key: "default-address", label: "Default Address" },
-  { key: "strike-off", label: "Strike Off" },
 ];
 
 const FILTER_TO_CATEGORY: Partial<Record<FilterKey, PrimaryCategory>> = {
@@ -79,7 +81,20 @@ const FILTER_TO_CATEGORY: Partial<Record<FilterKey, PrimaryCategory>> = {
   "active": "active",
 };
 
-const ALL_FILTERS: FilterDef[] = [...CATEGORY_FILTERS, ...ISSUE_FILTERS];
+const ALL_FILTERS: FilterDef[] = [...PRIMARY_CHIPS, ...SECONDARY_FILTERS];
+
+// Named exports surfaced in the export dropdown.
+const EXPORT_SEGMENTS: { key: FilterKey; label: string }[] = [
+  { key: "all", label: "All Companies" },
+  { key: "ready-to-sell", label: "Ready to Sell" },
+  { key: "auth-missing", label: "Auth Missing" },
+  { key: "default-address", label: "Default Address" },
+  { key: "strike-off", label: "Strike Off" },
+  { key: "sold", label: "Sold" },
+  { key: "ad01", label: "AD01 Pending" },
+  { key: "ad01-processing", label: "AD01 Processing" },
+  { key: "ad01-filed", label: "AD01 Complete" },
+];
 
 function DashboardPage() {
   const {
