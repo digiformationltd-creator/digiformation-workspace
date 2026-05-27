@@ -118,9 +118,9 @@ export function SummaryCards({ companies }: Props) {
   ];
 
   return (
-    <div className="space-y-3">
-      {/* Tier 1 — Hero Priority KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="space-y-2">
+      {/* Tier 1 — Hero Priority KPIs (compact, 4 across on laptop) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {hero.map((c, i) => {
           const t = TONE[c.tone];
           return (
@@ -129,25 +129,21 @@ export function SummaryCards({ companies }: Props) {
               to="/"
               search={{ filter: c.filter }}
               style={{ animationDelay: `${i * 50}ms` }}
-              className={`group relative overflow-hidden rounded-xl border bg-card p-4 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in`}
+              className={`group relative overflow-hidden rounded-lg border bg-card px-3 py-2.5 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in`}
             >
               <div className={`kpi-glow ${t.glow}`} aria-hidden="true" />
-              <div className={`absolute top-0 left-0 right-0 h-1 ${t.bar} opacity-80 kpi-bar-shimmer`} />
-              <div className="relative flex items-start justify-between gap-3">
-
+              <div className={`absolute top-0 left-0 right-0 h-0.5 ${t.bar} opacity-80 kpi-bar-shimmer`} />
+              <div className="relative flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] sm:text-[11px] font-semibold text-muted-foreground uppercase tracking-wider truncate">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate">
                     {c.title}
                   </p>
-                  <p className={`text-3xl sm:text-4xl font-bold mt-1.5 tabular-nums leading-none ${t.valueText}`}>
+                  <p className={`text-2xl font-bold mt-0.5 tabular-nums leading-none ${t.valueText}`}>
                     {c.value}
                   </p>
-                  <p className="text-[10px] text-muted-foreground/80 mt-1.5 line-clamp-1">
-                    {c.hint}
-                  </p>
                 </div>
-                <div className={`rounded-lg p-2 shrink-0 ${t.iconBg}`}>
-                  <c.icon className="h-5 w-5" />
+                <div className={`rounded-md p-1.5 shrink-0 ${t.iconBg}`}>
+                  <c.icon className="h-4 w-4" />
                 </div>
               </div>
             </Link>
@@ -155,35 +151,25 @@ export function SummaryCards({ companies }: Props) {
         })}
       </div>
 
-      {/* Tier 2 — Secondary context strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+      {/* Tier 2 — Secondary context strip (8-up on laptop, single row) */}
+      <div className="grid grid-cols-4 md:grid-cols-8 gap-1.5">
         {mini.map((c, i) => {
           const inner = (
-            <div className={`group h-full rounded-lg border bg-card/60 px-3 py-2.5 transition-colors hover:bg-card hover:border-border ${c.muted ? "opacity-70 hover:opacity-100" : ""}`}>
-              <div className="flex items-center gap-2 mb-0.5">
+            <div className={`group h-full rounded-md border bg-card/60 px-2 py-1.5 transition-colors hover:bg-card hover:border-border ${c.muted ? "opacity-70 hover:opacity-100" : ""}`}>
+              <div className="flex items-center gap-1 mb-0.5">
                 <c.icon className="h-3 w-3 text-muted-foreground shrink-0" />
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide truncate">
+                <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wide truncate">
                   {c.title}
                 </p>
               </div>
-              <p className="text-lg font-semibold tabular-nums leading-tight">{c.value}</p>
+              <p className="text-base font-semibold tabular-nums leading-tight">{c.value}</p>
             </div>
           );
-          return c.filter ? (
+          return (
             <Link
               key={c.title}
               to="/"
-              search={{ filter: c.filter }}
-              style={{ animationDelay: `${(i + 4) * 30}ms` }}
-              className="animate-fade-in"
-            >
-              {inner}
-            </Link>
-          ) : (
-            <Link
-              key={c.title}
-              to="/"
-              search={{}}
+              search={c.filter ? { filter: c.filter } : {}}
               style={{ animationDelay: `${(i + 4) * 30}ms` }}
               className="animate-fade-in"
             >
@@ -192,6 +178,7 @@ export function SummaryCards({ companies }: Props) {
           );
         })}
       </div>
+
     </div>
   );
 }
