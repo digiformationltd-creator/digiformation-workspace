@@ -171,6 +171,16 @@ export function SummaryCards({ companies }: Props) {
       hint: "Completed AD01 filings",
     },
     {
+      title: "AD01 Not Required",
+      value: ad01NotRequired,
+      icon: FileCheck,
+      filter: "ad01-not-required",
+      accent: "from-slate-500/20 to-gray-500/10",
+      ring: "group-hover:ring-slate-500/40",
+      iconBg: "bg-slate-500/10 text-slate-600 group-hover:bg-slate-500 group-hover:text-white",
+      hint: "AD01 never needed",
+    },
+    {
       title: "Ready to Sell",
       value: readyToSell,
       icon: Sparkles,
