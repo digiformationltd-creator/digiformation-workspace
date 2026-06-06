@@ -377,18 +377,41 @@ export function EditCompanyDialog({
           {/* 5. Address Status */}
           <Section title="5 · Address Status">
             <div className="space-y-1.5">
-              <Label>Old Address</Label>
+              <Label>Current Address</Label>
+              <Input
+                value={form.company_address}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  const originalCurrent = company.company_address ?? "";
+                  const originalPrevious = company.previous_address ?? "";
+                  setForm((p) => {
+                    // Auto-rotate: when the current address is being changed away
+                    // from the saved value, push the saved current into "Previous
+                    // Address" — but only if the user hasn't manually edited the
+                    // previous field yet (still matches the original DB value).
+                    const shouldRotate =
+                      next.trim() !== originalCurrent.trim() &&
+                      originalCurrent.trim() !== "" &&
+                      p.previous_address === originalPrevious;
+                    return {
+                      ...p,
+                      company_address: next,
+                      previous_address: shouldRotate ? originalCurrent : p.previous_address,
+                      address_status: shouldRotate ? "Changed/Updated" : p.address_status,
+                    };
+                  });
+                }}
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Changing this auto-moves the previous value into “Previous Address”.
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Previous Address</Label>
               <Input
                 value={form.previous_address}
                 onChange={(e) => set("previous_address", e.target.value)}
                 placeholder="Leave empty if never changed"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Current Address</Label>
-              <Input
-                value={form.company_address}
-                onChange={(e) => set("company_address", e.target.value)}
               />
             </div>
             <div className="space-y-1.5">
