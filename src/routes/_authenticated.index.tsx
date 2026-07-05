@@ -86,6 +86,7 @@ const ALL_FILTERS: FilterDef[] = [...PRIMARY_CHIPS, ...SECONDARY_FILTERS];
 // Named exports surfaced in the export dropdown.
 const EXPORT_SEGMENTS: { key: FilterKey; label: string }[] = [
   { key: "all", label: "All Companies" },
+  { key: "pending-sale", label: "Available Companies" },
   { key: "ready-to-sell", label: "Ready to Sell" },
   { key: "auth-missing", label: "Auth Missing" },
   { key: "default-address", label: "Default Address" },
