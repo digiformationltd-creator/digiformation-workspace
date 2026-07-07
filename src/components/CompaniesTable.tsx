@@ -485,6 +485,30 @@ export function CompaniesTable({
                       className={`text-[10px] ${!company.auth_code || company.auth_code.trim() === "" || company.auth_code.trim().toLowerCase() === "pending" ? "text-warning" : "text-foreground"}`}
                     />
                   </td>
+                  <td className="px-2 py-1.5">
+                    {(() => {
+                      const m = getAgeMonths(company.incorporation_date);
+                      if (m === null) return <span className="text-muted-foreground text-[10px]">—</span>;
+                      const inc = company.incorporation_date
+                        ? new Date(company.incorporation_date).toLocaleDateString("en-GB")
+                        : "";
+                      return (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className={`${ageBadgeClass(m)} text-[10px] px-1.5 py-0 whitespace-nowrap cursor-help`}
+                            >
+                              {formatAge(m)}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent className="text-xs">
+                            <div><strong>Incorporated:</strong> {inc || "—"}</div>
+                            <div className="mt-0.5"><strong>Age:</strong> {m} month{m === 1 ? "" : "s"}</div>
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })()}
                   <td className="px-1 py-1.5">
                     <div className="flex items-center gap-1 justify-end flex-wrap">
                       <CompanyDetailsSheet company={company} triggerStyle="compact" />
