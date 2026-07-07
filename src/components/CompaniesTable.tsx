@@ -509,6 +509,7 @@ export function CompaniesTable({
                         </Tooltip>
                       );
                     })()}
+                  </td>
                   <td className="px-1 py-1.5">
                     <div className="flex items-center gap-1 justify-end flex-wrap">
                       <CompanyDetailsSheet company={company} triggerStyle="compact" />
