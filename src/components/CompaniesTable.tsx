@@ -205,6 +205,18 @@ export function CompaniesTable({
                   className={`text-[11px] ${!company.auth_code || company.auth_code.trim() === "" || company.auth_code.trim().toLowerCase() === "pending" ? "text-warning" : "text-foreground"}`}
                 />
               </div>
+              <div>
+                <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Age</div>
+                {(() => {
+                  const m = getAgeMonths(company.incorporation_date);
+                  if (m === null) return <span className="text-muted-foreground text-[11px]">—</span>;
+                  return (
+                    <Badge variant="outline" className={`${ageBadgeClass(m)} text-[10px] px-1.5 py-0`}>
+                      {formatAge(m)}
+                    </Badge>
+                  );
+                })()}
+              </div>
             </div>
             <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t">
               <CompanyDetailsSheet company={company} triggerStyle="compact" />
