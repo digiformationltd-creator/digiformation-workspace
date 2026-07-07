@@ -35,6 +35,34 @@ import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import type { Company, Director } from "@/types";
 import { RULES, categoryBadgeClass, categoryLabel } from "@/lib/companyRules";
 
+/** Months between incorporation date and today. Returns null if no date. */
+function getAgeMonths(incorporationDate: string | null): number | null {
+  if (!incorporationDate) return null;
+  const inc = new Date(incorporationDate);
+  if (isNaN(inc.getTime())) return null;
+  const now = new Date();
+  let months = (now.getFullYear() - inc.getFullYear()) * 12 + (now.getMonth() - inc.getMonth());
+  if (now.getDate() < inc.getDate()) months -= 1;
+  return Math.max(0, months);
+}
+
+/** Human-readable age label, e.g. "3 mo", "1y 2mo". */
+function formatAge(months: number): string {
+  if (months < 1) return "<1 mo";
+  if (months < 12) return `${months} mo`;
+  const y = Math.floor(months / 12);
+  const m = months % 12;
+  return m === 0 ? `${y}y` : `${y}y ${m}mo`;
+}
+
+/** Bucket color: <=3mo green, 4-6mo blue, 7-12mo amber, >12mo slate. */
+function ageBadgeClass(months: number): string {
+  if (months <= 3) return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30";
+  if (months <= 6) return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30";
+  if (months <= 12) return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
+  return "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30";
+}
+
 interface Props {
   companies: Company[];
   directors: Director[];
@@ -177,6 +205,18 @@ export function CompaniesTable({
                   className={`text-[11px] ${!company.auth_code || company.auth_code.trim() === "" || company.auth_code.trim().toLowerCase() === "pending" ? "text-warning" : "text-foreground"}`}
                 />
               </div>
+              <div>
+                <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Age</div>
+                {(() => {
+                  const m = getAgeMonths(company.incorporation_date);
+                  if (m === null) return <span className="text-muted-foreground text-[11px]">—</span>;
+                  return (
+                    <Badge variant="outline" className={`${ageBadgeClass(m)} text-[10px] px-1.5 py-0`}>
+                      {formatAge(m)}
+                    </Badge>
+                  );
+                })()}
+              </div>
             </div>
             <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t">
               <CompanyDetailsSheet company={company} triggerStyle="compact" />
@@ -245,13 +285,14 @@ export function CompaniesTable({
         <div className="w-full">
           <table className="w-full text-[11px] table-fixed">
             <colgroup>
-              <col className="w-[15%]" />
+              <col className="w-[14%]" />
               <col className="w-[7%]" />
               <col className="w-[9%]" />
-              <col className="w-[14%]" />
-              <col className="w-[19%]" />
+              <col className="w-[13%]" />
+              <col className="w-[18%]" />
               <col className="w-[9%]" />
-              <col className="w-[27%]" />
+              <col className="w-[7%]" />
+              <col className="w-[23%]" />
             </colgroup>
             <thead>
               <tr className="border-b bg-muted/40 text-muted-foreground">
@@ -262,6 +303,7 @@ export function CompaniesTable({
                   { key: "director" as const, label: "Director", sortable: false },
                   { key: "company_address" as const, label: "Address" },
                   { key: "auth_code" as const, label: "Auth Code" },
+                  { key: "incorporation_date" as const, label: "Age" },
                   { key: "actions" as const, label: "Actions", sortable: false },
                 ].map((col) => (
                   <th
@@ -291,7 +333,7 @@ export function CompaniesTable({
             <tbody>
               {sortedCompanies.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-xs text-muted-foreground">
+                  <td colSpan={8} className="px-4 py-10 text-center text-xs text-muted-foreground">
                     No companies match your filters.
                   </td>
                 </tr>
@@ -442,6 +484,31 @@ export function CompaniesTable({
                       mono
                       className={`text-[10px] ${!company.auth_code || company.auth_code.trim() === "" || company.auth_code.trim().toLowerCase() === "pending" ? "text-warning" : "text-foreground"}`}
                     />
+                  </td>
+                  <td className="px-2 py-1.5">
+                    {(() => {
+                      const m = getAgeMonths(company.incorporation_date);
+                      if (m === null) return <span className="text-muted-foreground text-[10px]">—</span>;
+                      const inc = company.incorporation_date
+                        ? new Date(company.incorporation_date).toLocaleDateString("en-GB")
+                        : "";
+                      return (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className={`${ageBadgeClass(m)} text-[10px] px-1.5 py-0 whitespace-nowrap cursor-help`}
+                            >
+                              {formatAge(m)}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent className="text-xs">
+                            <div><strong>Incorporated:</strong> {inc || "—"}</div>
+                            <div className="mt-0.5"><strong>Age:</strong> {m} month{m === 1 ? "" : "s"}</div>
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })()}
                   </td>
                   <td className="px-1 py-1.5">
                     <div className="flex items-center gap-1 justify-end flex-wrap">
