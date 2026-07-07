@@ -35,6 +35,34 @@ import { CompanyDetailsSheet } from "@/components/CompanyDetailsSheet";
 import type { Company, Director } from "@/types";
 import { RULES, categoryBadgeClass, categoryLabel } from "@/lib/companyRules";
 
+/** Months between incorporation date and today. Returns null if no date. */
+function getAgeMonths(incorporationDate: string | null): number | null {
+  if (!incorporationDate) return null;
+  const inc = new Date(incorporationDate);
+  if (isNaN(inc.getTime())) return null;
+  const now = new Date();
+  let months = (now.getFullYear() - inc.getFullYear()) * 12 + (now.getMonth() - inc.getMonth());
+  if (now.getDate() < inc.getDate()) months -= 1;
+  return Math.max(0, months);
+}
+
+/** Human-readable age label, e.g. "3 mo", "1y 2mo". */
+function formatAge(months: number): string {
+  if (months < 1) return "<1 mo";
+  if (months < 12) return `${months} mo`;
+  const y = Math.floor(months / 12);
+  const m = months % 12;
+  return m === 0 ? `${y}y` : `${y}y ${m}mo`;
+}
+
+/** Bucket color: <=3mo green, 4-6mo blue, 7-12mo amber, >12mo slate. */
+function ageBadgeClass(months: number): string {
+  if (months <= 3) return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30";
+  if (months <= 6) return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30";
+  if (months <= 12) return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
+  return "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30";
+}
+
 interface Props {
   companies: Company[];
   directors: Director[];
