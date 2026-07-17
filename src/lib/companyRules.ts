@@ -267,9 +267,6 @@ export interface CompanyFormRaw {
   auth_code_status: AuthCodeStatus;
   address_status: AddressStatus;
   strike_off_status: boolean;
-  ad01_required: boolean;
-  ad01_status: Ad01Status;
-  ad01_filing_date?: string;
   ch_accounts_next_due?: string;
   ch_confirmation_statement_next_due?: string;
 }
@@ -277,10 +274,6 @@ export interface CompanyFormRaw {
 const blank = (s?: string) => (s && s.trim() !== "" ? s.trim() : null);
 
 export function buildCompanyWritePayload(raw: CompanyFormRaw) {
-  // PHASE 5 safety: if AD01 is not required, force the status to not_required
-  // so the dashboard never counts it as Completed.
-  const effectiveAd01: Ad01Status = raw.ad01_required ? raw.ad01_status : "not_required";
-
   return {
     company_name: raw.company_name.trim() || raw.previous_name?.trim() || "(Unnamed)",
     company_number:
@@ -304,8 +297,6 @@ export function buildCompanyWritePayload(raw: CompanyFormRaw) {
     availability_status: raw.availability_status,
     strike_off_status: raw.strike_off_status,
     auth_code_status: raw.auth_code_status,
-    ad01_status: effectiveAd01,
-    ad01_filing_date: blank(raw.ad01_filing_date),
     ch_accounts_next_due: blank(raw.ch_accounts_next_due),
     ch_confirmation_statement_next_due: blank(raw.ch_confirmation_statement_next_due),
     // NOTE: `status`, `primary_category`, `ready_to_sell` and
