@@ -56,7 +56,6 @@ const PRIMARY_CHIPS: FilterDef[] = [
   { key: "auth-missing", label: "Auth Missing" },
   { key: "default-address", label: "Default Address" },
   { key: "strike-off", label: "Strike Off" },
-  { key: "ad01", label: "AD01 Pending" },
 ];
 
 // Secondary filters — collapsed under "More Filters".
@@ -64,9 +63,6 @@ const SECONDARY_FILTERS: FilterDef[] = [
   { key: "all", label: "All Companies" },
   { key: "active", label: "Active" },
   { key: "pending-sale", label: "Available" },
-  { key: "ad01-processing", label: "AD01 Processing" },
-  { key: "ad01-filed", label: "AD01 Complete" },
-  { key: "ad01-not-required", label: "AD01 Not Required" },
   { key: "sold", label: "Sold" },
   { key: "dissolved", label: "Dissolved" },
 ];
@@ -77,7 +73,6 @@ const FILTER_TO_CATEGORY: Partial<Record<FilterKey, PrimaryCategory>> = {
   "default-address": "address_default",
   "strike-off": "strike_off",
   "sold": "sold",
-  "ad01-processing": "ad01_processing",
   "active": "active",
 };
 
@@ -92,9 +87,6 @@ const EXPORT_SEGMENTS: { key: FilterKey; label: string }[] = [
   { key: "default-address", label: "Default Address" },
   { key: "strike-off", label: "Strike Off" },
   { key: "sold", label: "Sold" },
-  { key: "ad01", label: "AD01 Pending" },
-  { key: "ad01-processing", label: "AD01 Processing" },
-  { key: "ad01-filed", label: "AD01 Complete" },
 ];
 
 function DashboardPage() {

@@ -19,7 +19,7 @@ export function exportCompaniesToExcel(companies: Company[], filename: string) {
     "UTR Number": c.utr_number || "",
     "SIC Codes": (c.sic_codes ?? []).join(", "),
     "Incorporation Date": fmt(c.incorporation_date),
-    "AD01 Filing Date": fmt(c.ad01_filing_date),
+    
     "Confirmation Statement Due": fmt(c.ch_confirmation_statement_next_due),
     "Accounts Next Due": fmt(c.ch_accounts_next_due),
   }));

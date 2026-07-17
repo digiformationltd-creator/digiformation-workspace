@@ -127,10 +127,6 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
             value={company.sic_codes?.join(", ") || "—"}
             mono
           />
-          <DetailRow
-            label="AD01 Filing Date"
-            value={fmt(company.ad01_filing_date) || "Pending"}
-          />
           <DetailRow label="Address Status" value={company.address_status} />
           <DetailRow
             label="Accounts Next Due"

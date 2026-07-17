@@ -29,7 +29,6 @@ import type {
   LifecycleStatus,
   AvailabilityStatus,
   AuthCodeStatus,
-  Ad01Status,
   AddressStatus,
 } from "@/types";
 import { RULES } from "@/lib/companyRules";
@@ -90,9 +89,6 @@ export function EditCompanyDialog({
     availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
     strike_off_status: company.strike_off_status ?? false,
     auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
-    ad01_required: (company.ad01_status ?? "pending") !== "not_required",
-    ad01_status: (company.ad01_status ?? "pending") as Ad01Status,
-    ad01_filing_date: company.ad01_filing_date ?? "",
   });
 
   const [form, setForm] = useState(initial);
@@ -116,7 +112,6 @@ export function EditCompanyDialog({
     availability_status: form.availability_status,
     strike_off_status: form.strike_off_status,
     auth_code_status: form.auth_code_status,
-    ad01_status: form.ad01_required ? form.ad01_status : "not_required",
     // Wipe DB-derived fields so the preview reflects the FORM, not stale row state.
     primary_category: null,
     ready_to_sell: false,

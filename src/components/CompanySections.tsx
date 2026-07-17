@@ -45,11 +45,6 @@ const SECTION_STYLE: Record<
     chip: "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30",
     headerBg: "bg-rose-500/5",
   },
-  ad01_processing: {
-    rail: "bg-blue-500",
-    chip: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30",
-    headerBg: "bg-blue-500/5",
-  },
   active: {
     rail: "bg-slate-400",
     chip: "bg-muted text-muted-foreground border-border",
