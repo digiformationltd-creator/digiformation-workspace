@@ -227,13 +227,14 @@ export function applyFilterKey(list: Company[], key: string | undefined): Compan
 // ---------------------------------------------------------------------------
 export const SECTION_ORDER: PrimaryCategory[] = [
   "ready_to_sell",
+  "sold",
   "auth_missing",
   "address_default",
   "strike_off",
   "ad01_processing",
   "active",
-  "sold",
 ];
+
 
 export type GroupedCompanies = Record<PrimaryCategory, Company[]>;
 
