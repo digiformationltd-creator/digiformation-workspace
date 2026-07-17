@@ -164,8 +164,6 @@ export function useCompanies() {
     directors: (directorsQuery.data ?? []) as Director[],
     loading: companiesQuery.isLoading || directorsQuery.isLoading,
     markAsSold: (id: string) => markSoldMutation.mutate(id),
-    markAd01Filed: (id: string) => markAd01Mutation.mutate(id),
-    markAd01Complete: (id: string) => markAd01CompleteMutation.mutate(id),
 
     syncCompanyCH: (id: string, companyNumber: string) =>
       syncCHMutation.mutate({ data: { id, companyNumber } }),
