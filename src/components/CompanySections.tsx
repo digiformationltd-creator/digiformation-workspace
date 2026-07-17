@@ -83,9 +83,10 @@ export function CompanySections({
   }, [companies]);
   const sections = onlyCategory ? [onlyCategory] : SECTION_ORDER;
 
-  // Collapsed by default for archive sections (Sold) when viewing the full dashboard.
+  // Collapsed by default for archive sections when viewing the full dashboard.
+  // Sold is always expanded and visible.
   const [collapsed, setCollapsed] = useState<Set<PrimaryCategory>>(
-    () => new Set<PrimaryCategory>(onlyCategory ? [] : ["sold"]),
+    () => new Set<PrimaryCategory>(),
   );
 
   const toggle = (cat: PrimaryCategory) => {
