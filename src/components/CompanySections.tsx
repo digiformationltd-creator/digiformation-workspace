@@ -83,9 +83,10 @@ export function CompanySections({
   }, [companies]);
   const sections = onlyCategory ? [onlyCategory] : SECTION_ORDER;
 
-  // Collapsed by default for archive sections (Sold) when viewing the full dashboard.
+  // Collapsed by default for archive sections when viewing the full dashboard.
+  // Sold is always expanded and visible.
   const [collapsed, setCollapsed] = useState<Set<PrimaryCategory>>(
-    () => new Set<PrimaryCategory>(onlyCategory ? [] : ["sold"]),
+    () => new Set<PrimaryCategory>(),
   );
 
   const toggle = (cat: PrimaryCategory) => {
@@ -105,6 +106,8 @@ export function CompanySections({
         const style = SECTION_STYLE[cat];
         const isCollapsed = collapsed.has(cat);
 
+        const isSold = cat === "sold";
+
         return (
           <section
             key={cat}
@@ -112,18 +115,11 @@ export function CompanySections({
             className={`scroll-mt-24 rounded-xl border overflow-hidden ${style.muted ? "opacity-90" : ""}`}
           >
             {/* Tinted header with priority rail */}
-            <button
-              type="button"
-              onClick={() => toggle(cat)}
-              className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 ${style.headerBg} hover:bg-muted/40 transition-colors text-left`}
-            >
-              <div className="flex items-center gap-3 min-w-0">
+            {isSold ? (
+              <div
+                className={`w-full flex items-center gap-3 px-4 py-2.5 ${style.headerBg} text-left`}
+              >
                 <span className={`h-5 w-1 rounded-full ${style.rail} shrink-0`} />
-                {isCollapsed ? (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
-                )}
                 <h3 className="text-sm font-semibold truncate">{categoryLabel(cat)}</h3>
                 <span
                   className={`tabular-nums text-[10px] font-semibold rounded-full border px-2 py-0.5 ${style.chip}`}
@@ -131,12 +127,33 @@ export function CompanySections({
                   {list.length}
                 </span>
               </div>
-              <span className="text-[10px] text-muted-foreground hidden sm:inline">
-                {isCollapsed ? "Show" : "Hide"}
-              </span>
-            </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => toggle(cat)}
+                className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 ${style.headerBg} hover:bg-muted/40 transition-colors text-left`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className={`h-5 w-1 rounded-full ${style.rail} shrink-0`} />
+                  {isCollapsed ? (
+                    <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                  )}
+                  <h3 className="text-sm font-semibold truncate">{categoryLabel(cat)}</h3>
+                  <span
+                    className={`tabular-nums text-[10px] font-semibold rounded-full border px-2 py-0.5 ${style.chip}`}
+                  >
+                    {list.length}
+                  </span>
+                </div>
+                <span className="text-[10px] text-muted-foreground hidden sm:inline">
+                  {isCollapsed ? "Show" : "Hide"}
+                </span>
+              </button>
+            )}
 
-            {!isCollapsed && (
+            {(isSold || !isCollapsed) && (
               <div className="border-t bg-background">
                 {list.length === 0 ? (
                   <div className="p-6 text-center text-xs text-muted-foreground">
