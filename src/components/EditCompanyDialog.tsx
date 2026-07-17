@@ -125,8 +125,6 @@ export function EditCompanyDialog({
     try {
       // Save only RAW FACTS. The DB trigger derives status, primary_category,
       // ready_to_sell and address_match_status.
-      const effectiveAd01: Ad01Status = form.ad01_required ? form.ad01_status : "not_required";
-
       await onUpdate(company.id, {
         company_name: form.company_name,
         company_number: form.company_number.toUpperCase(),
@@ -146,8 +144,6 @@ export function EditCompanyDialog({
         availability_status: form.availability_status,
         strike_off_status: form.strike_off_status,
         auth_code_status: form.auth_code_status,
-        ad01_status: effectiveAd01,
-        ad01_filing_date: form.ad01_filing_date || null,
         // status, primary_category, ready_to_sell, address_match_status, updated_at
         // are all owned by the DB trigger — never write them here.
       });
