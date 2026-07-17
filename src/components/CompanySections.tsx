@@ -71,7 +71,16 @@ export function CompanySections({
   isAdmin,
   onlyCategory,
 }: Props) {
-  const grouped = useMemo(() => groupByPrimaryCategory(companies), [companies]);
+  const grouped = useMemo(() => {
+    const g = groupByPrimaryCategory(companies);
+    // Sold list: most recently sold at top (uses updated_at as sold-timestamp proxy).
+    g.sold = [...g.sold].sort((a, b) => {
+      const ta = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+      const tb = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+      return tb - ta;
+    });
+    return g;
+  }, [companies]);
   const sections = onlyCategory ? [onlyCategory] : SECTION_ORDER;
 
   // Collapsed by default for archive sections (Sold) when viewing the full dashboard.
