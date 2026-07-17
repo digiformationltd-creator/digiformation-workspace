@@ -94,11 +94,12 @@ export function CompanyDetailsSheet({ company, triggerStyle = "icon" }: Props) {
         <div className="mt-4 grid gap-3 text-sm">
           <DetailRow label="Company Number" value={company.company_number} mono />
           <DetailRow label="Status" value={company.status} />
-          <DetailRow label="Director" value={company.director?.name ?? "—"} />
+          <DetailRow label="Old Director" value={company.director?.name ?? "—"} />
           <DetailRow
-            label="Old Director"
+            label="New Director"
             value={company.previous_director_name ?? "—"}
           />
+
           <DetailRow
             label="Director Verified"
             value={company.director?.verification_status ?? "—"}

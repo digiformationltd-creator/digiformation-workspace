@@ -279,17 +279,9 @@ export function EditCompanyDialog({
             </div>
             <div className="space-y-1.5">
               <Label>Old Director</Label>
-              <Input
-                value={form.previous_director_name}
-                onChange={(e) => set("previous_director_name", e.target.value)}
-                placeholder="Leave empty if never changed"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Current Director</Label>
               <Select value={form.director_id} onValueChange={(v) => set("director_id", v)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select current director" />
+                  <SelectValue placeholder="Select existing registered director" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">— None —</SelectItem>
@@ -303,6 +295,15 @@ export function EditCompanyDialog({
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-1.5">
+              <Label>New Director</Label>
+              <Input
+                value={form.previous_director_name}
+                onChange={(e) => set("previous_director_name", e.target.value)}
+                placeholder="Buyer's new director (leave empty until sold)"
+              />
+            </div>
+
           </Section>
 
           {/* 2. Company Health */}
