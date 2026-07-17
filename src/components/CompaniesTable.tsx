@@ -158,7 +158,8 @@ export function CompaniesTable({
                   </TooltipTrigger>
                   {company.previous_name && (
                     <TooltipContent className="text-xs max-w-[280px]">
-                      <div><strong>Now registered as:</strong> {company.previous_name}</div>
+                      <div><strong>Old name:</strong> {company.previous_name}</div>
+                      <div className="mt-1"><strong>Current name:</strong> {company.company_name}</div>
                     </TooltipContent>
                   )}
                 </Tooltip>
@@ -356,8 +357,8 @@ export function CompaniesTable({
                       </TooltipTrigger>
                       {company.previous_name && (
                         <TooltipContent className="text-xs max-w-[320px]">
-                          <div><strong>Original name:</strong> {company.company_name}</div>
-                          <div className="mt-1"><strong>Now registered as:</strong> {company.previous_name}</div>
+                          <div><strong>Old name:</strong> {company.previous_name}</div>
+                          <div className="mt-1"><strong>Current name:</strong> {company.company_name}</div>
                         </TooltipContent>
                       )}
                     </Tooltip>
