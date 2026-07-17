@@ -96,7 +96,8 @@ export function CompanyCard({ company, directors, onUpdate, onDelete, isAdmin = 
                 </TooltipTrigger>
                 {company.previous_name && (
                   <TooltipContent className="text-xs max-w-[280px]">
-                    <div><strong>Now registered as:</strong> {company.previous_name}</div>
+                    <div><strong>Old name:</strong> {company.previous_name}</div>
+                    <div className="mt-1"><strong>Current name:</strong> {company.company_name}</div>
                   </TooltipContent>
                 )}
               </Tooltip>
