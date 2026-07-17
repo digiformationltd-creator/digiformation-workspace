@@ -107,76 +107,55 @@ export function SummaryCards({ companies }: Props) {
     },
   ];
 
-  // Secondary stats — context, not action
+  // Secondary stats — same visual language as hero, half-height
   const mini: MiniCard[] = [
-    { title: "Total", value: COUNTERS.total(companies), icon: Building2 },
-    { title: "Active", value: COUNTERS.active(companies), icon: CheckCircle, filter: "active" },
-    { title: "Available", value: COUNTERS.available(companies), icon: TrendingUp, filter: "pending-sale" },
-    { title: "Dissolved", value: COUNTERS.dissolved(companies), icon: AlertTriangle, filter: "dissolved", muted: true },
-    { title: "Sold", value: COUNTERS.sold(companies), icon: Truck, filter: "sold", muted: true },
+    { title: "Total", value: COUNTERS.total(companies), icon: Building2, filter: "all", tone: "success", hint: "All companies tracked" },
+    { title: "Active", value: COUNTERS.active(companies), icon: CheckCircle, filter: "active", tone: "success", hint: "Currently trading" },
+    { title: "Available", value: COUNTERS.available(companies), icon: TrendingUp, filter: "pending-sale", tone: "alert", hint: "Marked available for sale" },
+    { title: "Dissolved", value: COUNTERS.dissolved(companies), icon: AlertTriangle, filter: "dissolved", tone: "danger", hint: "No longer active" },
+    { title: "Sold", value: COUNTERS.sold(companies), icon: Truck, filter: "sold", tone: "warning", hint: "Transferred to buyers" },
   ];
+
+  const renderCard = (c: HeroCard | MiniCard, i: number, delayBase: number) => {
+    const t = TONE[c.tone];
+    return (
+      <Link
+        key={c.title}
+        to="/"
+        search={{ filter: c.filter }}
+        style={{ animationDelay: `${(i + delayBase) * 50}ms` }}
+        className={`group relative overflow-hidden rounded-lg border bg-card px-3 py-2.5 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in card-glow card-glow-${c.tone === "success" ? "emerald" : c.tone === "warning" ? "amber" : c.tone === "danger" ? "rose" : "orange"}`}
+      >
+        <div className={`absolute top-0 left-0 right-0 h-0.5 ${t.bar} opacity-80`} />
+        <div className="relative flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate">
+              {c.title}
+            </p>
+            <p className={`text-2xl font-bold mt-0.5 tabular-nums leading-none ${t.valueText}`}>
+              {c.value}
+            </p>
+          </div>
+          <div className={`rounded-md p-1.5 shrink-0 ${t.iconBg}`}>
+            <c.icon className="h-4 w-4" />
+          </div>
+        </div>
+      </Link>
+    );
+  };
 
   return (
     <div className="space-y-2">
-      {/* Tier 1 — Hero Priority KPIs (compact, 4 across on laptop) */}
+      {/* Tier 1 — Hero Priority KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        {hero.map((c, i) => {
-          const t = TONE[c.tone];
-          return (
-            <Link
-              key={c.title}
-              to="/"
-              search={{ filter: c.filter }}
-              style={{ animationDelay: `${i * 50}ms` }}
-              className={`group relative overflow-hidden rounded-lg border bg-card px-3 py-2.5 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in card-glow card-glow-${c.tone === "success" ? "emerald" : c.tone === "warning" ? "amber" : c.tone === "danger" ? "rose" : "orange"}`}
-            >
-              <div className={`absolute top-0 left-0 right-0 h-0.5 ${t.bar} opacity-80`} />
-              <div className="relative flex items-center justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate">
-                    {c.title}
-                  </p>
-                  <p className={`text-2xl font-bold mt-0.5 tabular-nums leading-none ${t.valueText}`}>
-                    {c.value}
-                  </p>
-                </div>
-                <div className={`rounded-md p-1.5 shrink-0 ${t.iconBg}`}>
-                  <c.icon className="h-4 w-4" />
-                </div>
-              </div>
-            </Link>
-          );
-        })}
+        {hero.map((c, i) => renderCard(c, i, 0))}
       </div>
 
-      {/* Tier 2 — Secondary context strip (8-up on laptop, single row) */}
-      <div className="grid grid-cols-4 md:grid-cols-8 gap-1.5">
-        {mini.map((c, i) => {
-          const inner = (
-            <div className={`group h-full rounded-md border bg-card/60 px-2 py-1.5 transition-colors hover:bg-card hover:border-border card-glow ${c.muted ? "opacity-70 hover:opacity-100" : ""}`}>
-              <div className="flex items-center gap-1 mb-0.5">
-                <c.icon className="h-3 w-3 text-muted-foreground shrink-0" />
-                <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wide truncate">
-                  {c.title}
-                </p>
-              </div>
-              <p className="text-base font-semibold tabular-nums leading-tight">{c.value}</p>
-            </div>
-          );
-          return (
-            <Link
-              key={c.title}
-              to="/"
-              search={c.filter ? { filter: c.filter } : {}}
-              style={{ animationDelay: `${(i + 4) * 30}ms` }}
-              className="animate-fade-in"
-            >
-              {inner}
-            </Link>
-          );
-        })}
+      {/* Tier 2 — Secondary stats, matching hero design */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        {mini.map((c, i) => renderCard(c, i, 4))}
       </div>
-
     </div>
   );
 }
+
