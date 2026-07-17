@@ -32,9 +32,11 @@ interface MiniCard {
   title: string;
   value: number;
   icon: LucideIcon;
-  filter?: string;
-  muted?: boolean;
+  filter: string;
+  tone: "success" | "warning" | "danger" | "alert";
+  hint: string;
 }
+
 
 const TONE: Record<HeroCard["tone"], { ring: string; iconBg: string; valueText: string; bar: string; glow: string }> = {
   success: {
