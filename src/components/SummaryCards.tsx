@@ -110,9 +110,6 @@ export function SummaryCards({ companies }: Props) {
     { title: "Total", value: COUNTERS.total(companies), icon: Building2 },
     { title: "Active", value: COUNTERS.active(companies), icon: CheckCircle, filter: "active" },
     { title: "Available", value: COUNTERS.available(companies), icon: TrendingUp, filter: "pending-sale" },
-    { title: "AD01 Pending", value: COUNTERS.ad01Pending(companies), icon: Clock, filter: "ad01" },
-    { title: "AD01 Processing", value: COUNTERS.ad01Processing(companies), icon: Clock, filter: "ad01-processing" },
-    { title: "AD01 Complete", value: COUNTERS.ad01Complete(companies), icon: FileCheck, filter: "ad01-filed" },
     { title: "Dissolved", value: COUNTERS.dissolved(companies), icon: AlertTriangle, filter: "dissolved", muted: true },
     { title: "Sold", value: COUNTERS.sold(companies), icon: Truck, filter: "sold", muted: true },
   ];

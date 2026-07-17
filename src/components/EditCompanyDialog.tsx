@@ -29,7 +29,6 @@ import type {
   LifecycleStatus,
   AvailabilityStatus,
   AuthCodeStatus,
-  Ad01Status,
   AddressStatus,
 } from "@/types";
 import { RULES } from "@/lib/companyRules";
@@ -90,9 +89,6 @@ export function EditCompanyDialog({
     availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
     strike_off_status: company.strike_off_status ?? false,
     auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
-    ad01_required: (company.ad01_status ?? "pending") !== "not_required",
-    ad01_status: (company.ad01_status ?? "pending") as Ad01Status,
-    ad01_filing_date: company.ad01_filing_date ?? "",
   });
 
   const [form, setForm] = useState(initial);
@@ -116,7 +112,6 @@ export function EditCompanyDialog({
     availability_status: form.availability_status,
     strike_off_status: form.strike_off_status,
     auth_code_status: form.auth_code_status,
-    ad01_status: form.ad01_required ? form.ad01_status : "not_required",
     // Wipe DB-derived fields so the preview reflects the FORM, not stale row state.
     primary_category: null,
     ready_to_sell: false,
@@ -130,8 +125,6 @@ export function EditCompanyDialog({
     try {
       // Save only RAW FACTS. The DB trigger derives status, primary_category,
       // ready_to_sell and address_match_status.
-      const effectiveAd01: Ad01Status = form.ad01_required ? form.ad01_status : "not_required";
-
       await onUpdate(company.id, {
         company_name: form.company_name,
         company_number: form.company_number.toUpperCase(),
@@ -151,8 +144,6 @@ export function EditCompanyDialog({
         availability_status: form.availability_status,
         strike_off_status: form.strike_off_status,
         auth_code_status: form.auth_code_status,
-        ad01_status: effectiveAd01,
-        ad01_filing_date: form.ad01_filing_date || null,
         // status, primary_category, ready_to_sell, address_match_status, updated_at
         // are all owned by the DB trigger — never write them here.
       });
@@ -454,55 +445,6 @@ export function EditCompanyDialog({
             </div>
           </Section>
 
-          {/* 7. AD01 */}
-          <Section
-            title="7 · AD01"
-            hint='"Not Required" never counts as Complete on the dashboard.'
-          >
-            <div className="space-y-1.5">
-              <Label>AD01 Required?</Label>
-              <Select
-                value={form.ad01_required ? "yes" : "no"}
-                onValueChange={(v) => set("ad01_required", v === "yes")}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="no">No — Not Required</SelectItem>
-                  <SelectItem value="yes">Yes</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {form.ad01_required && (
-              <>
-                <div className="space-y-1.5">
-                  <Label>AD01 Status</Label>
-                  <Select
-                    value={form.ad01_status === "not_required" ? "pending" : form.ad01_status}
-                    onValueChange={(v) => set("ad01_status", v as Ad01Status)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="processing">Processing</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>AD01 Filing Date</Label>
-                  <Input
-                    type="date"
-                    value={form.ad01_filing_date}
-                    onChange={(e) => set("ad01_filing_date", e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-          </Section>
 
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>

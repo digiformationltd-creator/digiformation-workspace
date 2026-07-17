@@ -69,7 +69,7 @@ function StatusPill({
 export function CompanyCard({ company, directors, onUpdate, onDelete, isAdmin = true }: Props) {
   const sold = company.availability_status === "sold";
   const dissolved = company.lifecycle_status === "dissolved";
-  const ad01 = company.ad01_status ?? "pending";
+  
 
   const displayedDirector = company.previous_director_name || company.director?.name;
   const ourDirector = company.director?.name;
@@ -158,12 +158,6 @@ export function CompanyCard({ company, directors, onUpdate, onDelete, isAdmin = 
             label="Address"
             value={company.address_status === "Default Address" ? "Default" : "Normal"}
             good={company.address_status !== "Default Address"}
-          />
-          <StatusPill
-            icon={FileText}
-            label={`AD01${company.ad01_filing_date ? ` · ${fmt(company.ad01_filing_date)}` : ""}`}
-            value={ad01 === "completed" ? "Completed" : ad01 === "processing" ? "Processing" : "Pending"}
-            good={ad01 === "completed"}
           />
           {company.strike_off_status && (
             <StatusPill icon={AlertTriangle} label="Strike Off" value="Notice" good={false} />

@@ -88,50 +88,6 @@ export function useCompanies() {
   });
 
 
-  const markAd01Mutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("companies")
-        .update({ ad01_status: "processing" } as never)
-        .eq("id", id);
-      if (error) throw safeDbError(error, "Failed to mark AD01 processing.");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
-      toast.success("Moved to AD01 Processing");
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const markAd01CompleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const today = new Date().toISOString().slice(0, 10);
-      const { data: current, error: readErr } = await supabase
-        .from("companies")
-        .select("ad01_filing_date")
-        .eq("id", id)
-        .single();
-      if (readErr) throw safeDbError(readErr, "Failed to mark AD01 complete.");
-      const { error } = await supabase
-        .from("companies")
-        .update({
-          ad01_status: "completed",
-          ad01_filing_date: current?.ad01_filing_date ?? today,
-        } as never)
-
-        .eq("id", id);
-      if (error) throw safeDbError(error, "Failed to mark AD01 complete.");
-      if (!current?.ad01_filing_date) {
-        const { error: e2 } = await supabase.from("ad01_filings").insert({ company_id: id, filed_date: today });
-        if (e2) throw safeDbError(e2, "Failed to record AD01 filing.");
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
-      toast.success("AD01 marked as complete");
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
 
 
   const createDirectorMutation = useMutation({
@@ -208,8 +164,6 @@ export function useCompanies() {
     directors: (directorsQuery.data ?? []) as Director[],
     loading: companiesQuery.isLoading || directorsQuery.isLoading,
     markAsSold: (id: string) => markSoldMutation.mutate(id),
-    markAd01Filed: (id: string) => markAd01Mutation.mutate(id),
-    markAd01Complete: (id: string) => markAd01CompleteMutation.mutate(id),
 
     syncCompanyCH: (id: string, companyNumber: string) =>
       syncCHMutation.mutate({ data: { id, companyNumber } }),

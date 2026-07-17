@@ -22,7 +22,6 @@ import type {
   LifecycleStatus,
   AvailabilityStatus,
   AuthCodeStatus,
-  Ad01Status,
   AddressStatus,
   Company,
 } from "@/types";
@@ -51,9 +50,6 @@ const DEFAULTS = {
   auth_code_status: "missing" as AuthCodeStatus,
   address_status: "Changed/Updated" as AddressStatus,
   strike_off_status: false,
-  ad01_required: false,
-  ad01_status: "pending" as Ad01Status,
-  ad01_filing_date: "",
   ch_accounts_next_due: "",
   ch_confirmation_statement_next_due: "",
 };
@@ -108,7 +104,7 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
     availability_status: form.availability_status,
     strike_off_status: form.strike_off_status,
     auth_code_status: form.auth_code_status,
-    ad01_status: form.ad01_required ? form.ad01_status : "not_required",
+    ad01_status: "not_required",
     ad01_filing_date: null,
     director_id: null,
     tags: null,
@@ -436,52 +432,7 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
             </div>
           </Section>
 
-          {/* 7. AD01 */}
-          <Section title="7 · AD01" hint='"Not Required" never counts as Complete on the dashboard.'>
-            <div className="space-y-1.5">
-              <Label>AD01 Required?</Label>
-              <Select
-                value={form.ad01_required ? "yes" : "no"}
-                onValueChange={(v) => set("ad01_required", v === "yes")}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="no">No — Not Required</SelectItem>
-                  <SelectItem value="yes">Yes</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {form.ad01_required && (
-              <>
-                <div className="space-y-1.5">
-                  <Label>AD01 Status</Label>
-                  <Select
-                    value={form.ad01_status === "not_required" ? "pending" : form.ad01_status}
-                    onValueChange={(v) => set("ad01_status", v as Ad01Status)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="processing">Processing</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>AD01 Filing Date</Label>
-                  <Input
-                    type="date"
-                    value={form.ad01_filing_date}
-                    onChange={(e) => set("ad01_filing_date", e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-          </Section>
+
 
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
