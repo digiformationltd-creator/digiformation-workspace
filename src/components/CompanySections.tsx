@@ -7,6 +7,12 @@ import {
   categoryLabel,
   type PrimaryCategory,
 } from "@/lib/companyRules";
+import {
+  BUSINESS_CATEGORY_META,
+  BUSINESS_CATEGORY_ORDER,
+  getBusinessCategory,
+  type BusinessCategory,
+} from "@/lib/sicCategories";
 import { CompaniesTable } from "@/components/CompaniesTable";
 import { CompanyCard } from "@/components/CompanyCard";
 
