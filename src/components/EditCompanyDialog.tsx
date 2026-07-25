@@ -453,6 +453,38 @@ export function EditCompanyDialog({
             </div>
           </Section>
 
+          {/* 7. Business Category (manual override) */}
+          <Section
+            title="7 · Business Category"
+            hint="Manual selection ALWAYS overrides the automatic SIC-based category."
+          >
+            <div className="space-y-1.5">
+              <Label>Category</Label>
+              <Select
+                value={form.manual_category}
+                onValueChange={(v) => set("manual_category", v as "auto" | BusinessCategory)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="auto">🤖 Auto (from SIC code)</SelectItem>
+                  {BUSINESS_CATEGORY_ORDER.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {BUSINESS_CATEGORY_META[c].icon} {BUSINESS_CATEGORY_META[c].label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">
+                {form.manual_category === "auto"
+                  ? "Category is derived from SIC codes."
+                  : "Manual override active — SIC-based auto-category is ignored."}
+              </p>
+            </div>
+          </Section>
+
+
 
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
