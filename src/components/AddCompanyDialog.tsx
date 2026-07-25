@@ -26,6 +26,11 @@ import type {
   Company,
 } from "@/types";
 import { RULES, buildCompanyWritePayload, categoryLabel } from "@/lib/companyRules";
+import {
+  BUSINESS_CATEGORY_META,
+  BUSINESS_CATEGORY_ORDER,
+  type BusinessCategory,
+} from "@/lib/sicCategories";
 
 interface Props {
   directors: Director[];
@@ -52,6 +57,7 @@ const DEFAULTS = {
   strike_off_status: false,
   ch_accounts_next_due: "",
   ch_confirmation_statement_next_due: "",
+  manual_category: "auto" as "auto" | BusinessCategory,
 };
 
 function Section({
@@ -114,6 +120,7 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
     ch_address: null,
     address_match_status: null,
     primary_category: null,
+    manual_category: null,
     ready_to_sell: false,
     ch_expiry_date: null,
     ch_operation_date: null,
