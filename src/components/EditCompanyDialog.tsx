@@ -32,6 +32,11 @@ import type {
   AddressStatus,
 } from "@/types";
 import { RULES } from "@/lib/companyRules";
+import {
+  BUSINESS_CATEGORY_META,
+  BUSINESS_CATEGORY_ORDER,
+  type BusinessCategory,
+} from "@/lib/sicCategories";
 
 interface Props {
   company: Company;
@@ -89,6 +94,7 @@ export function EditCompanyDialog({
     availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
     strike_off_status: company.strike_off_status ?? false,
     auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
+    manual_category: (company.manual_category ?? "auto") as "auto" | BusinessCategory,
   });
 
   const [form, setForm] = useState(initial);
