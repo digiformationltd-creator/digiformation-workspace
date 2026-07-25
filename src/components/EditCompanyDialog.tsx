@@ -32,6 +32,11 @@ import type {
   AddressStatus,
 } from "@/types";
 import { RULES } from "@/lib/companyRules";
+import {
+  BUSINESS_CATEGORY_META,
+  BUSINESS_CATEGORY_ORDER,
+  type BusinessCategory,
+} from "@/lib/sicCategories";
 
 interface Props {
   company: Company;
@@ -89,6 +94,7 @@ export function EditCompanyDialog({
     availability_status: (company.availability_status ?? "available") as AvailabilityStatus,
     strike_off_status: company.strike_off_status ?? false,
     auth_code_status: (company.auth_code_status ?? "missing") as AuthCodeStatus,
+    manual_category: (company.manual_category ?? "auto") as "auto" | BusinessCategory,
   });
 
   const [form, setForm] = useState(initial);
@@ -144,6 +150,8 @@ export function EditCompanyDialog({
         availability_status: form.availability_status,
         strike_off_status: form.strike_off_status,
         auth_code_status: form.auth_code_status,
+        manual_category:
+          !form.manual_category || form.manual_category === "auto" ? null : form.manual_category,
         // status, primary_category, ready_to_sell, address_match_status, updated_at
         // are all owned by the DB trigger — never write them here.
       });
@@ -444,6 +452,38 @@ export function EditCompanyDialog({
               </Select>
             </div>
           </Section>
+
+          {/* 7. Business Category (manual override) */}
+          <Section
+            title="7 · Business Category"
+            hint="Manual selection ALWAYS overrides the automatic SIC-based category."
+          >
+            <div className="space-y-1.5">
+              <Label>Category</Label>
+              <Select
+                value={form.manual_category}
+                onValueChange={(v) => set("manual_category", v as "auto" | BusinessCategory)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="auto">🤖 Auto (from SIC code)</SelectItem>
+                  {BUSINESS_CATEGORY_ORDER.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {BUSINESS_CATEGORY_META[c].icon} {BUSINESS_CATEGORY_META[c].label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">
+                {form.manual_category === "auto"
+                  ? "Category is derived from SIC codes."
+                  : "Manual override active — SIC-based auto-category is ignored."}
+              </p>
+            </div>
+          </Section>
+
 
 
           <DialogFooter className="pt-2">

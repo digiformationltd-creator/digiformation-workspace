@@ -364,4 +364,19 @@ export function getBusinessCategory(sicCodes: string[] | null | undefined): Busi
   return "other";
 }
 
+const isBusinessCategory = (v: unknown): v is BusinessCategory =>
+  typeof v === "string" && v in BUSINESS_CATEGORY_META;
+
+/**
+ * Resolve a company's business category.
+ * Manual override (admin-selected) ALWAYS wins over SIC-derived category.
+ */
+export function resolveBusinessCategory(input: {
+  manual_category?: string | null;
+  sic_codes?: string[] | null;
+}): BusinessCategory {
+  if (isBusinessCategory(input.manual_category)) return input.manual_category;
+  return getBusinessCategory(input.sic_codes ?? null);
+}
+
 export const businessCategoryLabel = (c: BusinessCategory) => BUSINESS_CATEGORY_META[c].label;

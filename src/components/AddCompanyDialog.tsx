@@ -26,6 +26,11 @@ import type {
   Company,
 } from "@/types";
 import { RULES, buildCompanyWritePayload, categoryLabel } from "@/lib/companyRules";
+import {
+  BUSINESS_CATEGORY_META,
+  BUSINESS_CATEGORY_ORDER,
+  type BusinessCategory,
+} from "@/lib/sicCategories";
 
 interface Props {
   directors: Director[];
@@ -52,6 +57,7 @@ const DEFAULTS = {
   strike_off_status: false,
   ch_accounts_next_due: "",
   ch_confirmation_statement_next_due: "",
+  manual_category: "auto" as "auto" | BusinessCategory,
 };
 
 function Section({
@@ -114,6 +120,7 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
     ch_address: null,
     address_match_status: null,
     primary_category: null,
+    manual_category: null,
     ready_to_sell: false,
     ch_expiry_date: null,
     ch_operation_date: null,
@@ -433,6 +440,32 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
           </Section>
 
 
+
+          {/* 7. Business Category (manual override) */}
+          <Section
+            title="7 · Business Category"
+            hint="Manual selection ALWAYS overrides the automatic SIC-based category."
+          >
+            <div className="space-y-1.5">
+              <Label>Category</Label>
+              <Select
+                value={form.manual_category}
+                onValueChange={(v) => set("manual_category", v as "auto" | BusinessCategory)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="auto">🤖 Auto (from SIC code)</SelectItem>
+                  {BUSINESS_CATEGORY_ORDER.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {BUSINESS_CATEGORY_META[c].icon} {BUSINESS_CATEGORY_META[c].label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </Section>
 
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

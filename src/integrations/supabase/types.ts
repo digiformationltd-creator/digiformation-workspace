@@ -72,6 +72,7 @@ export type Database = {
           incorporation_date: string | null
           last_ch_sync: string | null
           lifecycle_status: string
+          manual_category: string | null
           previous_address: string | null
           previous_director_name: string | null
           previous_name: string | null
@@ -109,6 +110,7 @@ export type Database = {
           incorporation_date?: string | null
           last_ch_sync?: string | null
           lifecycle_status?: string
+          manual_category?: string | null
           previous_address?: string | null
           previous_director_name?: string | null
           previous_name?: string | null
@@ -146,6 +148,7 @@ export type Database = {
           incorporation_date?: string | null
           last_ch_sync?: string | null
           lifecycle_status?: string
+          manual_category?: string | null
           previous_address?: string | null
           previous_director_name?: string | null
           previous_name?: string | null

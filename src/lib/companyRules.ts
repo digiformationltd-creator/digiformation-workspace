@@ -269,6 +269,8 @@ export interface CompanyFormRaw {
   strike_off_status: boolean;
   ch_accounts_next_due?: string;
   ch_confirmation_statement_next_due?: string;
+  /** Admin-selected business category — "" or "auto" means no override. */
+  manual_category?: string;
 }
 
 const blank = (s?: string) => (s && s.trim() !== "" ? s.trim() : null);
@@ -299,6 +301,8 @@ export function buildCompanyWritePayload(raw: CompanyFormRaw) {
     auth_code_status: raw.auth_code_status,
     ch_accounts_next_due: blank(raw.ch_accounts_next_due),
     ch_confirmation_statement_next_due: blank(raw.ch_confirmation_statement_next_due),
+    manual_category:
+      !raw.manual_category || raw.manual_category === "auto" ? null : raw.manual_category,
     // NOTE: `status`, `primary_category`, `ready_to_sell` and
     // `address_match_status` are intentionally omitted — owned by DB trigger.
   };
