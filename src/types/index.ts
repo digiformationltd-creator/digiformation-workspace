@@ -43,6 +43,8 @@ export interface Company {
   address_match_status: string | null;
   /** DB-derived: single-bucket category, computed by trigger. */
   primary_category: string | null;
+  /** Admin-selected business category override — always wins over SIC-derived. */
+  manual_category: string | null;
   /** DB-derived: true only for clean, sellable companies. */
   ready_to_sell: boolean;
   ch_expiry_date: string | null;

@@ -10,7 +10,7 @@ import {
 import {
   BUSINESS_CATEGORY_META,
   BUSINESS_CATEGORY_ORDER,
-  getBusinessCategory,
+  resolveBusinessCategory,
   type BusinessCategory,
 } from "@/lib/sicCategories";
 import { CompaniesTable } from "@/components/CompaniesTable";
@@ -218,7 +218,7 @@ function ReadyToSellByBusiness({ list, directors, onUpdate, onDelete, isAdmin }:
   const grouped = useMemo(() => {
     const map = new Map<BusinessCategory, Company[]>();
     for (const c of list) {
-      const cat = getBusinessCategory(c.sic_codes);
+      const cat = resolveBusinessCategory({ manual_category: c.manual_category, sic_codes: c.sic_codes });
       const arr = map.get(cat) ?? [];
       arr.push(c);
       map.set(cat, arr);
