@@ -150,6 +150,8 @@ export function EditCompanyDialog({
         availability_status: form.availability_status,
         strike_off_status: form.strike_off_status,
         auth_code_status: form.auth_code_status,
+        manual_category:
+          !form.manual_category || form.manual_category === "auto" ? null : form.manual_category,
         // status, primary_category, ready_to_sell, address_match_status, updated_at
         // are all owned by the DB trigger — never write them here.
       });
