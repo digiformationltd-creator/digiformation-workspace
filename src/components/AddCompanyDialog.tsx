@@ -441,6 +441,32 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
 
 
 
+          {/* 7. Business Category (manual override) */}
+          <Section
+            title="7 · Business Category"
+            hint="Manual selection ALWAYS overrides the automatic SIC-based category."
+          >
+            <div className="space-y-1.5">
+              <Label>Category</Label>
+              <Select
+                value={form.manual_category}
+                onValueChange={(v) => set("manual_category", v as "auto" | BusinessCategory)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="auto">🤖 Auto (from SIC code)</SelectItem>
+                  {BUSINESS_CATEGORY_ORDER.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {BUSINESS_CATEGORY_META[c].icon} {BUSINESS_CATEGORY_META[c].label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </Section>
+
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add Company
