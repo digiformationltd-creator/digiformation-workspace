@@ -74,10 +74,11 @@ export function CompanySections({
 }: Props) {
   const grouped = useMemo(() => {
     const g = groupByPrimaryCategory(companies);
-    // Sold list: most recently sold at top (uses updated_at as sold-timestamp proxy).
+    // Sold list: strictly ordered by the moment the company became sold
+    // (DB-stamped `sold_at`). Falls back to updated_at only for pre-backfill rows.
     g.sold = [...g.sold].sort((a, b) => {
-      const ta = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-      const tb = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+      const ta = new Date(a.sold_at ?? a.updated_at ?? 0).getTime();
+      const tb = new Date(b.sold_at ?? b.updated_at ?? 0).getTime();
       return tb - ta;
     });
     return g;
