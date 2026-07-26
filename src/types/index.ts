@@ -34,6 +34,7 @@ export interface Company {
   auth_code_status: AuthCodeStatus;
   ad01_status: Ad01Status;
   ad01_filing_date: string | null;
+  sold_at: string | null;
   director_id: string | null;
   tags: string[] | null;
   last_ch_sync: string | null;
