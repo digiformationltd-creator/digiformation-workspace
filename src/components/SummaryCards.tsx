@@ -67,6 +67,20 @@ const TONE: Record<HeroCard["tone"], { ring: string; iconBg: string; valueText: 
     bar: "bg-orange-500",
     glow: "kpi-glow-alert",
   },
+  info: {
+    ring: "ring-sky-500/20 hover:ring-sky-500/60",
+    iconBg: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
+    valueText: "text-sky-600 dark:text-sky-400",
+    bar: "bg-sky-500",
+    glow: "kpi-glow-info",
+  },
+  neutral: {
+    ring: "ring-indigo-500/20 hover:ring-indigo-500/60",
+    iconBg: "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400",
+    valueText: "text-indigo-600 dark:text-indigo-400",
+    bar: "bg-indigo-500",
+    glow: "kpi-glow-neutral",
+  },
 };
 
 
