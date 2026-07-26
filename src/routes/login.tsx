@@ -90,10 +90,14 @@ function LoginPage() {
                 <Label htmlFor="signin-password">Password</Label>
                 <button
                   type="button"
-                  onClick={() => sendReset(email)}
-                  className="text-xs text-primary hover:underline"
+                  disabled={resetting}
+                  onClick={async () => {
+                    setResetting(true);
+                    try { await sendReset(email); } finally { setTimeout(() => setResetting(false), 20000); }
+                  }}
+                  className="text-xs text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Forgot password?
+                  {resetting ? "Sending…" : "Forgot password?"}
                 </button>
               </div>
               <Input
