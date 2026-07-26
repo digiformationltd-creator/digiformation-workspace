@@ -52,15 +52,14 @@ const SECTION_STYLE: Record<
     headerBg: "bg-rose-500/5",
   },
   active: {
-    rail: "bg-slate-400",
-    chip: "bg-muted text-muted-foreground border-border",
-    headerBg: "bg-transparent",
+    rail: "bg-emerald-500",
+    chip: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+    headerBg: "bg-emerald-500/5",
   },
   sold: {
-    rail: "bg-slate-300 dark:bg-slate-700",
-    chip: "bg-muted text-muted-foreground border-border",
-    headerBg: "bg-muted/30",
-    muted: true,
+    rail: "bg-sky-500",
+    chip: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30",
+    headerBg: "bg-sky-500/5",
   },
 };
 
@@ -74,10 +73,11 @@ export function CompanySections({
 }: Props) {
   const grouped = useMemo(() => {
     const g = groupByPrimaryCategory(companies);
-    // Sold list: most recently sold at top (uses updated_at as sold-timestamp proxy).
+    // Sold list: strictly ordered by the moment the company became sold
+    // (DB-stamped `sold_at`). Falls back to updated_at only for pre-backfill rows.
     g.sold = [...g.sold].sort((a, b) => {
-      const ta = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-      const tb = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+      const ta = new Date(a.sold_at ?? a.updated_at ?? 0).getTime();
+      const tb = new Date(b.sold_at ?? b.updated_at ?? 0).getTime();
       return tb - ta;
     });
     return g;

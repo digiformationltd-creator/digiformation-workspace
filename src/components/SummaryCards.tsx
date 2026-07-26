@@ -24,7 +24,7 @@ interface HeroCard {
   value: number;
   icon: LucideIcon;
   filter: string;
-  tone: "success" | "warning" | "danger" | "alert";
+  tone: "success" | "warning" | "danger" | "alert" | "info" | "neutral";
   hint: string;
 }
 
@@ -33,7 +33,7 @@ interface MiniCard {
   value: number;
   icon: LucideIcon;
   filter: string;
-  tone: "success" | "warning" | "danger" | "alert";
+  tone: "success" | "warning" | "danger" | "alert" | "info" | "neutral";
   hint: string;
 }
 
@@ -66,6 +66,20 @@ const TONE: Record<HeroCard["tone"], { ring: string; iconBg: string; valueText: 
     valueText: "text-orange-600 dark:text-orange-400",
     bar: "bg-orange-500",
     glow: "kpi-glow-alert",
+  },
+  info: {
+    ring: "ring-sky-500/20 hover:ring-sky-500/60",
+    iconBg: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
+    valueText: "text-sky-600 dark:text-sky-400",
+    bar: "bg-sky-500",
+    glow: "kpi-glow-info",
+  },
+  neutral: {
+    ring: "ring-indigo-500/20 hover:ring-indigo-500/60",
+    iconBg: "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400",
+    valueText: "text-indigo-600 dark:text-indigo-400",
+    bar: "bg-indigo-500",
+    glow: "kpi-glow-neutral",
   },
 };
 
@@ -109,11 +123,11 @@ export function SummaryCards({ companies }: Props) {
 
   // Secondary stats — same visual language as hero, half-height
   const mini: MiniCard[] = [
-    { title: "Total", value: COUNTERS.total(companies), icon: Building2, filter: "all", tone: "success", hint: "All companies tracked" },
+    { title: "Total", value: COUNTERS.total(companies), icon: Building2, filter: "all", tone: "neutral", hint: "All companies tracked" },
     { title: "Active", value: COUNTERS.active(companies), icon: CheckCircle, filter: "active", tone: "success", hint: "Currently trading" },
     { title: "Available", value: COUNTERS.available(companies), icon: TrendingUp, filter: "pending-sale", tone: "alert", hint: "Marked available for sale" },
     { title: "Dissolved", value: COUNTERS.dissolved(companies), icon: AlertTriangle, filter: "dissolved", tone: "danger", hint: "No longer active" },
-    { title: "Sold", value: COUNTERS.sold(companies), icon: Truck, filter: "sold", tone: "warning", hint: "Transferred to buyers" },
+    { title: "Sold", value: COUNTERS.sold(companies), icon: Truck, filter: "sold", tone: "info", hint: "Transferred to buyers" },
   ];
 
   const renderCard = (c: HeroCard | MiniCard, i: number, delayBase: number) => {
@@ -124,7 +138,7 @@ export function SummaryCards({ companies }: Props) {
         to="/"
         search={{ filter: c.filter }}
         style={{ animationDelay: `${(i + delayBase) * 50}ms` }}
-        className={`group relative overflow-hidden rounded-lg border bg-card px-3 py-2.5 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in card-glow card-glow-${c.tone === "success" ? "emerald" : c.tone === "warning" ? "amber" : c.tone === "danger" ? "rose" : "orange"}`}
+        className={`group relative overflow-hidden rounded-lg border bg-card px-3 py-2.5 shadow-sm ring-1 ${t.ring} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg animate-fade-in card-glow card-glow-${c.tone === "success" ? "emerald" : c.tone === "warning" ? "amber" : c.tone === "danger" ? "rose" : c.tone === "info" ? "sky" : c.tone === "neutral" ? "indigo" : "orange"}`}
       >
         <div className={`absolute top-0 left-0 right-0 h-0.5 ${t.bar} opacity-80`} />
         <div className="relative flex items-center justify-between gap-2">

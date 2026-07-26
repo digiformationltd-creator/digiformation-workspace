@@ -79,6 +79,7 @@ export type Database = {
           primary_category: string | null
           ready_to_sell: boolean
           sic_codes: string[] | null
+          sold_at: string | null
           status: Database["public"]["Enums"]["company_status"] | null
           strike_off_status: boolean
           tags: string[] | null
@@ -117,6 +118,7 @@ export type Database = {
           primary_category?: string | null
           ready_to_sell?: boolean
           sic_codes?: string[] | null
+          sold_at?: string | null
           status?: Database["public"]["Enums"]["company_status"] | null
           strike_off_status?: boolean
           tags?: string[] | null
@@ -155,6 +157,7 @@ export type Database = {
           primary_category?: string | null
           ready_to_sell?: boolean
           sic_codes?: string[] | null
+          sold_at?: string | null
           status?: Database["public"]["Enums"]["company_status"] | null
           strike_off_status?: boolean
           tags?: string[] | null
