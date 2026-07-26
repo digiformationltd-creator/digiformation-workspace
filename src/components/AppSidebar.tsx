@@ -42,11 +42,11 @@ const quickFilters: Array<{
 }> = [
   { title: "Total Companies", icon: Building2, color: "text-indigo-500", search: undefined },
   { title: "Active", icon: CheckCircle, color: "text-emerald-500", search: { filter: "active" } },
-  { title: "Available", icon: TrendingUp, color: "text-amber-500", search: { filter: "pending-sale" } },
+  { title: "Available", icon: TrendingUp, color: "text-orange-500", search: { filter: "pending-sale" } },
   { title: "Sold / Transferred", icon: Truck, color: "text-sky-500", search: { filter: "sold" } },
   { title: "Strike Off Notice", icon: AlertTriangle, color: "text-rose-500", search: { filter: "strike-off" } },
-  { title: "Auth Missing", icon: KeyRound, color: "text-fuchsia-500", search: { filter: "auth-missing" } },
-  { title: "Default Address", icon: Home, color: "text-yellow-600", search: { filter: "default-address" } },
+  { title: "Auth Missing", icon: KeyRound, color: "text-amber-500", search: { filter: "auth-missing" } },
+  { title: "Default Address", icon: Home, color: "text-orange-500", search: { filter: "default-address" } },
   { title: "Confirmation Statement", icon: FileText, color: "text-purple-500", search: undefined },
   { title: "Annual Accounts", icon: BookOpen, color: "text-teal-500", search: undefined },
 ];
