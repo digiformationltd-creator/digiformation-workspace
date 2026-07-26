@@ -9,16 +9,27 @@ import { Loader2 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 
 async function sendReset(email: string) {
-  const trimmed = email.trim();
+  const trimmed = email.trim().toLowerCase();
   if (!trimmed) {
     toast.error("Enter your email above first, then click Forgot password.");
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    toast.error("Enter a valid email address.");
     return;
   }
   const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
     redirectTo: `${window.location.origin}/reset-password`,
   });
-  if (error) toast.error(error.message);
-  else toast.success(`Reset link sent to ${trimmed}. Check your inbox.`);
+  if (error) {
+    if (error.message?.toLowerCase().includes("rate limit") || (error as any).status === 429) {
+      toast.error("Please wait a moment before requesting another reset email.");
+    } else {
+      toast.error(error.message);
+    }
+    return;
+  }
+  toast.success(`Reset link sent to ${trimmed}. Check your inbox and spam folder.`);
 }
 
 
@@ -31,6 +42,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -78,10 +90,14 @@ function LoginPage() {
                 <Label htmlFor="signin-password">Password</Label>
                 <button
                   type="button"
-                  onClick={() => sendReset(email)}
-                  className="text-xs text-primary hover:underline"
+                  disabled={resetting}
+                  onClick={async () => {
+                    setResetting(true);
+                    try { await sendReset(email); } finally { setTimeout(() => setResetting(false), 20000); }
+                  }}
+                  className="text-xs text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Forgot password?
+                  {resetting ? "Sending…" : "Forgot password?"}
                 </button>
               </div>
               <Input
