@@ -9,16 +9,27 @@ import { Loader2 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 
 async function sendReset(email: string) {
-  const trimmed = email.trim();
+  const trimmed = email.trim().toLowerCase();
   if (!trimmed) {
     toast.error("Enter your email above first, then click Forgot password.");
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    toast.error("Enter a valid email address.");
     return;
   }
   const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
     redirectTo: `${window.location.origin}/reset-password`,
   });
-  if (error) toast.error(error.message);
-  else toast.success(`Reset link sent to ${trimmed}. Check your inbox.`);
+  if (error) {
+    if (error.message?.toLowerCase().includes("rate limit") || (error as any).status === 429) {
+      toast.error("Please wait a moment before requesting another reset email.");
+    } else {
+      toast.error(error.message);
+    }
+    return;
+  }
+  toast.success(`Reset link sent to ${trimmed}. Check your inbox and spam folder.`);
 }
 
 
