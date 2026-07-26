@@ -52,15 +52,14 @@ const SECTION_STYLE: Record<
     headerBg: "bg-rose-500/5",
   },
   active: {
-    rail: "bg-slate-400",
-    chip: "bg-muted text-muted-foreground border-border",
-    headerBg: "bg-transparent",
+    rail: "bg-emerald-500",
+    chip: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+    headerBg: "bg-emerald-500/5",
   },
   sold: {
-    rail: "bg-slate-300 dark:bg-slate-700",
-    chip: "bg-muted text-muted-foreground border-border",
-    headerBg: "bg-muted/30",
-    muted: true,
+    rail: "bg-sky-500",
+    chip: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30",
+    headerBg: "bg-sky-500/5",
   },
 };
 

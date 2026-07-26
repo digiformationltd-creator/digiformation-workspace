@@ -24,7 +24,7 @@ interface HeroCard {
   value: number;
   icon: LucideIcon;
   filter: string;
-  tone: "success" | "warning" | "danger" | "alert";
+  tone: "success" | "warning" | "danger" | "alert" | "info" | "neutral";
   hint: string;
 }
 
@@ -33,7 +33,7 @@ interface MiniCard {
   value: number;
   icon: LucideIcon;
   filter: string;
-  tone: "success" | "warning" | "danger" | "alert";
+  tone: "success" | "warning" | "danger" | "alert" | "info" | "neutral";
   hint: string;
 }
 
