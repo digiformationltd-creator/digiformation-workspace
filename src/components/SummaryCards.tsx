@@ -123,11 +123,11 @@ export function SummaryCards({ companies }: Props) {
 
   // Secondary stats — same visual language as hero, half-height
   const mini: MiniCard[] = [
-    { title: "Total", value: COUNTERS.total(companies), icon: Building2, filter: "all", tone: "success", hint: "All companies tracked" },
+    { title: "Total", value: COUNTERS.total(companies), icon: Building2, filter: "all", tone: "neutral", hint: "All companies tracked" },
     { title: "Active", value: COUNTERS.active(companies), icon: CheckCircle, filter: "active", tone: "success", hint: "Currently trading" },
     { title: "Available", value: COUNTERS.available(companies), icon: TrendingUp, filter: "pending-sale", tone: "alert", hint: "Marked available for sale" },
     { title: "Dissolved", value: COUNTERS.dissolved(companies), icon: AlertTriangle, filter: "dissolved", tone: "danger", hint: "No longer active" },
-    { title: "Sold", value: COUNTERS.sold(companies), icon: Truck, filter: "sold", tone: "warning", hint: "Transferred to buyers" },
+    { title: "Sold", value: COUNTERS.sold(companies), icon: Truck, filter: "sold", tone: "info", hint: "Transferred to buyers" },
   ];
 
   const renderCard = (c: HeroCard | MiniCard, i: number, delayBase: number) => {
