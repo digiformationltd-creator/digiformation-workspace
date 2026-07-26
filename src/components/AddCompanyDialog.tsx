@@ -112,6 +112,7 @@ export function AddCompanyDialog({ directors, createCompany, createDirector }: P
     auth_code_status: form.auth_code_status,
     ad01_status: "not_required",
     ad01_filing_date: null,
+    sold_at: null,
     director_id: null,
     tags: null,
     last_ch_sync: null,
