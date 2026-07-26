@@ -8,6 +8,20 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 
+async function sendReset(email: string) {
+  const trimmed = email.trim();
+  if (!trimmed) {
+    toast.error("Enter your email above first, then click Forgot password.");
+    return;
+  }
+  const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  });
+  if (error) toast.error(error.message);
+  else toast.success(`Reset link sent to ${trimmed}. Check your inbox.`);
+}
+
+
 export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
@@ -60,7 +74,16 @@ function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="signin-password">Password</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="signin-password">Password</Label>
+                <button
+                  type="button"
+                  onClick={() => sendReset(email)}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
               <Input
                 id="signin-password"
                 type="password"
