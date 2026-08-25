@@ -1,30 +1,19 @@
-import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, LogOut } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/_authenticated")({
-  beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) {
-      throw redirect({ to: "/login" });
-    }
-  },
   component: AppLayout,
 });
 
 function AppLayout() {
-  const navigate = useNavigate();
   const [theme, setTheme] = useState<"light" | "dark">("dark");
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate({ to: "/login" });
-  };
+
 
   useEffect(() => {
     const saved = localStorage.getItem("theme") as "light" | "dark" | null;
