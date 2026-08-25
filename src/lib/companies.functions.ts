@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
 
 
@@ -36,7 +35,6 @@ function dbError(error: { message: string; code?: string }, context: string): Er
 }
 
 export const getCompanies = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
   .handler(async () => {
     const { data, error } = await supabaseAdmin
       .from("companies")
@@ -47,7 +45,6 @@ export const getCompanies = createServerFn({ method: "GET" })
   });
 
 export const getDirectors = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
   .handler(async () => {
     const { data, error } = await supabaseAdmin
       .from("directors")
@@ -58,7 +55,6 @@ export const getDirectors = createServerFn({ method: "GET" })
   });
 
 export const createCompany = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { company: CompanyInsert }) => data)
   .handler(async ({ data }) => {
     const { data: result, error } = await supabaseAdmin
@@ -71,7 +67,6 @@ export const createCompany = createServerFn({ method: "POST" })
   });
 
 export const updateCompany = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string; updates: Partial<CompanyInsert> }) => data)
   .handler(async ({ data }) => {
     // updated_at is now set by the DB trigger; status changes are auto-logged.
@@ -86,7 +81,6 @@ export const updateCompany = createServerFn({ method: "POST" })
   });
 
 export const markAsSold = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     // Setting availability_status=sold makes the DB trigger re-derive
@@ -102,7 +96,6 @@ export const markAsSold = createServerFn({ method: "POST" })
   });
 
 export const markAd01Filed = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     const today = new Date().toISOString().split("T")[0];
@@ -128,7 +121,6 @@ export const markAd01Filed = createServerFn({ method: "POST" })
   });
 
 export const verifyDirector = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { directorId: string }) => data)
   .handler(async ({ data }) => {
     const { data: result, error } = await supabaseAdmin
@@ -142,7 +134,6 @@ export const verifyDirector = createServerFn({ method: "POST" })
   });
 
 export const createDirector = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { name: string }) => data)
   .handler(async ({ data }) => {
     const { data: result, error } = await supabaseAdmin
@@ -155,7 +146,6 @@ export const createDirector = createServerFn({ method: "POST" })
   });
 
 export const deleteCompany = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin
@@ -167,7 +157,6 @@ export const deleteCompany = createServerFn({ method: "POST" })
   });
 
 export const importCompaniesCSV = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { rows: Array<Record<string, string>> }) => data)
   .handler(async ({ data }) => {
     const directorNames = Array.from(
@@ -244,7 +233,6 @@ interface CHSyncResponse {
 }
 
 export const syncWithCompaniesHouse = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { companyNumber: string }) => data)
   .handler(async ({ data }): Promise<CHSyncResponse> => {
     const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
@@ -280,7 +268,6 @@ export const syncWithCompaniesHouse = createServerFn({ method: "POST" })
   });
 
 export const updateCompanyCHStatus = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string; companyNumber: string }) => data)
   .handler(async ({ data }) => {
     const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
@@ -326,7 +313,6 @@ interface BulkSyncResult {
 }
 
 export const bulkSyncCompaniesHouse = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .handler(async () => {
     const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
     if (!apiKey) throw new Error("Companies House API key not configured");
