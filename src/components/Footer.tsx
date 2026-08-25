@@ -146,29 +146,30 @@ export function Footer() {
 
           {/* Social row */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5 border-t border-border/50 pt-5">
-            {SOCIAL_LINKS.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={s.label}
-                title={s.label}
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-110 ${s.brand}`}
-              >
-                {s.svg ? (
-                  s.label === "WhatsApp" ? (
+            {SOCIAL_LINKS.map((s) => {
+              const Icon = s.icon;
+              return (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  title={s.label}
+                  className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-110 ${s.brand}`}
+                >
+                  {s.label === "WhatsApp" ? (
                     <WhatsAppIcon className="h-4 w-4" />
                   ) : s.label === "Threads" ? (
                     <ThreadsIcon className="h-4 w-4" />
-                  ) : (
+                  ) : s.label === "Pinterest" ? (
                     <PinterestIcon className="h-4 w-4" />
-                  )
-                ) : (
-                  <s.icon className="h-4 w-4" />
-                )}
-              </a>
-            ))}
+                  ) : Icon ? (
+                    <Icon className="h-4 w-4" />
+                  ) : null}
+                </a>
+              );
+            })}
           </div>
 
           {/* Bottom bar */}
