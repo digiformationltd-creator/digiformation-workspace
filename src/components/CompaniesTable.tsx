@@ -82,6 +82,7 @@ export function CompaniesTable({
   onDelete,
   isAdmin = true,
 }: Props) {
+  const codesHidden = useAuthCodesHidden();
   const [sortField, setSortField] = useState<keyof Company | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
