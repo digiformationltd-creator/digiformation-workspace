@@ -3,8 +3,11 @@ import {
   ChevronDown,
   ChevronUp,
   Trash2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { CompaniesHouseLogo } from "@/components/CompaniesHouseLogo";
+import { toggleAuthCodes, useAuthCodesHidden } from "@/hooks/useAuthCodeVisibility";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -79,6 +82,7 @@ export function CompaniesTable({
   onDelete,
   isAdmin = true,
 }: Props) {
+  const codesHidden = useAuthCodesHidden();
   const [sortField, setSortField] = useState<keyof Company | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
@@ -198,13 +202,22 @@ export function CompaniesTable({
                 <div className="break-words text-[11px]">{company.company_address || "—"}</div>
               </div>
               <div>
-                <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Auth Code</div>
+                <div className="flex items-center gap-1 text-[9px] uppercase tracking-wide text-muted-foreground">
+                  Auth Code
+                  <button type="button" onClick={toggleAuthCodes} aria-label="Toggle auth codes">
+                    {codesHidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                  </button>
+                </div>
+                {codesHidden ? (
+                  <span className="font-mono text-[11px] text-muted-foreground">••••••</span>
+                ) : (
                 <EditableCell
                   value={company.auth_code}
                   onSave={(v) => onUpdate(company.id, { auth_code: v })}
                   mono
                   className={`text-[11px] ${!company.auth_code || company.auth_code.trim() === "" || company.auth_code.trim().toLowerCase() === "pending" ? "text-warning" : "text-foreground"}`}
                 />
+                )}
               </div>
               <div>
                 <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Age</div>
@@ -326,6 +339,16 @@ export function CompaniesTable({
                       </button>
                     ) : (
                       <span className="uppercase tracking-wide text-[10px]">{col.label}</span>
+                    )}
+                    {col.key === "auth_code" && (
+                      <button
+                        type="button"
+                        onClick={toggleAuthCodes}
+                        aria-label={codesHidden ? "Show auth codes" : "Hide auth codes"}
+                        className="ml-1 hover:text-foreground"
+                      >
+                        {codesHidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      </button>
                     )}
                   </th>
                 ))}
@@ -479,12 +502,16 @@ export function CompaniesTable({
                     </Tooltip>
                   </td>
                   <td className="px-2 py-1.5">
+                    {codesHidden ? (
+                      <span className="font-mono text-[10px] text-muted-foreground">••••••</span>
+                    ) : (
                     <EditableCell
                       value={company.auth_code}
                       onSave={(v) => onUpdate(company.id, { auth_code: v })}
                       mono
                       className={`text-[10px] ${!company.auth_code || company.auth_code.trim() === "" || company.auth_code.trim().toLowerCase() === "pending" ? "text-warning" : "text-foreground"}`}
                     />
+                    )}
                   </td>
                   <td className="px-2 py-1.5">
                     {(() => {
