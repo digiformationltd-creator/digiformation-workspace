@@ -122,15 +122,19 @@ export function Footer() {
                 Product
               </h4>
               <div className="rounded-lg border border-border/60 bg-background/40 p-3">
-                <p className="text-xs font-semibold text-foreground">
-                  Universal WhatsApp AI Sales Agent
-                </p>
-                <p className="text-[10px] text-muted-foreground">v2.0 PRO</p>
+                <p className="text-xs font-semibold text-foreground">DigiBizOS</p>
                 <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                  Business-agnostic conversational sales engine — Multi-account Baileys QR pairing,
-                  8-stage deterministic sales state machine, Groq Whisper STT with Roman Urdu &amp;
-                  English, persistent local SQLite memory, zero-hallucination pricing integrity.
+                  An all-in-one digital business platform by Digiformation — helping businesses
+                  set up, manage and grow online from one place.
                 </p>
+                <a
+                  href="https://www.digibizos.co.uk/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-block text-[11px] font-medium text-primary hover:underline"
+                >
+                  www.digibizos.co.uk →
+                </a>
               </div>
               <a
                 href="https://find-and-update.company-information.service.gov.uk/company/16994903"
